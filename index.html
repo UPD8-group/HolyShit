@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HolyShit.app — Seek Sanctuary</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💩</text></svg>">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#EAE6DF">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,14 +29,10 @@
             overflow: hidden;
         }
 
-        /* The Heavenly Sunburst */
         .divine-glow {
-            position: absolute;
-            width: 300px; height: 300px;
+            position: absolute; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            z-index: 1;
-            animation: pulse-glow 4s infinite alternate;
+            border-radius: 50%; z-index: 1; animation: pulse-glow 4s infinite alternate;
         }
 
         @keyframes pulse-glow {
@@ -43,13 +40,9 @@
             100% { transform: scale(1.6); opacity: 1; box-shadow: 0 0 150px rgba(255, 255, 255, 0.8), 0 0 200px rgba(255, 215, 0, 0.6); }
         }
 
-        /* The Majestic Poo */
         .majestic-poo {
-            font-size: 7rem;
-            z-index: 2;
-            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2));
-            animation: float 3.5s ease-in-out infinite;
-            margin-bottom: 10px;
+            font-size: 7rem; z-index: 2; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2));
+            animation: float 3.5s ease-in-out infinite; margin-bottom: 10px;
         }
 
         @keyframes float {
@@ -60,7 +53,6 @@
 
         #splash h1 { font-family: 'Cinzel Decorative', cursive; font-size: 4.5rem; color: var(--red); margin: 0; text-shadow: 3px 3px var(--border); z-index: 2; position: relative; }
         #splash p { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 15px 0 40px; font-weight: bold; letter-spacing: 1px; z-index: 2; position: relative; }
-        
         .btn-enter { position: relative; z-index: 2; background: var(--red); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #601a25; transition: all 0.1s; }
         .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
 
@@ -69,19 +61,25 @@
             display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px;
             height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto;
         }
-
         .bento-card {
             background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06);
             border: 1px solid var(--border); overflow: hidden; position: relative;
         }
 
-        /* --- LEFT COLUMN --- */
+        /* --- THE DASHBOARD (Left Column) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0 0 20px 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
         
         #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
-        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 30px; font-size: 1.1rem; }
+        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
+        /* Dashboard Filters */
+        .filter-section { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
+        .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .filter-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .filter-btn { background: white; border: 1px solid var(--border); padding: 10px 15px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .filter-btn.active { background: var(--gold); color: white; border-color: var(--gold); box-shadow: 0 4px 10px rgba(184, 132, 30, 0.3); transform: translateY(-2px); }
+
         #loo-details { display: none; }
         .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
         .tag { display: inline-block; padding: 6px 12px; background: rgba(226, 206, 173, 0.3); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; font-family: 'Cinzel', serif; }
@@ -99,10 +97,12 @@
         /* --- MOBILE --- */
         @media (max-width: 800px) {
             .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; height: 100vh; }
-            .sidebar { padding: 20px; max-height: 35vh; }
+            .sidebar { padding: 20px; max-height: 40vh; }
             .logo-small { font-size: 1.8rem; margin-bottom: 10px; padding-bottom: 10px; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
+            .filter-grid { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; }
+            .filter-btn { flex-shrink: 0; }
         }
     </style>
 </head>
@@ -122,13 +122,22 @@
             <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
             
             <div id="default-menu">
-                <p><strong>HolyShit</strong> is your divine guide to finding a sanctuary when you need it most.</p>
                 <p>We have mapped over 25,000 public restrooms across Australia, rating them from humble Houses of Relief to glorious <strong>Golden Thrones</strong>.</p>
+                
+                <div class="filter-section">
+                    <h3>Seek Thy Preference</h3>
+                    <div class="filter-grid">
+                        <button class="filter-btn" id="btn-golden" onclick="toggleFilter('golden')">👑 Golden Thrones</button>
+                        <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
+                        <button class="filter-btn" id="btn-access" onclick="toggleFilter('access')">♿ Accessible</button>
+                    </div>
+                </div>
+
                 <p class="gospel-quote">"Never wander the wilderness again."</p>
             </div>
 
             <div id="loo-details">
-                <button class="btn-back" onclick="resetSidebar()">← Back to Gospel</button>
+                <button class="btn-back" onclick="resetSidebar()">← Back to Dashboard</button>
                 <span id="loo-tier" class="tier-label">House of Relief</span>
                 <h2 id="loo-name" style="font-family: 'Cinzel', serif; margin: 0 0 5px 0; font-size: 1.6rem;">Sanctuary</h2>
                 <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
@@ -152,6 +161,9 @@
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
+        
+        // Filter State
+        let filters = { golden: false, baby: false, access: false };
 
         const GOLDEN_THRONES = [
             { id: 'maccas_canberra_centre', n: "McDonald's Canberra Centre", a: "Canberra Centre, Bunda St", lat: -35.2796, lon: 149.1320, t: { w:1, b:1, f:1, o:"24/7" }, golden: true, note: "The First Golden Throne. A sanctuary of convenience." }
@@ -169,6 +181,12 @@
             document.querySelector('.sidebar').style.borderTop = "none";
         }
 
+        function toggleFilter(type) {
+            filters[type] = !filters[type]; // Toggle true/false
+            document.getElementById('btn-' + type).classList.toggle('active'); // Toggle UI button
+            renderVisibleMarkers(); // Instantly update the map
+        }
+
         async function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -35.2809, lng: 149.1300 }, 
@@ -178,6 +196,7 @@
             });
 
             map.addListener("click", resetSidebar);
+            map.addListener("idle", renderVisibleMarkers);
             geolocate();
             loadData();
         }
@@ -198,19 +217,43 @@
         async function loadData() {
             try {
                 const response = await fetch('toilets-au.json');
-                const govLoos = await response.json();
+                let govLoos = await response.json();
+                
+                // THE MACCAS BAPTISM: Automatically upgrade all McDonald's to Golden Thrones
+                govLoos = govLoos.map(loo => {
+                    if (loo.n && (loo.n.toLowerCase().includes('mcdonald') || loo.n.toLowerCase().includes('maccas'))) {
+                        loo.golden = true;
+                        loo.note = "A franchised sanctuary. The Golden Arches provide.";
+                    }
+                    return loo;
+                });
+
                 allLoos = [...GOLDEN_THRONES, ...govLoos];
-                map.addListener("idle", renderVisibleMarkers);
+                renderVisibleMarkers();
             } catch (e) { console.error("Data load failed", e); }
         }
 
         function renderVisibleMarkers() {
+            if (!map) return;
             const bounds = map.getBounds();
+            if (!bounds) return;
+
+            // Clear old markers
             markers.forEach(m => m.setMap(null));
             markers = [];
 
-            const visible = allLoos.filter(l => bounds.contains({lat: l.lat, lng: l.lon}));
+            // Find loosely visible loos
+            let visible = allLoos.filter(l => bounds.contains({lat: l.lat, lng: l.lon}));
             
+            // Apply the Dashboard Filters!
+            visible = visible.filter(loo => {
+                if (filters.golden && !loo.golden) return false; // Hide if not golden
+                if (filters.baby && !loo.t.b) return false;     // Hide if no baby change
+                if (filters.access && !loo.t.w) return false;   // Hide if not accessible
+                return true;
+            });
+            
+            // Draw up to 80 pins
             visible.slice(0, 80).forEach(loo => {
                 const emoji = loo.golden ? "👑" : "💩";
                 const svgIcon = `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">${emoji}</text></svg>`;
@@ -254,6 +297,7 @@
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
     </script>
     
+   
   
  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
