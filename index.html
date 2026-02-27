@@ -43,7 +43,6 @@
         #splash p { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 15px 0 40px; font-weight: bold; letter-spacing: 1px; z-index: 2; position: relative; }
         .btn-enter { position: relative; z-index: 2; background: var(--red); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #601a25; transition: all 0.1s; }
         .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
-        
         .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #888; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
 
         /* --- BENTO LAYOUT --- */
@@ -56,16 +55,11 @@
         #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
         .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
-        /* Filters */
         .filter-section { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
         .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
         .filter-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .filter-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
         .filter-btn:active { transform: scale(0.95); }
-        .filter-btn.active-maccas { background: #FFC72C; color: #27251F; border-color: #FFC72C; }
-        .filter-btn.active-kfc { background: #E50027; color: white; border-color: #E50027; }
-        .filter-btn.active-subway { background: #008938; color: white; border-color: #008938; }
-        .filter-btn.active-hj { background: #D71920; color: white; border-color: #D71920; }
         .filter-btn.active-feature { background: var(--gold); color: white; border-color: var(--gold); }
 
         /* Loo Details View */
@@ -78,12 +72,14 @@
         .btn-back { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: bold; }
         .btn-report { background: transparent; color: #888; border: 1px dashed #ccc; padding: 10px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; font-family: 'Nunito'; font-size: 0.9rem; }
 
-        /* --- RIGHT SIDEBAR (MAP & SEARCH) --- */
+        /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
         #map { height: 100%; width: 100%; border-radius: 30px; }
-        #search-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; width: 90%; max-width: 400px; background: white; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid var(--border); overflow: hidden; }
-        #pac-input { flex-grow: 1; border: none; padding: 15px 20px; font-family: 'Nunito', sans-serif; font-size: 1rem; outline: none; background: transparent; color: var(--text); }
-        #btn-near-me { background: var(--card-bg); border: none; border-left: 1px solid var(--border); padding: 0 20px; height: 100%; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .map-ctrl { position: absolute; right: 20px; bottom: 20px; z-index: 100; }
+        
+        /* The Giant Mobile Panic Button */
+        .fab-locate { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; border: none; width: 220px; height: 55px; border-radius: 30px; font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(139, 38, 53, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; }
+        .fab-locate:active { transform: translateX(-50%) scale(0.95); box-shadow: 0 2px 10px rgba(139, 38, 53, 0.4); }
+
+        .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; }
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
         /* --- REPORT MODAL --- */
@@ -96,10 +92,10 @@
 
         @media (max-width: 800px) {
             .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; }
-            .sidebar { padding: 20px; max-height: 45vh; }
+            .sidebar { padding: 20px; max-height: 40vh; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
-            #search-container { top: 15px; }
+            .fab-locate { bottom: 20px; width: 200px; font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -117,7 +113,7 @@
         <p>Seek Sanctuary. Find Deliverance.</p>
         <button class="btn-enter" onclick="dismissSplash()">Enter the Gates</button>
         <div class="splash-footer">
-            &copy; 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
+            © 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
         </div>
     </div>
 
@@ -127,18 +123,9 @@
             <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
             
             <div id="default-menu">
-                <p>We have mapped over 25,000 public restrooms across Australia, including the most reliable fast-food sanctuaries.</p>
+                <p>Welcome to your sanctuary. We have mapped over 25,000 public restrooms across Australia so you never have to panic again.</p>
                 <div class="filter-section">
-                    <h3>Brand Sanctuaries</h3>
-                    <div class="filter-grid">
-                        <button class="filter-btn" id="btn-maccas" onclick="toggleFilter('maccas')">🍔 McDonald's</button>
-                        <button class="filter-btn" id="btn-kfc" onclick="toggleFilter('kfc')">🍗 KFC</button>
-                        <button class="filter-btn" id="btn-subway" onclick="toggleFilter('subway')">🥪 Subway</button>
-                        <button class="filter-btn" id="btn-hj" onclick="toggleFilter('hj')">🍔 Hungry Jack's</button>
-                    </div>
-                </div>
-                <div class="filter-section">
-                    <h3>Holy Features</h3>
+                    <h3>Filter by Need</h3>
                     <div class="filter-grid">
                         <button class="filter-btn" id="btn-access" onclick="toggleFilter('access')">♿ Accessible</button>
                         <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
@@ -165,11 +152,10 @@
         </div>
 
         <div class="bento-card">
-            <div id="search-container">
-                <input id="pac-input" type="text" placeholder="Search a city or suburb...">
-                <button id="btn-near-me" onclick="geolocate()" title="Find Near Me">📍</button>
-            </div>
             <div id="map"></div>
+            
+            <button class="fab-locate" id="btn-near-me" onclick="geolocate()">📍 Find Near Me</button>
+
             <div class="map-ctrl">
                 <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View">🛰️</button>
             </div>
@@ -193,25 +179,7 @@
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
-        let filters = { maccas: false, kfc: false, subway: false, hj: false, baby: false, access: false, unisex: false, open24: false };
-
-        const BRANDS = {
-            maccas: { name: "McDonald's", icon: "https://www.google.com/s2/favicons?domain=mcdonalds.com.au&sz=64", color: "#FFC72C", quote: "The Golden Arches provide sanctuary." },
-            kfc: { name: "KFC", icon: "https://www.google.com/s2/favicons?domain=kfc.com.au&sz=64", color: "#E50027", quote: "Finger lickin' relief." },
-            subway: { name: "Subway", icon: "https://www.google.com/s2/favicons?domain=subway.com.au&sz=64", color: "#008938", quote: "Eat fresh. Rest easy." },
-            hj: { name: "Hungry Jack's", icon: "https://www.google.com/s2/favicons?domain=hungryjacks.com.au&sz=64", color: "#D71920", quote: "The burgers are better, and so is the bathroom." },
-            public: { name: "House of Relief", icon: null, color: "#8B2635", quote: "A humble, public sanctuary." }
-        };
-
-        function detectBrand(name) {
-            if (!name) return 'public';
-            const n = name.toLowerCase();
-            if (n.includes('mcdonald') || n.includes('maccas')) return 'maccas';
-            if (n.includes('kfc') || n.includes('kentucky fried')) return 'kfc';
-            if (n.includes('subway')) return 'subway';
-            if (n.includes('hungry jack')) return 'hj';
-            return 'public';
-        }
+        let filters = { baby: false, access: false, unisex: false, open24: false };
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -222,14 +190,12 @@
         function resetSidebar() {
             document.getElementById('loo-details').style.display = 'none';
             document.getElementById('default-menu').style.display = 'block';
-            document.querySelector('.sidebar').style.borderTop = "none";
         }
 
         function toggleFilter(type) {
             filters[type] = !filters[type]; 
             const btn = document.getElementById('btn-' + type);
-            if (['maccas', 'kfc', 'subway', 'hj'].includes(type)) btn.classList.toggle('active-' + type);
-            else btn.classList.toggle('active-feature');
+            btn.classList.toggle('active-feature');
             renderVisibleMarkers(); 
         }
 
@@ -239,33 +205,20 @@
                 zoom: 14, disableDefaultUI: true,
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
-            initAutocomplete();
             map.addListener("click", resetSidebar);
             map.addListener("idle", renderVisibleMarkers);
             loadData();
         }
 
-        function initAutocomplete() {
-            const input = document.getElementById("pac-input");
-            const autocomplete = new google.maps.places.Autocomplete(input, { componentRestrictions: { country: "au" }, fields: ["geometry", "name"] });
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (!place.geometry) return;
-                if (place.geometry.viewport) map.fitBounds(place.geometry.viewport);
-                else { map.setCenter(place.geometry.location); map.setZoom(15); }
-                input.blur(); renderVisibleMarkers();
-            });
-        }
-
         function geolocate() {
             const btn = document.getElementById("btn-near-me");
-            btn.innerHTML = "⏳";
+            btn.innerHTML = "⏳ Seeking...";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     map.panTo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                    map.setZoom(15); btn.innerHTML = "📍"; renderVisibleMarkers();
-                }, () => { btn.innerHTML = "📍"; alert("Enable location to find your nearest sanctuary."); });
-            } else btn.innerHTML = "📍";
+                    map.setZoom(15); btn.innerHTML = "📍 Find Near Me"; renderVisibleMarkers();
+                }, () => { btn.innerHTML = "📍 Find Near Me"; alert("Enable location to find your nearest sanctuary."); });
+            } else btn.innerHTML = "📍 Find Near Me";
         }
 
         function toggleMapType() {
@@ -276,7 +229,6 @@
             try {
                 const response = await fetch('toilets-au.json');
                 allLoos = await response.json();
-                allLoos.forEach(loo => { loo.brand = detectBrand(loo.n); });
                 renderVisibleMarkers();
             } catch (e) { console.error("Data load failed", e); }
         }
@@ -286,15 +238,10 @@
             const bounds = map.getBounds();
             markers.forEach(m => m.setMap(null)); markers = [];
 
-            const brandFilterActive = filters.maccas || filters.kfc || filters.subway || filters.hj;
-
             let visible = allLoos.filter(loo => {
                 if (!bounds.contains({lat: loo.lat, lng: loo.lon})) return false;
-                if (brandFilterActive) {
-                    if (loo.brand === 'public') return false; 
-                    if (!filters[loo.brand]) return false;    
-                }
-                if (!loo.t) return false;
+                if (!loo.t && (filters.baby || filters.access || filters.unisex || filters.open24)) return false;
+                
                 if (filters.baby && !loo.t.b) return false;
                 if (filters.access && !loo.t.w) return false;
                 if (filters.unisex && !loo.t.u) return false;
@@ -303,10 +250,7 @@
             });
             
             visible.slice(0, 80).forEach(loo => {
-                let iconConfig = loo.brand !== 'public' 
-                    ? { url: BRANDS[loo.brand].icon, scaledSize: new google.maps.Size(32, 32), anchor: new google.maps.Point(16, 16) }
-                    : { url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`, anchor: new google.maps.Point(16, 24) };
-
+                const iconConfig = { url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`, anchor: new google.maps.Point(16, 24) };
                 const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map: map, icon: iconConfig });
                 marker.addListener("click", () => populateSidebar(loo));
                 markers.push(marker);
@@ -318,11 +262,8 @@
             document.getElementById('default-menu').style.display = 'none';
             document.getElementById('loo-details').style.display = 'block';
 
-            const brandData = BRANDS[loo.brand];
-            document.getElementById('loo-name').innerText = loo.n || brandData.name;
-            document.getElementById('loo-address').innerText = loo.a;
-            document.getElementById('loo-tier').innerText = brandData.name;
-            document.querySelector('.sidebar').style.borderTop = `8px solid ${brandData.color}`;
+            document.getElementById('loo-name').innerText = loo.n || "House of Relief";
+            document.getElementById('loo-address').innerText = loo.a || "Location detailed on map";
             
             const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
             if (loo.t) {
@@ -334,7 +275,7 @@
                 if (loo.t.d) tags.innerHTML += '<span class="tag">💧 Water</span>';
                 if (loo.t.o) tags.innerHTML += `<span class="tag" style="background: rgba(184, 132, 30, 0.2); border-color: var(--gold);">🕒 ${loo.t.o}</span>`;
             }
-            document.getElementById('loo-scripture').innerText = loo.note || brandData.quote;
+            document.getElementById('loo-scripture').innerText = loo.note || "A humble, public sanctuary.";
         }
 
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
@@ -365,16 +306,11 @@
             });
         }
         
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
         }
     </script>
     
-  
- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_REAL_API_KEY_HERE&callback=initMap" async defer></script>
 </body>
 </html>
-    
-
-  
