@@ -4,72 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HolyShit.app — Seek Sanctuary</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💩</text></svg>">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#EAE6DF">
+    
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-color: #EAE6DF; 
-            --card-bg: #FDF6E8;
-            --border: #E2CEAD;
-            --text: #2A1A0A;
-            --gold: #B8841E;
-            --red: #8B2635;
+            --bg-color: #EAE6DF; --card-bg: #FDF6E8; --border: #E2CEAD;
+            --text: #2A1A0A; --gold: #B8841E; --red: #8B2635;
         }
-        
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Nunito', sans-serif; background: var(--bg-color); overflow: hidden; }
 
-        /* --- THE DIVINE SPLASH PAGE --- */
+        /* --- SPLASH PAGE --- */
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: radial-gradient(circle at center, #FFFDF0 0%, #E2CEAD 100%);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.8s ease;
-            overflow: hidden;
         }
-
         .divine-glow {
             position: absolute; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255,255,255,0) 70%);
             border-radius: 50%; z-index: 1; animation: pulse-glow 4s infinite alternate;
         }
-
         @keyframes pulse-glow {
             0% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 50px rgba(255, 215, 0, 0.4); }
             100% { transform: scale(1.6); opacity: 1; box-shadow: 0 0 150px rgba(255, 255, 255, 0.8), 0 0 200px rgba(255, 215, 0, 0.6); }
         }
-
-        .majestic-poo {
-            font-size: 7rem; z-index: 2; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2));
-            animation: float 3.5s ease-in-out infinite; margin-bottom: 10px;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
-        }
-
+        .majestic-poo { font-size: 7rem; z-index: 2; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2)); animation: float 3.5s ease-in-out infinite; margin-bottom: 10px; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
         #splash h1 { font-family: 'Cinzel Decorative', cursive; font-size: 4.5rem; color: var(--red); margin: 0; text-shadow: 3px 3px var(--border); z-index: 2; position: relative; }
         #splash p { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 15px 0 40px; font-weight: bold; letter-spacing: 1px; z-index: 2; position: relative; }
         .btn-enter { position: relative; z-index: 2; background: var(--red); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #601a25; transition: all 0.1s; }
         .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
+        
+        .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #888; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
 
-        /* --- BENTO BOX LAYOUT --- */
-        .bento-wrapper {
-            display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px;
-            height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto;
-        }
-        .bento-card {
-            background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-            border: 1px solid var(--border); overflow: hidden; position: relative;
-        }
+        /* --- BENTO LAYOUT --- */
+        .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; }
+        .bento-card { background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
-        /* --- THE DASHBOARD --- */
+        /* --- LEFT SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0 0 20px 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        
         #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
         .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
@@ -77,42 +60,55 @@
         .filter-section { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
         .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
         .filter-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        
         .filter-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
         .filter-btn:active { transform: scale(0.95); }
-        
-        /* Active Filter Colors */
         .filter-btn.active-maccas { background: #FFC72C; color: #27251F; border-color: #FFC72C; }
         .filter-btn.active-kfc { background: #E50027; color: white; border-color: #E50027; }
         .filter-btn.active-subway { background: #008938; color: white; border-color: #008938; }
         .filter-btn.active-hj { background: #D71920; color: white; border-color: #D71920; }
         .filter-btn.active-feature { background: var(--gold); color: white; border-color: var(--gold); }
 
+        /* Loo Details View */
         #loo-details { display: none; }
         .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
         .tags-container { display: flex; flex-wrap: wrap; gap: 5px; margin: 15px 0; }
         .tag { padding: 6px 10px; background: rgba(226, 206, 173, 0.3); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 5px; }
         .scripture { font-style: italic; color: var(--gold); margin: 20px 0; border-left: 4px solid var(--gold); padding-left: 15px; font-size: 1rem; line-height: 1.5; }
         .btn-action { background: var(--red); color: white; border: none; padding: 16px; border-radius: 12px; font-family: 'Cinzel', serif; font-weight: bold; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 0 #601a25; }
-        .btn-back { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: bold; transition: background 0.2s; }
-        .btn-back:hover { background: rgba(0,0,0,0.05); }
+        .btn-back { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: bold; }
+        .btn-report { background: transparent; color: #888; border: 1px dashed #ccc; padding: 10px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; font-family: 'Nunito'; font-size: 0.9rem; }
 
-        /* --- RIGHT COLUMN: MAP --- */
+        /* --- RIGHT SIDEBAR (MAP & SEARCH) --- */
         #map { height: 100%; width: 100%; border-radius: 30px; }
-        .map-ctrl { position: absolute; right: 20px; bottom: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-        .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        #search-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; width: 90%; max-width: 400px; background: white; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid var(--border); overflow: hidden; }
+        #pac-input { flex-grow: 1; border: none; padding: 15px 20px; font-family: 'Nunito', sans-serif; font-size: 1rem; outline: none; background: transparent; color: var(--text); }
+        #btn-near-me { background: var(--card-bg); border: none; border-left: 1px solid var(--border); padding: 0 20px; height: 100%; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .map-ctrl { position: absolute; right: 20px; bottom: 20px; z-index: 100; }
+        .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-        /* --- MOBILE --- */
+        /* --- REPORT MODAL --- */
+        #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; border: 2px solid var(--border); text-align: center; }
+        .modal-content h3 { font-family: 'Cinzel', serif; color: var(--red); margin-top: 0; }
+        .modal-content select { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); font-family: 'Nunito'; font-size: 1rem; }
+        .btn-submit { background: var(--red); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+        .btn-cancel { background: transparent; color: var(--text); border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+
         @media (max-width: 800px) {
-            .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; height: 100vh; }
+            .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; }
             .sidebar { padding: 20px; max-height: 45vh; }
-            .logo-small { font-size: 1.8rem; margin-bottom: 10px; padding-bottom: 10px; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
+            #search-container { top: 15px; }
         }
     </style>
 </head>
 <body>
+
+    <form name="report-loo" data-netlify="true" hidden>
+        <input type="text" name="loo_name">
+        <input type="text" name="issue">
+    </form>
 
     <div id="splash">
         <div class="divine-glow"></div>
@@ -120,6 +116,9 @@
         <h1>HolyShit</h1>
         <p>Seek Sanctuary. Find Deliverance.</p>
         <button class="btn-enter" onclick="dismissSplash()">Enter the Gates</button>
+        <div class="splash-footer">
+            &copy; 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
+        </div>
     </div>
 
     <div class="bento-wrapper">
@@ -129,7 +128,6 @@
             
             <div id="default-menu">
                 <p>We have mapped over 25,000 public restrooms across Australia, including the most reliable fast-food sanctuaries.</p>
-                
                 <div class="filter-section">
                     <h3>Brand Sanctuaries</h3>
                     <div class="filter-grid">
@@ -139,7 +137,6 @@
                         <button class="filter-btn" id="btn-hj" onclick="toggleFilter('hj')">🍔 Hungry Jack's</button>
                     </div>
                 </div>
-
                 <div class="filter-section">
                     <h3>Holy Features</h3>
                     <div class="filter-grid">
@@ -149,7 +146,6 @@
                         <button class="filter-btn" id="btn-open24" onclick="toggleFilter('open24')">🕒 24/7 Access</button>
                     </div>
                 </div>
-
                 <p class="gospel-quote">"Never wander the wilderness again."</p>
             </div>
 
@@ -158,30 +154,45 @@
                 <span id="loo-tier" class="tier-label">House of Relief</span>
                 <h2 id="loo-name" style="font-family: 'Cinzel', serif; margin: 0 0 5px 0; font-size: 1.6rem;">Sanctuary</h2>
                 <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
-                
                 <div id="loo-tags" class="tags-container"></div>
-                
                 <div class="scripture" id="loo-scripture"></div>
                 
                 <button class="btn-action" onclick="openDirections()">Navigate to Peace</button>
                 <button class="btn-action" style="background: var(--gold); box-shadow: 0 4px 0 #8c6316;" onclick="openStreetView()">Behold the Entrance</button>
+                
+                <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this Sanctuary</button>
             </div>
         </div>
 
         <div class="bento-card">
+            <div id="search-container">
+                <input id="pac-input" type="text" placeholder="Search a city or suburb...">
+                <button id="btn-near-me" onclick="geolocate()" title="Find Near Me">📍</button>
+            </div>
             <div id="map"></div>
             <div class="map-ctrl">
                 <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View">🛰️</button>
-                <button class="ctrl-btn" onclick="geolocate()" title="Find Me">📍</button>
             </div>
         </div>
+    </div>
 
+    <div id="report-modal">
+        <div class="modal-content">
+            <h3>Report Issue</h3>
+            <p style="font-size: 0.9rem; color: #666;">Is there a false prophet among us? Let us know if this data is wrong.</p>
+            <select id="report-reason">
+                <option value="closed">Location is permanently closed</option>
+                <option value="does_not_exist">Location doesn't exist here</option>
+                <option value="wrong_details">Features/Tags are incorrect</option>
+                <option value="unsafe">Location feels unsafe</option>
+            </select>
+            <button class="btn-submit" onclick="submitReport()">Submit to the Gatekeeper</button>
+            <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+        </div>
     </div>
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
-        
-        // Filter State (Added Unisex & 24/7)
         let filters = { maccas: false, kfc: false, subway: false, hj: false, baby: false, access: false, unisex: false, open24: false };
 
         const BRANDS = {
@@ -205,7 +216,7 @@
         function dismissSplash() {
             const splash = document.getElementById('splash');
             splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; }, 800);
+            setTimeout(() => { splash.style.display = 'none'; geolocate(); }, 800);
         }
 
         function resetSidebar() {
@@ -217,98 +228,86 @@
         function toggleFilter(type) {
             filters[type] = !filters[type]; 
             const btn = document.getElementById('btn-' + type);
-            if (['maccas', 'kfc', 'subway', 'hj'].includes(type)) {
-                btn.classList.toggle('active-' + type);
-            } else {
-                btn.classList.toggle('active-feature');
-            }
+            if (['maccas', 'kfc', 'subway', 'hj'].includes(type)) btn.classList.toggle('active-' + type);
+            else btn.classList.toggle('active-feature');
             renderVisibleMarkers(); 
         }
 
         async function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -35.2809, lng: 149.1300 }, 
-                zoom: 14,
-                disableDefaultUI: true,
+                zoom: 14, disableDefaultUI: true,
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
-
+            initAutocomplete();
             map.addListener("click", resetSidebar);
             map.addListener("idle", renderVisibleMarkers);
-            geolocate();
             loadData();
         }
 
+        function initAutocomplete() {
+            const input = document.getElementById("pac-input");
+            const autocomplete = new google.maps.places.Autocomplete(input, { componentRestrictions: { country: "au" }, fields: ["geometry", "name"] });
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) return;
+                if (place.geometry.viewport) map.fitBounds(place.geometry.viewport);
+                else { map.setCenter(place.geometry.location); map.setZoom(15); }
+                input.blur(); renderVisibleMarkers();
+            });
+        }
+
         function geolocate() {
+            const btn = document.getElementById("btn-near-me");
+            btn.innerHTML = "⏳";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     map.panTo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                });
-            }
+                    map.setZoom(15); btn.innerHTML = "📍"; renderVisibleMarkers();
+                }, () => { btn.innerHTML = "📍"; alert("Enable location to find your nearest sanctuary."); });
+            } else btn.innerHTML = "📍";
         }
 
         function toggleMapType() {
-            const current = map.getMapTypeId();
-            map.setMapTypeId(current === 'roadmap' ? 'satellite' : 'roadmap');
+            map.setMapTypeId(map.getMapTypeId() === 'roadmap' ? 'satellite' : 'roadmap');
         }
 
         async function loadData() {
             try {
                 const response = await fetch('toilets-au.json');
                 allLoos = await response.json();
-                
                 allLoos.forEach(loo => { loo.brand = detectBrand(loo.n); });
                 renderVisibleMarkers();
             } catch (e) { console.error("Data load failed", e); }
         }
 
         function renderVisibleMarkers() {
-            if (!map) return;
+            if (!map || !map.getBounds()) return;
             const bounds = map.getBounds();
-            if (!bounds) return;
-
-            markers.forEach(m => m.setMap(null));
-            markers = [];
+            markers.forEach(m => m.setMap(null)); markers = [];
 
             const brandFilterActive = filters.maccas || filters.kfc || filters.subway || filters.hj;
 
             let visible = allLoos.filter(loo => {
                 if (!bounds.contains({lat: loo.lat, lng: loo.lon})) return false;
-
                 if (brandFilterActive) {
                     if (loo.brand === 'public') return false; 
                     if (!filters[loo.brand]) return false;    
                 }
-
-                // Apply Deep Feature Filters
-                if (!loo.t) return false; // Skip if no tags at all
+                if (!loo.t) return false;
                 if (filters.baby && !loo.t.b) return false;
                 if (filters.access && !loo.t.w) return false;
                 if (filters.unisex && !loo.t.u) return false;
-                
-                // Check if 24/7 filter is active and the string contains "24"
                 if (filters.open24 && (!loo.t.o || !loo.t.o.includes('24'))) return false;
-
                 return true;
             });
             
             visible.slice(0, 80).forEach(loo => {
-                let iconConfig;
-                if (loo.brand !== 'public') {
-                    iconConfig = { url: BRANDS[loo.brand].icon, scaledSize: new google.maps.Size(32, 32), anchor: new google.maps.Point(16, 16) };
-                } else {
-                    iconConfig = {
-                        url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`,
-                        anchor: new google.maps.Point(16, 24)
-                    };
-                }
+                let iconConfig = loo.brand !== 'public' 
+                    ? { url: BRANDS[loo.brand].icon, scaledSize: new google.maps.Size(32, 32), anchor: new google.maps.Point(16, 16) }
+                    : { url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`, anchor: new google.maps.Point(16, 24) };
 
-                const marker = new google.maps.Marker({
-                    position: { lat: loo.lat, lng: loo.lon },
-                    map: map,
-                    icon: iconConfig
-                });
-                
+                const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map: map, icon: iconConfig });
                 marker.addListener("click", () => populateSidebar(loo));
                 markers.push(marker);
             });
@@ -320,34 +319,58 @@
             document.getElementById('loo-details').style.display = 'block';
 
             const brandData = BRANDS[loo.brand];
-
             document.getElementById('loo-name').innerText = loo.n || brandData.name;
             document.getElementById('loo-address').innerText = loo.a;
             document.getElementById('loo-tier').innerText = brandData.name;
             document.querySelector('.sidebar').style.borderTop = `8px solid ${brandData.color}`;
             
-            // THE TAG DECODER: Turning JSON letters into beautiful UI
-            const tags = document.getElementById('loo-tags');
-            tags.innerHTML = '';
-            
+            const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
             if (loo.t) {
                 if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Accessible</span>';
                 if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baby Change</span>';
                 if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ All Gender</span>';
                 if (loo.t.f && !loo.t.u) tags.innerHTML += '<span class="tag">🚺 Female</span>';
                 if (loo.t.m && !loo.t.u) tags.innerHTML += '<span class="tag">🚹 Male</span>';
-                if (loo.t.d) tags.innerHTML += '<span class="tag">💧 Water / Wash</span>';
+                if (loo.t.d) tags.innerHTML += '<span class="tag">💧 Water</span>';
                 if (loo.t.o) tags.innerHTML += `<span class="tag" style="background: rgba(184, 132, 30, 0.2); border-color: var(--gold);">🕒 ${loo.t.o}</span>`;
             }
-            
             document.getElementById('loo-scripture').innerText = loo.note || brandData.quote;
         }
 
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
+
+        /* --- REPORTING LOGIC --- */
+        function openReportModal() { document.getElementById('report-modal').style.display = 'flex'; }
+        function closeReportModal() { document.getElementById('report-modal').style.display = 'none'; }
+        
+        function submitReport() {
+            const reason = document.getElementById('report-reason').value;
+            const looName = currentLoo.n || "Unknown Location";
+            
+            fetch("/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    "form-name": "report-loo",
+                    "loo_name": looName + " (Lat: " + currentLoo.lat + ", Lon: " + currentLoo.lon + ")",
+                    "issue": reason
+                }).toString()
+            }).then(() => {
+                alert("Thank you. The Gatekeeper has been notified and will review this location.");
+                closeReportModal();
+            }).catch((error) => {
+                alert("Error sending report. Please try again.");
+                closeReportModal();
+            });
+        }
+        
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+        }
     </script>
     
-
   
  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
