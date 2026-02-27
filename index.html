@@ -73,7 +73,7 @@
         #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
         .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
-        /* Fast Food Filters */
+        /* Filters */
         .filter-section { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
         .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
         .filter-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
@@ -90,7 +90,8 @@
 
         #loo-details { display: none; }
         .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
-        .tag { display: inline-block; padding: 6px 12px; background: rgba(226, 206, 173, 0.3); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; margin: 4px 4px 4px 0; font-family: 'Cinzel', serif; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 5px; margin: 15px 0; }
+        .tag { padding: 6px 10px; background: rgba(226, 206, 173, 0.3); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 5px; }
         .scripture { font-style: italic; color: var(--gold); margin: 20px 0; border-left: 4px solid var(--gold); padding-left: 15px; font-size: 1rem; line-height: 1.5; }
         .btn-action { background: var(--red); color: white; border: none; padding: 16px; border-radius: 12px; font-family: 'Cinzel', serif; font-weight: bold; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 0 #601a25; }
         .btn-back { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: bold; transition: background 0.2s; }
@@ -140,10 +141,12 @@
                 </div>
 
                 <div class="filter-section">
-                    <h3>Features</h3>
+                    <h3>Holy Features</h3>
                     <div class="filter-grid">
-                        <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
                         <button class="filter-btn" id="btn-access" onclick="toggleFilter('access')">♿ Accessible</button>
+                        <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
+                        <button class="filter-btn" id="btn-unisex" onclick="toggleFilter('unisex')">⚧️ All Gender</button>
+                        <button class="filter-btn" id="btn-open24" onclick="toggleFilter('open24')">🕒 24/7 Access</button>
                     </div>
                 </div>
 
@@ -155,7 +158,9 @@
                 <span id="loo-tier" class="tier-label">House of Relief</span>
                 <h2 id="loo-name" style="font-family: 'Cinzel', serif; margin: 0 0 5px 0; font-size: 1.6rem;">Sanctuary</h2>
                 <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
-                <div id="loo-tags" style="margin: 15px 0;"></div>
+                
+                <div id="loo-tags" class="tags-container"></div>
+                
                 <div class="scripture" id="loo-scripture"></div>
                 
                 <button class="btn-action" onclick="openDirections()">Navigate to Peace</button>
@@ -176,10 +181,9 @@
     <script>
         let map, currentLoo, markers = [], allLoos = [];
         
-        // Filter State
-        let filters = { maccas: false, kfc: false, subway: false, hj: false, baby: false, access: false };
+        // Filter State (Added Unisex & 24/7)
+        let filters = { maccas: false, kfc: false, subway: false, hj: false, baby: false, access: false, unisex: false, open24: false };
 
-        // Brand Configuration (Logos pulled directly from Google's Favicon API)
         const BRANDS = {
             maccas: { name: "McDonald's", icon: "https://www.google.com/s2/favicons?domain=mcdonalds.com.au&sz=64", color: "#FFC72C", quote: "The Golden Arches provide sanctuary." },
             kfc: { name: "KFC", icon: "https://www.google.com/s2/favicons?domain=kfc.com.au&sz=64", color: "#E50027", quote: "Finger lickin' relief." },
@@ -188,7 +192,6 @@
             public: { name: "House of Relief", icon: null, color: "#8B2635", quote: "A humble, public sanctuary." }
         };
 
-        // Determine Brand from JSON Name
         function detectBrand(name) {
             if (!name) return 'public';
             const n = name.toLowerCase();
@@ -213,15 +216,12 @@
 
         function toggleFilter(type) {
             filters[type] = !filters[type]; 
-            
             const btn = document.getElementById('btn-' + type);
-            // Apply specific active colors based on the button clicked
             if (['maccas', 'kfc', 'subway', 'hj'].includes(type)) {
                 btn.classList.toggle('active-' + type);
             } else {
                 btn.classList.toggle('active-feature');
             }
-            
             renderVisibleMarkers(); 
         }
 
@@ -257,11 +257,7 @@
                 const response = await fetch('toilets-au.json');
                 allLoos = await response.json();
                 
-                // Pre-process the brands to make filtering lightning fast
-                allLoos.forEach(loo => {
-                    loo.brand = detectBrand(loo.n);
-                });
-
+                allLoos.forEach(loo => { loo.brand = detectBrand(loo.n); });
                 renderVisibleMarkers();
             } catch (e) { console.error("Data load failed", e); }
         }
@@ -274,36 +270,32 @@
             markers.forEach(m => m.setMap(null));
             markers = [];
 
-            // Check if ANY brand filter is turned on
             const brandFilterActive = filters.maccas || filters.kfc || filters.subway || filters.hj;
 
             let visible = allLoos.filter(loo => {
                 if (!bounds.contains({lat: loo.lat, lng: loo.lon})) return false;
 
-                // 1. Brand Filtering Logic
                 if (brandFilterActive) {
-                    if (loo.brand === 'public') return false; // Hide regular loos if a brand is selected
-                    if (!filters[loo.brand]) return false;    // Hide unselected brands
+                    if (loo.brand === 'public') return false; 
+                    if (!filters[loo.brand]) return false;    
                 }
 
-                // 2. Feature Filtering Logic
+                // Apply Deep Feature Filters
+                if (!loo.t) return false; // Skip if no tags at all
                 if (filters.baby && !loo.t.b) return false;
                 if (filters.access && !loo.t.w) return false;
+                if (filters.unisex && !loo.t.u) return false;
+                
+                // Check if 24/7 filter is active and the string contains "24"
+                if (filters.open24 && (!loo.t.o || !loo.t.o.includes('24'))) return false;
 
                 return true;
             });
             
-            // Draw up to 80 pins to keep the map fast
             visible.slice(0, 80).forEach(loo => {
                 let iconConfig;
-                
-                // Swap the Poop for the Brand Logo!
                 if (loo.brand !== 'public') {
-                    iconConfig = {
-                        url: BRANDS[loo.brand].icon,
-                        scaledSize: new google.maps.Size(32, 32),
-                        anchor: new google.maps.Point(16, 16)
-                    };
+                    iconConfig = { url: BRANDS[loo.brand].icon, scaledSize: new google.maps.Size(32, 32), anchor: new google.maps.Point(16, 16) };
                 } else {
                     iconConfig = {
                         url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`,
@@ -334,11 +326,19 @@
             document.getElementById('loo-tier').innerText = brandData.name;
             document.querySelector('.sidebar').style.borderTop = `8px solid ${brandData.color}`;
             
+            // THE TAG DECODER: Turning JSON letters into beautiful UI
             const tags = document.getElementById('loo-tags');
             tags.innerHTML = '';
-            if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Blessed Access</span>';
-            if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baptismal</span>';
-            if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
+            
+            if (loo.t) {
+                if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Accessible</span>';
+                if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baby Change</span>';
+                if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ All Gender</span>';
+                if (loo.t.f && !loo.t.u) tags.innerHTML += '<span class="tag">🚺 Female</span>';
+                if (loo.t.m && !loo.t.u) tags.innerHTML += '<span class="tag">🚹 Male</span>';
+                if (loo.t.d) tags.innerHTML += '<span class="tag">💧 Water / Wash</span>';
+                if (loo.t.o) tags.innerHTML += `<span class="tag" style="background: rgba(184, 132, 30, 0.2); border-color: var(--gold);">🕒 ${loo.t.o}</span>`;
+            }
             
             document.getElementById('loo-scripture').innerText = loo.note || brandData.quote;
         }
@@ -346,7 +346,8 @@
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
     </script>
-       
+    
+
   
  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
