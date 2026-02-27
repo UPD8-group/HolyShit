@@ -1,12 +1,23 @@
 {
-  "name": "HolyShit",
+  "name": "HolyShit - Seek Sanctuary",
   "short_name": "HolyShit",
+  "description": "Your divine guide to finding a sanctuary when you need it most.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FDF6E8",
-  "theme_color": "#8B2635",
+  "background_color": "#EAE6DF",
+  "theme_color": "#EAE6DF",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
