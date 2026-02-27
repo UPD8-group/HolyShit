@@ -66,19 +66,27 @@
             border: 1px solid var(--border); overflow: hidden; position: relative;
         }
 
-        /* --- THE DASHBOARD (Left Column) --- */
+        /* --- THE DASHBOARD --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0 0 20px 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
         
         #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
         .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
-        /* Dashboard Filters */
-        .filter-section { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
-        .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .filter-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .filter-btn { background: white; border: 1px solid var(--border); padding: 10px 15px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .filter-btn.active { background: var(--gold); color: white; border-color: var(--gold); box-shadow: 0 4px 10px rgba(184, 132, 30, 0.3); transform: translateY(-2px); }
+        /* Fast Food Filters */
+        .filter-section { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .filter-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        
+        .filter-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
+        .filter-btn:active { transform: scale(0.95); }
+        
+        /* Active Filter Colors */
+        .filter-btn.active-maccas { background: #FFC72C; color: #27251F; border-color: #FFC72C; }
+        .filter-btn.active-kfc { background: #E50027; color: white; border-color: #E50027; }
+        .filter-btn.active-subway { background: #008938; color: white; border-color: #008938; }
+        .filter-btn.active-hj { background: #D71920; color: white; border-color: #D71920; }
+        .filter-btn.active-feature { background: var(--gold); color: white; border-color: var(--gold); }
 
         #loo-details { display: none; }
         .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
@@ -92,17 +100,14 @@
         #map { height: 100%; width: 100%; border-radius: 30px; }
         .map-ctrl { position: absolute; right: 20px; bottom: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s; }
-        .ctrl-btn:active { transform: scale(0.95); }
 
         /* --- MOBILE --- */
         @media (max-width: 800px) {
             .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; height: 100vh; }
-            .sidebar { padding: 20px; max-height: 40vh; }
+            .sidebar { padding: 20px; max-height: 45vh; }
             .logo-small { font-size: 1.8rem; margin-bottom: 10px; padding-bottom: 10px; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
-            .filter-grid { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; }
-            .filter-btn { flex-shrink: 0; }
         }
     </style>
 </head>
@@ -122,12 +127,21 @@
             <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
             
             <div id="default-menu">
-                <p>We have mapped over 25,000 public restrooms across Australia, rating them from humble Houses of Relief to glorious <strong>Golden Thrones</strong>.</p>
+                <p>We have mapped over 25,000 public restrooms across Australia, including the most reliable fast-food sanctuaries.</p>
                 
                 <div class="filter-section">
-                    <h3>Seek Thy Preference</h3>
+                    <h3>Brand Sanctuaries</h3>
                     <div class="filter-grid">
-                        <button class="filter-btn" id="btn-golden" onclick="toggleFilter('golden')">👑 Golden Thrones</button>
+                        <button class="filter-btn" id="btn-maccas" onclick="toggleFilter('maccas')">🍔 McDonald's</button>
+                        <button class="filter-btn" id="btn-kfc" onclick="toggleFilter('kfc')">🍗 KFC</button>
+                        <button class="filter-btn" id="btn-subway" onclick="toggleFilter('subway')">🥪 Subway</button>
+                        <button class="filter-btn" id="btn-hj" onclick="toggleFilter('hj')">🍔 Hungry Jack's</button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Features</h3>
+                    <div class="filter-grid">
                         <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
                         <button class="filter-btn" id="btn-access" onclick="toggleFilter('access')">♿ Accessible</button>
                     </div>
@@ -145,7 +159,7 @@
                 <div class="scripture" id="loo-scripture"></div>
                 
                 <button class="btn-action" onclick="openDirections()">Navigate to Peace</button>
-                <button class="btn-action" id="btn-streetview" style="background: var(--gold); box-shadow: 0 4px 0 #8c6316;" onclick="openStreetView()">Behold the Entrance</button>
+                <button class="btn-action" style="background: var(--gold); box-shadow: 0 4px 0 #8c6316;" onclick="openStreetView()">Behold the Entrance</button>
             </div>
         </div>
 
@@ -163,11 +177,27 @@
         let map, currentLoo, markers = [], allLoos = [];
         
         // Filter State
-        let filters = { golden: false, baby: false, access: false };
+        let filters = { maccas: false, kfc: false, subway: false, hj: false, baby: false, access: false };
 
-        const GOLDEN_THRONES = [
-            { id: 'maccas_canberra_centre', n: "McDonald's Canberra Centre", a: "Canberra Centre, Bunda St", lat: -35.2796, lon: 149.1320, t: { w:1, b:1, f:1, o:"24/7" }, golden: true, note: "The First Golden Throne. A sanctuary of convenience." }
-        ];
+        // Brand Configuration (Logos pulled directly from Google's Favicon API)
+        const BRANDS = {
+            maccas: { name: "McDonald's", icon: "https://www.google.com/s2/favicons?domain=mcdonalds.com.au&sz=64", color: "#FFC72C", quote: "The Golden Arches provide sanctuary." },
+            kfc: { name: "KFC", icon: "https://www.google.com/s2/favicons?domain=kfc.com.au&sz=64", color: "#E50027", quote: "Finger lickin' relief." },
+            subway: { name: "Subway", icon: "https://www.google.com/s2/favicons?domain=subway.com.au&sz=64", color: "#008938", quote: "Eat fresh. Rest easy." },
+            hj: { name: "Hungry Jack's", icon: "https://www.google.com/s2/favicons?domain=hungryjacks.com.au&sz=64", color: "#D71920", quote: "The burgers are better, and so is the bathroom." },
+            public: { name: "House of Relief", icon: null, color: "#8B2635", quote: "A humble, public sanctuary." }
+        };
+
+        // Determine Brand from JSON Name
+        function detectBrand(name) {
+            if (!name) return 'public';
+            const n = name.toLowerCase();
+            if (n.includes('mcdonald') || n.includes('maccas')) return 'maccas';
+            if (n.includes('kfc') || n.includes('kentucky fried')) return 'kfc';
+            if (n.includes('subway')) return 'subway';
+            if (n.includes('hungry jack')) return 'hj';
+            return 'public';
+        }
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -182,15 +212,23 @@
         }
 
         function toggleFilter(type) {
-            filters[type] = !filters[type]; // Toggle true/false
-            document.getElementById('btn-' + type).classList.toggle('active'); // Toggle UI button
-            renderVisibleMarkers(); // Instantly update the map
+            filters[type] = !filters[type]; 
+            
+            const btn = document.getElementById('btn-' + type);
+            // Apply specific active colors based on the button clicked
+            if (['maccas', 'kfc', 'subway', 'hj'].includes(type)) {
+                btn.classList.toggle('active-' + type);
+            } else {
+                btn.classList.toggle('active-feature');
+            }
+            
+            renderVisibleMarkers(); 
         }
 
         async function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -35.2809, lng: 149.1300 }, 
-                zoom: 15,
+                zoom: 14,
                 disableDefaultUI: true,
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
@@ -217,18 +255,13 @@
         async function loadData() {
             try {
                 const response = await fetch('toilets-au.json');
-                let govLoos = await response.json();
+                allLoos = await response.json();
                 
-                // THE MACCAS BAPTISM: Automatically upgrade all McDonald's to Golden Thrones
-                govLoos = govLoos.map(loo => {
-                    if (loo.n && (loo.n.toLowerCase().includes('mcdonald') || loo.n.toLowerCase().includes('maccas'))) {
-                        loo.golden = true;
-                        loo.note = "A franchised sanctuary. The Golden Arches provide.";
-                    }
-                    return loo;
+                // Pre-process the brands to make filtering lightning fast
+                allLoos.forEach(loo => {
+                    loo.brand = detectBrand(loo.n);
                 });
 
-                allLoos = [...GOLDEN_THRONES, ...govLoos];
                 renderVisibleMarkers();
             } catch (e) { console.error("Data load failed", e); }
         }
@@ -238,31 +271,52 @@
             const bounds = map.getBounds();
             if (!bounds) return;
 
-            // Clear old markers
             markers.forEach(m => m.setMap(null));
             markers = [];
 
-            // Find loosely visible loos
-            let visible = allLoos.filter(l => bounds.contains({lat: l.lat, lng: l.lon}));
-            
-            // Apply the Dashboard Filters!
-            visible = visible.filter(loo => {
-                if (filters.golden && !loo.golden) return false; // Hide if not golden
-                if (filters.baby && !loo.t.b) return false;     // Hide if no baby change
-                if (filters.access && !loo.t.w) return false;   // Hide if not accessible
+            // Check if ANY brand filter is turned on
+            const brandFilterActive = filters.maccas || filters.kfc || filters.subway || filters.hj;
+
+            let visible = allLoos.filter(loo => {
+                if (!bounds.contains({lat: loo.lat, lng: loo.lon})) return false;
+
+                // 1. Brand Filtering Logic
+                if (brandFilterActive) {
+                    if (loo.brand === 'public') return false; // Hide regular loos if a brand is selected
+                    if (!filters[loo.brand]) return false;    // Hide unselected brands
+                }
+
+                // 2. Feature Filtering Logic
+                if (filters.baby && !loo.t.b) return false;
+                if (filters.access && !loo.t.w) return false;
+
                 return true;
             });
             
-            // Draw up to 80 pins
+            // Draw up to 80 pins to keep the map fast
             visible.slice(0, 80).forEach(loo => {
-                const emoji = loo.golden ? "👑" : "💩";
-                const svgIcon = `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">${emoji}</text></svg>`;
+                let iconConfig;
+                
+                // Swap the Poop for the Brand Logo!
+                if (loo.brand !== 'public') {
+                    iconConfig = {
+                        url: BRANDS[loo.brand].icon,
+                        scaledSize: new google.maps.Size(32, 32),
+                        anchor: new google.maps.Point(16, 16)
+                    };
+                } else {
+                    iconConfig = {
+                        url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`,
+                        anchor: new google.maps.Point(16, 24)
+                    };
+                }
 
                 const marker = new google.maps.Marker({
                     position: { lat: loo.lat, lng: loo.lon },
                     map: map,
-                    icon: { url: svgIcon, anchor: new google.maps.Point(16, 24) }
+                    icon: iconConfig
                 });
+                
                 marker.addListener("click", () => populateSidebar(loo));
                 markers.push(marker);
             });
@@ -273,9 +327,12 @@
             document.getElementById('default-menu').style.display = 'none';
             document.getElementById('loo-details').style.display = 'block';
 
-            document.getElementById('loo-name').innerText = loo.n;
+            const brandData = BRANDS[loo.brand];
+
+            document.getElementById('loo-name').innerText = loo.n || brandData.name;
             document.getElementById('loo-address').innerText = loo.a;
-            document.getElementById('loo-tier').innerText = loo.golden ? "👑 The Golden Throne" : "💩 House of Relief";
+            document.getElementById('loo-tier').innerText = brandData.name;
+            document.querySelector('.sidebar').style.borderTop = `8px solid ${brandData.color}`;
             
             const tags = document.getElementById('loo-tags');
             tags.innerHTML = '';
@@ -283,21 +340,13 @@
             if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baptismal</span>';
             if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             
-            const quotes = ["Seek and ye shall find.", "Rest for the weary soul.", "Deliverance is at hand."];
-            document.getElementById('loo-scripture').innerText = loo.note || quotes[Math.floor(Math.random()*quotes.length)];
-
-            if (loo.golden) {
-                document.querySelector('.sidebar').style.borderTop = "8px solid var(--gold)";
-            } else {
-                document.querySelector('.sidebar').style.borderTop = "none";
-            }
+            document.getElementById('loo-scripture').innerText = loo.note || brandData.quote;
         }
 
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
     </script>
-    
-   
+       
   
  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
