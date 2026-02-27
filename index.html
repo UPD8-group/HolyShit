@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HolyShit.app — Seek Sanctuary</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8B2635">
@@ -15,17 +15,9 @@
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Nunito', sans-serif; background: var(--cream); overflow: hidden; }
         #map { height: 100vh; width: 100vw; }
         
-        /* Gospel Header */
-        .header { 
-            position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; 
-            transform: translateX(-50%); z-index: 1000; text-align: center; width: 90%; pointer-events: none; 
-        }
-        .logo { 
-            font-family: 'Cinzel Decorative', cursive; font-size: 2.5rem; color: var(--red); 
-            text-shadow: 2px 2px 0px var(--border); margin: 0; pointer-events: auto; cursor: pointer;
-        }
+        .header { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 90%; pointer-events: none; }
+        .logo { font-family: 'Cinzel Decorative', cursive; font-size: 2.5rem; color: var(--red); text-shadow: 2px 2px 0px var(--border); margin: 0; pointer-events: auto; cursor: pointer; }
 
-        /* The Bottom Sheet */
         #sheet {
             position: fixed; bottom: -100%; left: 0; right: 0; background: var(--warm-white);
             border-top: 5px solid var(--gold); border-radius: 24px 24px 0 0;
@@ -36,12 +28,10 @@
         #sheet.golden { border-top-color: #FFD700; background: #FFFDF0; }
         
         .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.75rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
-        .btn-action { background: var(--red); color: white; border: none; padding: 16px; border-radius: 12px; font-family: 'Cinzel', serif; font-weight: bold; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 0 #601a25; transition: all 0.1s; }
-        .btn-action:active { transform: translateY(2px); box-shadow: 0 2px 0 #601a25; }
-        .tag { display: inline-block; padding: 6px 12px; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; margin: 4px; font-family: 'Cinzel', serif; color: var(--text-mid); }
+        .btn-action { background: var(--red); color: white; border: none; padding: 16px; border-radius: 12px; font-family: 'Cinzel', serif; font-weight: bold; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 0 #601a25; }
+        .tag { display: inline-block; padding: 6px 12px; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; margin: 4px; font-family: 'Cinzel', serif; }
         .scripture { font-style: italic; color: var(--gold); margin: 20px 0; border-left: 4px solid var(--gold); padding-left: 15px; font-size: 1rem; line-height: 1.5; }
 
-        /* Custom Map Controls */
         .map-ctrl { position: absolute; right: 20px; bottom: 100px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     </style>
@@ -73,11 +63,8 @@
     </div>
 
     <script>
-        let map, currentLoo;
-        let markers = [];
-        let allLoos = [];
+        let map, currentLoo, markers = [], allLoos = [];
 
-        // DIVINE REGISTRY: Pilot Locations
         const GOLDEN_THRONES = [
             { id: 'maccas_canberra_centre', n: "McDonald's Canberra Centre", a: "Canberra Centre, Bunda St", lat: -35.2796, lon: 149.1320, t: { w:1, b:1, f:1, o:"24/7" }, golden: true, note: "The First Golden Throne. A sanctuary of convenience." }
         ];
@@ -87,12 +74,10 @@
                 center: { lat: -35.2809, lng: 149.1300 }, 
                 zoom: 16,
                 disableDefaultUI: true,
-                styles: [
-                    { "featureType": "poi.business", "stylers": [{ "visibility": "off" }] },
-                    { "featureType": "transit", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }
-                ]
+                styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
 
+            map.addListener("click", () => document.getElementById('sheet').classList.remove('open'));
             geolocate();
             loadData();
         }
@@ -100,9 +85,7 @@
         function geolocate() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    const myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    map.panTo(myPos);
-                    // Update search radius if necessary
+                    map.panTo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
                 });
             }
         }
@@ -117,28 +100,28 @@
                 const response = await fetch('toilets-au.json');
                 const govLoos = await response.json();
                 allLoos = [...GOLDEN_THRONES, ...govLoos];
-                
-                // Redraw markers when map moves
-                map.addListener("idle", () => renderVisibleMarkers());
-            } catch (e) {
-                console.error("Data load failed", e);
-            }
+                map.addListener("idle", renderVisibleMarkers);
+            } catch (e) { console.error("Data load failed", e); }
         }
 
         function renderVisibleMarkers() {
             const bounds = map.getBounds();
-            // Clear old markers for performance
             markers.forEach(m => m.setMap(null));
             markers = [];
 
             const visible = allLoos.filter(l => bounds.contains({lat: l.lat, lng: l.lon}));
             
-            visible.slice(0, 100).forEach(loo => { // Cap at 100 for speed
+            visible.slice(0, 75).forEach(loo => {
                 const marker = new google.maps.Marker({
                     position: { lat: loo.lat, lng: loo.lon },
                     map: map,
                     icon: {
-                        url: loo.golden ? 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                        path: loo.golden ? "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" : google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                        fillColor: loo.golden ? "#FFD700" : "#8B2635",
+                        fillOpacity: 1,
+                        strokeColor: "#FFFFFF",
+                        strokeWeight: 2,
+                        scale: loo.golden ? 1.5 : 6
                     }
                 });
                 marker.addListener("click", () => openSheet(loo));
@@ -148,7 +131,6 @@
 
         function openSheet(loo) {
             currentLoo = loo;
-            const sheet = document.getElementById('sheet');
             document.getElementById('loo-name').innerText = loo.n;
             document.getElementById('loo-address').innerText = loo.a;
             document.getElementById('loo-tier').innerText = loo.golden ? "👑 The Golden Throne" : "⛪ House of Relief";
@@ -159,28 +141,17 @@
             if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baptismal</span>';
             if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             
-            const quotes = [
-                "And they shall find relief in the shadow of the throne.",
-                "Blessed is the one who finds the door unlocked.",
-                "Seek and ye shall find; knock and the stall shall be opened.",
-                "A sanctuary in the hour of greatest need."
-            ];
+            const quotes = ["Seek and ye shall find.", "Rest for the weary soul.", "Deliverance is at hand."];
             document.getElementById('loo-scripture').innerText = loo.note || quotes[Math.floor(Math.random()*quotes.length)];
 
-            sheet.classList.add('open');
-            if (loo.golden) sheet.classList.add('golden'); else sheet.classList.remove('golden');
+            document.getElementById('sheet').classList.add('open');
+            if (loo.golden) document.getElementById('sheet').classList.add('golden'); 
+            else document.getElementById('sheet').classList.remove('golden');
         }
 
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
-        
-        map.addListener("click", () => document.getElementById('sheet').classList.remove('open'));
-
-        // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFitpvie2eA9NEg8pFuhr7SvsKLzrFvVcE&callback=initMap" async defer></script>
 </body>
 </html>
