@@ -5,19 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HolyShit.app — Seek Sanctuary</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#8B2635">
+    <meta name="theme-color" content="#FDF6E8">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --cream: #FDF6E8; --warm-white: #FFFCF4; --border: #E2CEAD;
-            --text: #2A1A0A; --gold: #B8841E; --red: #8B2635; --green: #2E7D4F;
+            --text: #2A1A0A; --gold: #B8841E; --red: #8B2635;
         }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Nunito', sans-serif; background: var(--cream); overflow: hidden; }
         #map { height: 100vh; width: 100vw; }
         
-        .header { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 90%; pointer-events: none; }
-        .logo { font-family: 'Cinzel Decorative', cursive; font-size: 2.5rem; color: var(--red); text-shadow: 2px 2px 0px var(--border); margin: 0; pointer-events: auto; cursor: pointer; }
+        /* The Header & Hamburger */
+        .header { position: absolute; top: env(safe-area-inset-top, 20px); width: 100%; display: flex; justify-content: center; align-items: center; z-index: 1000; pointer-events: none; }
+        .logo { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); text-shadow: 2px 2px 0px var(--border); margin: 0; pointer-events: auto; cursor: pointer; }
+        .menu-btn { position: absolute; left: 20px; font-size: 2rem; background: none; border: none; color: var(--red); cursor: pointer; pointer-events: auto; text-shadow: 2px 2px 0px white; }
 
+        /* The Splash Page */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--cream);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease;
+        }
+        #splash h1 { font-family: 'Cinzel Decorative', cursive; font-size: 4rem; color: var(--red); margin: 0; text-shadow: 3px 3px var(--border); }
+        #splash p { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 15px 0 50px; }
+        .btn-enter { background: var(--red); color: white; border: none; padding: 20px 40px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #601a25; transition: all 0.1s; }
+        .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
+
+        /* The Sidebar Menu */
+        #sidebar {
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: var(--warm-white);
+            z-index: 3000; box-shadow: 5px 0 25px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            padding: 40px 25px; box-sizing: border-box;
+        }
+        #sidebar.open { left: 0; }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 2rem; background: none; border: none; cursor: pointer; color: var(--text); }
+        .sidebar-content h2 { font-family: 'Cinzel Decorative', cursive; color: var(--red); font-size: 2rem; margin-top: 20px; }
+        .sidebar-content p { font-size: 1.05rem; line-height: 1.6; color: var(--text); margin-bottom: 20px; }
+
+        /* The Bottom Sheet */
         #sheet {
             position: fixed; bottom: -100%; left: 0; right: 0; background: var(--warm-white);
             border-top: 5px solid var(--gold); border-radius: 24px 24px 0 0;
@@ -32,13 +57,31 @@
         .tag { display: inline-block; padding: 6px 12px; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; margin: 4px; font-family: 'Cinzel', serif; }
         .scripture { font-style: italic; color: var(--gold); margin: 20px 0; border-left: 4px solid var(--gold); padding-left: 15px; font-size: 1rem; line-height: 1.5; }
 
+        /* Map Controls */
         .map-ctrl { position: absolute; right: 20px; bottom: 100px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
+    <div id="splash">
+        <h1>HolyShit</h1>
+        <p>Seek Sanctuary. Find Deliverance.</p>
+        <button class="btn-enter" onclick="dismissSplash()">Enter the Gates</button>
+    </div>
+
+    <div id="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+        <div class="sidebar-content">
+            <h2>The Gospel</h2>
+            <p><strong>HolyShit</strong> is your divine guide to finding a sanctuary when you need it most.</p>
+            <p>We have mapped over 25,000 public restrooms across Australia, rating them from humble Houses of Relief to glorious <strong>Golden Thrones</strong>.</p>
+            <p style="color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 40px;">"Never wander the wilderness again."</p>
+        </div>
+    </div>
+
     <div class="header">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
         <h1 class="logo" onclick="location.reload()">HolyShit</h1>
     </div>
 
@@ -69,15 +112,32 @@
             { id: 'maccas_canberra_centre', n: "McDonald's Canberra Centre", a: "Canberra Centre, Bunda St", lat: -35.2796, lon: 149.1320, t: { w:1, b:1, f:1, o:"24/7" }, golden: true, note: "The First Golden Throne. A sanctuary of convenience." }
         ];
 
+        // UI Functions
+        function dismissSplash() {
+            const splash = document.getElementById('splash');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500); // Wait for fade
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Map Functions
         async function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -35.2809, lng: 149.1300 }, 
-                zoom: 16,
+                zoom: 15,
                 disableDefaultUI: true,
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
 
-            map.addListener("click", () => document.getElementById('sheet').classList.remove('open'));
+            // Close sheet or sidebar if map is clicked
+            map.addListener("click", () => {
+                document.getElementById('sheet').classList.remove('open');
+                document.getElementById('sidebar').classList.remove('open');
+            });
+
             geolocate();
             loadData();
         }
@@ -111,17 +171,18 @@
 
             const visible = allLoos.filter(l => bounds.contains({lat: l.lat, lng: l.lon}));
             
+            // Render up to 75 visible pins to keep the map fast
             visible.slice(0, 75).forEach(loo => {
+                // The Emoji Magic happens here
+                const emoji = loo.golden ? "👑" : "💩";
+                const svgIcon = `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">${emoji}</text></svg>`;
+
                 const marker = new google.maps.Marker({
                     position: { lat: loo.lat, lng: loo.lon },
                     map: map,
                     icon: {
-                        path: loo.golden ? "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" : google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-                        fillColor: loo.golden ? "#FFD700" : "#8B2635",
-                        fillOpacity: 1,
-                        strokeColor: "#FFFFFF",
-                        strokeWeight: 2,
-                        scale: loo.golden ? 1.5 : 6
+                        url: svgIcon,
+                        anchor: new google.maps.Point(16, 24)
                     }
                 });
                 marker.addListener("click", () => openSheet(loo));
@@ -133,7 +194,7 @@
             currentLoo = loo;
             document.getElementById('loo-name').innerText = loo.n;
             document.getElementById('loo-address').innerText = loo.a;
-            document.getElementById('loo-tier').innerText = loo.golden ? "👑 The Golden Throne" : "⛪ House of Relief";
+            document.getElementById('loo-tier').innerText = loo.golden ? "👑 The Golden Throne" : "💩 House of Relief";
             
             const tags = document.getElementById('loo-tags');
             tags.innerHTML = '';
@@ -152,6 +213,8 @@
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
+    
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
 </html>
+  
