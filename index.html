@@ -28,26 +28,21 @@
         }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-color); overflow: hidden; color: var(--text-main); }
 
-        /* --- THE NEW ATHLETIC LOGO WITH OUTLINE POO --- */
+        /* --- THE NEW ATHLETIC LOGO --- */
         .app-logo { 
             font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; 
-            font-size: 2.2rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; 
-            color: var(--text-main); display: flex; align-items: center; gap: 2px;
+            font-size: 2.2rem; margin: 0; text-transform: uppercase; letter-spacing: -2px; 
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
         }
-        .app-logo span.orange { color: var(--primary); }
+        .app-logo span.orange { color: var(--primary); letter-spacing: -1px; }
         
-        /* The Outlined Poo Icon CSS */
-        .poo-outline { 
-            width: 1.2em; /* Slightly bigger than the font height */
-            height: 1.2em; 
-            fill: none; 
-            stroke: var(--text-main); /* Matches the HOLY text color */
-            stroke-width: 4; /* Bold athletic line weight */
-            stroke-linecap: round; 
-            stroke-linejoin: round; 
-            font-style: normal;
-            display: inline-block;
-            transform: translateY(2px); /* Baseline alignment */
+        /* Tightly kerned, scaled-up solid emoji */
+        .poo-emoji { 
+            font-style: normal; 
+            display: inline-block; 
+            font-size: 1.2em; /* 20% bigger than the text */
+            margin: 0 -0.05em; /* Sucks the H and LY in tightly */
+            transform: translateY(1px); /* Perfect baseline snap */
         }
 
         /* --- SPLASH PAGE --- */
@@ -58,8 +53,8 @@
             text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s ease;
         }
         /* Splash specific logo size and color override */
-        #splash .app-logo { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 5px; gap: 4px;}
-        #splash .poo-outline { stroke: #FFFFFF; } /* White outline on dark bg */
+        #splash .app-logo { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 5px; }
+        #splash .poo-emoji { transform: translateY(4px); }
         
         #splash p { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #9CA3AF; margin: 10px 0 40px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .btn-enter { background: var(--primary); color: white; border: none; padding: 18px 45px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
@@ -72,7 +67,7 @@
         /* --- SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 25px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
         .mobile-peek { display: none; } 
-        .header-row { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
+        .header-row { margin-bottom: 25px; display: flex; align-items: center; justify-content: center; }
 
         #default-menu { display: flex; flex-direction: column; justify-content: flex-start; height: 100%; gap: 20px;}
         
@@ -123,8 +118,7 @@
             #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
             
             /* Splash mobile adjustments */
-            #splash .app-logo { font-size: 3.5rem; gap: 3px; }
-            #splash .poo-outline { stroke-width: 5; } /* Slightly thicker outline for smaller screens */
+            #splash .app-logo { font-size: 3.5rem; }
 
             .map-ctrl { top: auto; bottom: 130px; right: 15px; z-index: 5000; }
             .header-row { display: none; }
@@ -156,10 +150,9 @@
             .mobile-peek-title { 
                 font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; 
                 color: var(--text-main); font-size: 1.8rem; margin: 0; text-transform: uppercase; 
-                letter-spacing: -1px; margin-top: 12px; display: flex; align-items: center; gap: 2px;
+                letter-spacing: -2px; margin-top: 12px; display: flex; align-items: center; justify-content: center;
             }
-            .mobile-peek-title span.orange { color: var(--primary); }
-            .mobile-peek-title .poo-outline { width: 1.1em; height: 1.1em; stroke-width: 5; transform: translateY(2px); }
+            .mobile-peek-title span.orange { color: var(--primary); letter-spacing: -1px; }
             
             .hud-grid { margin-top: 10px; }
             .action-group { flex-direction: row; }
@@ -175,14 +168,7 @@
     </form>
 
     <div id="splash">
-        <h1 class="app-logo">
-            H<svg class="poo-outline" viewBox="0 0 100 100">
-                <path d="M50,15 C35,15 25,25 25,35 C25,40 28,43 30,45 C25,48 20,53 20,60 C20,68 25,73 30,75 C25,78 15,83 15,90 C15,96 25,98 50,98 C75,98 85,96 85,90 C85,83 75,78 70,75 C75,73 80,68 80,60 C80,53 75,48 70,45 C72,43 75,40 75,35 C75,25 65,15 50,15 Z" />
-                <circle cx="40" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                <circle cx="60" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                <path d="M40,75 Q50,85 60,75" fill="none" stroke-width="4" stroke="currentColor"/>
-            </svg>LY<span class="orange">SHIT</span>
-        </h1>
+        <h1 class="app-logo">H<span class="poo-emoji">💩</span>LY<span class="orange">SHIT</span></h1>
         <p>Relief Radar Active</p>
         <button class="btn-enter" onclick="dismissSplash()">Launch</button>
     </div>
@@ -204,25 +190,11 @@
 
         <div class="bento-card sidebar" id="app-sidebar">
             <div class="mobile-peek" onclick="toggleMobileMenu()">
-                <h1 class="mobile-peek-title">
-                    H<svg class="poo-outline" viewBox="0 0 100 100">
-                        <path d="M50,15 C35,15 25,25 25,35 C25,40 28,43 30,45 C25,48 20,53 20,60 C20,68 25,73 30,75 C25,78 15,83 15,90 C15,96 25,98 50,98 C75,98 85,96 85,90 C85,83 75,78 70,75 C75,73 80,68 80,60 C80,53 75,48 70,45 C72,43 75,40 75,35 C75,25 65,15 50,15 Z" />
-                        <circle cx="40" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                        <circle cx="60" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                        <path d="M40,75 Q50,85 60,75" fill="none" stroke-width="4" stroke="currentColor"/>
-                    </svg>LY<span class="orange">SHIT</span>
-                </h1>
+                <h1 class="mobile-peek-title">H<span class="poo-emoji">💩</span>LY<span class="orange">SHIT</span></h1>
             </div>
 
             <div class="header-row">
-                <h1 class="app-logo">
-                    H<svg class="poo-outline" viewBox="0 0 100 100">
-                        <path d="M50,15 C35,15 25,25 25,35 C25,40 28,43 30,45 C25,48 20,53 20,60 C20,68 25,73 30,75 C25,78 15,83 15,90 C15,96 25,98 50,98 C75,98 85,96 85,90 C85,83 75,78 70,75 C75,73 80,68 80,60 C80,53 75,48 70,45 C72,43 75,40 75,35 C75,25 65,15 50,15 Z" />
-                        <circle cx="40" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                        <circle cx="60" cy="55" r="5" stroke-width="0" fill="currentColor"/>
-                        <path d="M40,75 Q50,85 60,75" fill="none" stroke-width="4" stroke="currentColor"/>
-                    </svg>LY<span class="orange">SHIT</span>
-                </h1>
+                <h1 class="app-logo">H<span class="poo-emoji">💩</span>LY<span class="orange">SHIT</span></h1>
             </div>
             
             <div id="default-menu">
@@ -438,9 +410,6 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_REAL_API_KEY_HERE&callback=initMap" async defer></script>
-</body>
-</html>
    
    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
