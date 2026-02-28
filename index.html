@@ -55,7 +55,22 @@
         
         #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
         #default-menu p { font-size: 1.15rem; line-height: 1.8; color: var(--text); }
-        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 40px; font-size: 1.2rem; }
+        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.2rem; }
+
+        /* The Giant Dashboard Panic Button */
+        .btn-saviour { 
+            background: var(--red); color: white; border: none; padding: 20px; border-radius: 15px; 
+            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.3rem; cursor: pointer; 
+            width: 100%; margin-top: 30px; box-shadow: 0 6px 0 #601a25, 0 15px 20px rgba(139, 38, 53, 0.3); 
+            transition: all 0.1s; animation: holy-pulse 2s infinite; display: flex; align-items: center; justify-content: center; gap: 10px; 
+        }
+        .btn-saviour:active { transform: translateY(6px); box-shadow: 0 0px 0 #601a25, 0 5px 10px rgba(139, 38, 53, 0.4); animation: none; }
+        
+        @keyframes holy-pulse {
+            0% { box-shadow: 0 6px 0 #601a25, 0 0 0 0 rgba(139, 38, 53, 0.6); }
+            70% { box-shadow: 0 6px 0 #601a25, 0 0 0 15px rgba(139, 38, 53, 0); }
+            100% { box-shadow: 0 6px 0 #601a25, 0 0 0 0 rgba(139, 38, 53, 0); }
+        }
 
         /* Loo Details View */
         #loo-details { display: none; }
@@ -69,11 +84,6 @@
 
         /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
         #map { height: 100%; width: 100%; border-radius: 30px; }
-        
-        /* The Giant Mobile Panic Button */
-        .fab-locate { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; border: none; width: 220px; height: 55px; border-radius: 30px; font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(139, 38, 53, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; }
-        .fab-locate:active { transform: translateX(-50%) scale(0.95); box-shadow: 0 2px 10px rgba(139, 38, 53, 0.4); }
-
         .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; }
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
@@ -87,10 +97,9 @@
 
         @media (max-width: 800px) {
             .bento-wrapper { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 15px; padding: 15px; }
-            .sidebar { padding: 20px; max-height: 40vh; }
+            .sidebar { padding: 20px; max-height: 45vh; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
-            .fab-locate { bottom: 20px; width: 200px; font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -108,7 +117,7 @@
         <p>Seek Sanctuary. Find Deliverance.</p>
         <button class="btn-enter" onclick="dismissSplash()">Enter the Gates</button>
         <div class="splash-footer">
-            © 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
+            © 2026 UPD8 GROUP <br> Data provided by the Department of Health, Disability and Ageing
         </div>
     </div>
 
@@ -118,7 +127,10 @@
             <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
             
             <div id="default-menu">
-                <p><strong>Welcome to your sanctuary.</strong><br><br>We have mapped over 25,000 public restrooms across Australia so you never have to panic again.<br><br>Tap the button to find relief near you.</p>
+                <p><strong>Welcome to your sanctuary.</strong><br><br>We have mapped over 25,000 public restrooms across Australia so you never have to panic again.</p>
+                
+                <button class="btn-saviour" id="btn-near-me" onclick="geolocate()">🕊️ Find Thee Saviour</button>
+
                 <p class="gospel-quote">"Never wander the wilderness again."</p>
             </div>
 
@@ -139,9 +151,6 @@
 
         <div class="bento-card">
             <div id="map"></div>
-            
-            <button class="fab-locate" id="btn-near-me" onclick="geolocate()">📍 Find Near Me</button>
-
             <div class="map-ctrl">
                 <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View">🛰️</button>
             </div>
@@ -190,13 +199,13 @@
 
         function geolocate() {
             const btn = document.getElementById("btn-near-me");
-            btn.innerHTML = "⏳ Seeking...";
+            btn.innerHTML = "⏳ Consulting heavens...";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     map.panTo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                    map.setZoom(15); btn.innerHTML = "📍 Find Near Me"; renderVisibleMarkers();
-                }, () => { btn.innerHTML = "📍 Find Near Me"; alert("Enable location to find your nearest sanctuary."); });
-            } else btn.innerHTML = "📍 Find Near Me";
+                    map.setZoom(15); btn.innerHTML = "🕊️ Find Thee Saviour"; renderVisibleMarkers();
+                }, () => { btn.innerHTML = "🕊️ Find Thee Saviour"; alert("Enable location to find your nearest sanctuary."); });
+            } else btn.innerHTML = "🕊️ Find Thee Saviour";
         }
 
         function toggleMapType() {
@@ -216,7 +225,6 @@
             const bounds = map.getBounds();
             markers.forEach(m => m.setMap(null)); markers = [];
 
-            // ONLY logic here now is checking if it's on the screen! No filters.
             let visible = allLoos.filter(loo => {
                 return bounds.contains({lat: loo.lat, lng: loo.lon});
             });
