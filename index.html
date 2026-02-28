@@ -1,137 +1,139 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HolyShit.app — Runner's Relief</title>
+    <title>HolyShit — Runner's Relief Radar</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💩</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚽</text></svg>">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#F1F5F9">
+    <meta name="theme-color" content="#F3F4F6">
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,800;0,900;1,800;1,900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #F1F5F9;     /* Track Grey */
-            --card-bg: #FFFFFF;      /* Clean White */
-            --border: #E2E8F0;       /* Light border */
-            --text: #0F172A;         /* Slate Black */
-            --accent: #2563EB;       /* Athletic Blue */
-            --primary: #EA580C;      /* High-Viz Orange */
-            --water: #06B6D4;        /* Cyan for water */
+            --bg-color: #F3F4F6;       /* Track Slate Gray */
+            --card-bg: #FFFFFF;        /* Crisp White */
+            --border: #E5E7EB;         /* Subtle Line */
+            --text-main: #111827;      /* Deep Charcoal Black */
+            --text-muted: #6B7280;     /* Secondary Gray */
+            --primary: #FC4C02;        /* High-Viz Racing Orange (Strava style) */
+            --primary-hover: #E34402;
+            --secondary: #2563EB;      /* Athletic Blue */
+            --water: #06B6D4;          /* Cyan */
         }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Nunito', sans-serif; background: var(--bg-color); overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-color); overflow: hidden; color: var(--text-main); }
+
+        /* --- THE NEW ATHLETIC LOGO --- */
+        .app-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 2.2rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: var(--text-main); }
+        .app-logo span { color: var(--primary); }
 
         /* --- SPLASH PAGE --- */
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+            background: var(--text-main); /* Dark mode splash for contrast */
             z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease;
+            text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s ease;
         }
-        .majestic-poo { font-size: 6rem; z-index: 2; margin-bottom: 0px; animation: bounce-run 1s infinite alternate; }
-        @keyframes bounce-run {
-            0% { transform: translateY(0px) rotate(-5deg); }
-            100% { transform: translateY(-15px) rotate(5deg); }
-        }
-        #splash h1 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 4.5rem; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: -2px; z-index: 2; }
-        #splash p { font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--text); margin: 5px 0 40px; font-weight: 700; z-index: 2; }
-        .btn-enter { position: relative; z-index: 2; background: var(--text); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; }
-        .btn-enter:active { transform: scale(0.95); }
-        .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #64748B; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
+        #splash .app-logo { font-size: 4rem; color: #FFFFFF; }
+        #splash p { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #9CA3AF; margin: 10px 0 40px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .btn-enter { background: var(--primary); color: white; border: none; padding: 18px 45px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
+        .btn-enter:active { transform: scale(0.96); background: var(--primary-hover); }
 
         /* --- BENTO LAYOUT (Desktop) --- */
-        .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; position: relative; }
-        .bento-card { background: var(--card-bg); border-radius: 24px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); border: 1px solid var(--border); overflow: hidden; position: relative; }
+        .bento-wrapper { display: grid; grid-template-columns: 380px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; position: relative; }
+        .bento-card { background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
         /* --- SIDEBAR (DASHBOARD) --- */
-        .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
-        
+        .sidebar { padding: 25px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
         .mobile-peek { display: none; } 
-        .header-row { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        .logo-small { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 2.2rem; color: var(--primary); margin: 0; cursor: pointer; text-transform: uppercase; letter-spacing: -1px; }
+        .header-row { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
 
-        #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        #default-menu { display: flex; flex-direction: column; justify-content: flex-start; height: 100%; gap: 20px;}
         
-        .helpful-text { font-size: 1.1rem; line-height: 1.6; color: var(--text); background: #F8FAFC; padding: 20px; border-radius: 16px; border-left: 5px solid var(--accent); }
-        .helpful-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 0.5px; }
+        /* THE RUNNER HUD (Stats Grid) */
+        .hud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .hud-box { background: #F9FAFB; border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
+        .hud-box.full-width { grid-column: span 2; }
+        .hud-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .hud-value { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.6rem; color: var(--text-main); display: flex; align-items: baseline; gap: 4px;}
+        .hud-unit { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
 
-        .btn-relief { 
-            background: var(--primary); color: white; border: none; padding: 18px; border-radius: 16px; 
-            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.2rem; cursor: pointer; 
-            width: 100%; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; 
-        }
-        .btn-relief:active { transform: translateY(4px); background: #C2410C; }
+        /* ACTION BUTTONS */
+        .action-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 20px;}
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary:active { transform: scale(0.98); background: var(--primary-hover); }
+        .btn-secondary { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-secondary:active { transform: scale(0.98); background: #E5E7EB; }
 
         /* Loo Details View */
-        #loo-details { display: none; }
-        .tier-label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8rem; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px;}
+        #loo-details { display: none; flex-direction: column; height: 100%; }
+        .tier-label { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.75rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 1px;}
         .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
-        .tag { padding: 6px 12px; background: #F1F5F9; border: 1px solid var(--border); border-radius: 12px; font-size: 0.85rem; font-family: 'Nunito', sans-serif; font-weight: 700; display: flex; align-items: center; gap: 5px; color: var(--text); }
+        .tag { padding: 6px 12px; background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 5px; color: var(--text-main); }
         .tag-water { background: #ECFEFF; border-color: #67E8F9; color: #0E7490; } 
         
-        .location-note { color: #64748B; margin: 20px 0; font-size: 1rem; line-height: 1.5; font-weight: 600; }
-        .btn-action { background: var(--text); color: white; border: none; padding: 16px; border-radius: 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
-        .btn-back { background: transparent; border: 2px solid var(--border); color: var(--text); padding: 10px 15px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: 700; display: inline-block; }
-        .btn-report { background: transparent; color: #94A3B8; border: 1px dashed #CBD5E1; padding: 12px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; font-family: 'Nunito'; font-weight: 600; font-size: 0.9rem; }
+        .location-note { color: var(--text-muted); margin: 20px 0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; }
+        .btn-back { background: transparent; border: none; color: var(--text-muted); padding: 0; cursor: pointer; margin-bottom: 20px; font-family: 'Inter'; font-weight: 700; display: flex; align-items: center; gap: 5px; font-size: 0.9rem;}
+        .btn-report { background: transparent; color: var(--text-muted); border: 1px dashed var(--border); padding: 12px; border-radius: 12px; width: 100%; margin-top: auto; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
 
         /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
-        #map { height: 100%; width: 100%; border-radius: 24px; }
+        #map { height: 100%; width: 100%; border-radius: 20px; }
         .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;}
-        .ctrl-btn { background: white; border: 1px solid var(--border); width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1); }
-        
-        .icon-crosshair { width: 22px; height: 22px; fill: #475569; }
-        .ctrl-btn:active .icon-crosshair { fill: var(--accent); }
+        .ctrl-btn { background: white; border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .icon-crosshair { width: 20px; height: 20px; fill: var(--text-main); }
+        .ctrl-btn:active { background: var(--bg-color); }
 
-        #btn-install { display: none; background: var(--card-bg); border: 2px solid var(--accent); color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 0 16px; height: 48px; border-radius: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1); align-items: center; gap: 8px; white-space: nowrap; text-transform: uppercase; font-size: 0.9rem; }
+        #btn-install { display: none; background: var(--card-bg); border: 2px solid var(--primary); color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 800; padding: 0 16px; height: 44px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.85rem; }
 
         /* --- REPORT MODAL --- */
-        #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 10000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-        .modal-content h3 { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--primary); margin-top: 0; text-transform: uppercase; }
-        .modal-content select { width: 100%; padding: 14px; margin: 15px 0; border-radius: 12px; border: 1px solid var(--border); font-family: 'Nunito'; font-size: 1rem; font-weight: 600; }
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; width: 100%; font-size: 1rem; text-transform: uppercase;}
-        .btn-cancel { background: transparent; color: #64748B; border: none; margin-top: 15px; cursor: pointer; font-family: 'Nunito'; font-weight: 700; }
+        #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(17, 24, 39, 0.8); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);}
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
+        .modal-content select { width: 100%; padding: 14px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); font-family: 'Inter'; font-size: 1rem; font-weight: 600; outline: none;}
 
         /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
         @media (max-width: 800px) {
             .bento-wrapper { display: block; padding: 0; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; overflow: hidden; }
             .bento-card { border-radius: 0; border: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: visible; }
             #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-            #splash h1 { font-size: 3.5rem; }
-            .majestic-poo { font-size: 5rem; }
+            #splash .app-logo { font-size: 3.2rem; }
 
-            .map-ctrl { top: auto; bottom: 105px; right: 15px; z-index: 5000; }
+            .map-ctrl { top: auto; bottom: 130px; right: 15px; z-index: 5000; }
             .header-row { display: none; }
 
             /* Fixed Bottom Sheet */
             .sidebar { 
                 position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999; height: auto;
                 background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
-                max-height: 85vh; padding: 15px 20px 30px; 
-                border-radius: 30px 30px 0 0; border: 1px solid var(--border); border-bottom: none;
-                box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.1);
-                transform: translateY(calc(100% - 75px)); 
+                max-height: 85vh; padding: 10px 20px 30px; 
+                border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: none;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+                transform: translateY(calc(100% - 90px)); /* Peek height */
                 transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
             
             .sidebar.menu-open { transform: translateY(0); }
 
+            /* Sleek pill handle */
             .mobile-peek { 
                 display: flex; align-items: center; justify-content: center; 
-                height: 40px; margin-bottom: 5px; cursor: pointer; position: relative;
+                height: 40px; margin-bottom: 10px; cursor: pointer; position: relative;
             }
             .mobile-peek::before {
-                content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-                width: 45px; height: 5px; background: #CBD5E1; border-radius: 5px;
+                content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+                width: 40px; height: 4px; background: #D1D5DB; border-radius: 4px;
             }
-            .mobile-peek-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: var(--primary); font-size: 1.5rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; }
-            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.4rem; color: var(--text); }
+            .mobile-peek-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: var(--text-main); font-size: 1.6rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; margin-top: 10px;}
+            .mobile-peek-title span { color: var(--primary); }
+            .mobile-peek-icon { display: none; } /* Hid the hamburger menu for a cleaner look */
+            
+            .hud-grid { margin-top: 10px; }
+            .action-group { flex-direction: row; }
+            .btn-primary, .btn-secondary { width: 100%; font-size: 1rem; padding: 16px;}
         }
     </style>
 </head>
@@ -143,13 +145,9 @@
     </form>
 
     <div id="splash">
-        <div class="majestic-poo">💩</div>
-        <h1>HolyShit</h1>
-        <p>Save your strides. Find relief.</p>
-        <button class="btn-enter" onclick="dismissSplash()">Start Tracking</button>
-        <div class="splash-footer">
-            © 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
-        </div>
+        <h1 class="app-logo">HOLY<span>SHIT</span></h1>
+        <p>Relief Radar Active</p>
+        <button class="btn-enter" onclick="dismissSplash()">Launch</button>
     </div>
 
     <div class="bento-wrapper">
@@ -157,7 +155,7 @@
         <div class="bento-card">
             <div id="map"></div>
             <div class="map-ctrl">
-                <button id="btn-install" onclick="installPWA()">📲 Get App</button>
+                <button id="btn-install" onclick="installPWA()">📲 App</button>
                 <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
                     <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
                         <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
@@ -169,34 +167,49 @@
 
         <div class="bento-card sidebar" id="app-sidebar">
             <div class="mobile-peek" onclick="toggleMobileMenu()">
-                <h1 class="mobile-peek-title">HolyShit</h1>
-                <span class="mobile-peek-icon">☰</span>
+                <h1 class="mobile-peek-title">HOLY<span>SHIT</span></h1>
             </div>
 
             <div class="header-row">
-                <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
+                <h1 class="app-logo">HOLY<span>SHIT</span></h1>
             </div>
             
             <div id="default-menu">
-                <div class="helpful-text">
-                    <span class="helpful-title">Because Every Second Counts</span>
-                    Beat your personal best, not your bladder. We've mapped over 25,000 public restrooms and water fountains across Australia so you never have to break pace.
+                <div class="hud-grid">
+                    <div class="hud-box">
+                        <span class="hud-label">Distance</span>
+                        <div class="hud-value" id="hud-distance">0.00 <span class="hud-unit">km</span></div>
+                    </div>
+                    <div class="hud-box">
+                        <span class="hud-label">Pace</span>
+                        <div class="hud-value" id="hud-pace">--:-- <span class="hud-unit">/km</span></div>
+                    </div>
+                    <div class="hud-box full-width">
+                        <span class="hud-label">Pit Stops on Route</span>
+                        <div class="hud-value" id="hud-stops">Ready to Track</div>
+                    </div>
                 </div>
-                <button class="btn-relief" id="btn-relief-menu" onclick="geolocate()">🏃‍♂️ Find Relief Near Me</button>
+
+                <div class="action-group">
+                    <button class="btn-secondary" onclick="alert('Route Planning Logic Coming Tomorrow!')">📍 Plan</button>
+                    <button class="btn-primary" id="btn-start-run" onclick="geolocate()">▶ Start</button>
+                </div>
             </div>
 
             <div id="loo-details">
-                <button class="btn-back" onclick="resetSidebar()">← Back</button>
-                <span id="loo-tier" class="tier-label">Public Facility</span>
-                <h2 id="loo-name" style="font-family: 'Montserrat', sans-serif; font-weight: 900; margin: 0 0 5px 0; font-size: 1.5rem; color: var(--text);">Restroom</h2>
-                <p id="loo-address" style="color: #64748B; font-size: 0.95rem; margin: 0; font-weight: 600;"></p>
+                <button class="btn-back" onclick="resetSidebar()">← Back to Dashboard</button>
+                <span id="loo-tier" class="tier-label">Facility Identified</span>
+                <h2 id="loo-name" style="font-family: 'Montserrat', sans-serif; font-weight: 900; margin: 0 0 5px 0; font-size: 1.4rem;">Restroom</h2>
+                <p id="loo-address" style="color: var(--text-muted); font-size: 0.95rem; margin: 0; font-weight: 600;"></p>
                 <div id="loo-tags" class="tags-container"></div>
                 <div class="location-note" id="loo-scripture"></div>
-                <button class="btn-action" style="background: var(--primary);" onclick="openDirections()">Navigate to Target</button>
                 
-                <button class="btn-action" style="background: var(--text);" onclick="openStreetView()">View Street Level</button>
+                <div class="action-group" style="padding-top: 0; margin-top: 0;">
+                    <button class="btn-primary" style="width: 100%" onclick="openDirections()">Navigate</button>
+                    <button class="btn-secondary" style="width: 100%" onclick="openStreetView()">Street View</button>
+                </div>
                 
-                <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this location</button>
+                <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue</button>
             </div>
         </div>
 
@@ -204,16 +217,16 @@
 
     <div id="report-modal">
         <div class="modal-content">
-            <h3>Report Issue</h3>
-            <p style="font-size: 0.9rem; color: #64748B;">Help the community keep the pace. Let us know if this data is wrong.</p>
+            <h3 style="font-family: 'Montserrat'; font-weight: 900; color: var(--text-main);">Report Issue</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Keep the radar accurate.</p>
             <select id="report-reason">
                 <option value="closed">Location is permanently closed</option>
                 <option value="does_not_exist">Location doesn't exist here</option>
                 <option value="wrong_details">Features/Tags are incorrect</option>
                 <option value="unsafe">Location feels unsafe</option>
             </select>
-            <button class="btn-submit" onclick="submitReport()">Submit Report</button>
-            <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="submitReport()">Submit Report</button>
+            <button class="btn-back" style="width: 100%; justify-content: center; margin-top: 15px;" onclick="closeReportModal()">Cancel</button>
         </div>
     </div>
 
@@ -225,7 +238,7 @@
         function dismissSplash() {
             const splash = document.getElementById('splash');
             splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; geolocate(); }, 500);
+            setTimeout(() => { splash.style.display = 'none'; geolocate(); }, 400);
         }
 
         function toggleMobileMenu() {
@@ -253,8 +266,8 @@
         }
 
         function geolocate() {
-            const btn = document.getElementById("btn-relief-menu");
-            if(btn) btn.innerHTML = "⏳ Scanning route...";
+            const btn = document.getElementById("btn-start-run");
+            if(btn) btn.innerHTML = "⏳ Locating...";
             
             document.getElementById('app-sidebar').classList.remove('menu-open');
 
@@ -262,7 +275,7 @@
                 navigator.geolocation.getCurrentPosition(pos => {
                     const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     map.panTo(userLoc);
-                    map.setZoom(15); 
+                    map.setZoom(16); 
                     
                     if (userMarker) userMarker.setMap(null);
                     userMarker = new google.maps.Marker({
@@ -270,13 +283,13 @@
                         icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#2563EB', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }
                     });
 
-                    if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; 
+                    if(btn) btn.innerHTML = "▶ Tracking"; 
                     renderVisibleMarkers();
                 }, () => { 
-                    if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; 
-                    alert("Enable location to find your nearest restroom."); 
+                    if(btn) btn.innerHTML = "▶ Start"; 
+                    alert("Enable location to track your run."); 
                 });
-            } else { if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; }
+            } else { if(btn) btn.innerHTML = "▶ Start"; }
         }
 
         function toggleMapType() {
@@ -313,7 +326,7 @@
         function populateSidebar(loo) {
             currentLoo = loo;
             document.getElementById('default-menu').style.display = 'none';
-            document.getElementById('loo-details').style.display = 'block';
+            document.getElementById('loo-details').style.display = 'flex';
 
             document.getElementById('loo-name').innerText = loo.n || "Public Restroom";
             document.getElementById('loo-address').innerText = loo.a || "Location detailed on map";
@@ -321,25 +334,18 @@
             const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
             if (loo.t) {
                 if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Accessible</span>';
-                if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baby Change</span>';
-                if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ All Gender</span>';
-                if (loo.t.f && !loo.t.u) tags.innerHTML += '<span class="tag">🚺 Female</span>';
-                if (loo.t.m && !loo.t.u) tags.innerHTML += '<span class="tag">🚹 Male</span>';
-                
-                // Highlight the water fountain tag specially for runners
-                if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Drinking Water</span>';
-                
+                if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baby</span>';
+                if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ Unisex</span>';
+                if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Water</span>';
                 if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             }
-            document.getElementById('loo-scripture').innerText = loo.note || "Available public facility.";
+            document.getElementById('loo-scripture').innerText = loo.note || "";
         }
 
-        /* Navigates cleanly into Google Maps App or new Tab */
         function openDirections() { 
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`, '_blank'); 
         }
 
-        /* Embeds Street View natively, but disables gyroscope/VR tracking! */
         function openStreetView() { 
             const panorama = map.getStreetView();
             panorama.setOptions({
@@ -348,15 +354,12 @@
                 motionTrackingControl: false
             });
             panorama.setVisible(true);
-            
-            // Drop the menu so they can see the full street view
             document.getElementById('app-sidebar').classList.remove('menu-open');
         }
 
-        /* --- PWA INSTALLATION LOGIC --- */
+        /* --- PWA LOGIC --- */
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
             document.getElementById('btn-install').style.display = 'flex';
         });
 
@@ -367,7 +370,7 @@
                     if (choiceResult.outcome === 'accepted') { document.getElementById('btn-install').style.display = 'none'; }
                     deferredPrompt = null;
                 });
-            } else { alert("To install on iPhone: Tap the 'Share' button at the bottom of Safari, then tap 'Add to Home Screen'."); }
+            } else { alert("To install on iPhone: Tap 'Share' in Safari, then 'Add to Home Screen'."); }
         }
 
         /* --- REPORTING LOGIC --- */
@@ -377,13 +380,14 @@
             fetch("/", {
                 method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ "form-name": "report-loo", "loo_name": (currentLoo.n || "Unknown") + " (Lat: " + currentLoo.lat + ")", "issue": document.getElementById('report-reason').value }).toString()
-            }).then(() => { alert("Thank you. The report has been sent."); closeReportModal(); })
+            }).then(() => { alert("Thank you. Report sent."); closeReportModal(); })
               .catch(() => { alert("Error sending report."); closeReportModal(); });
         }
         
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
+   
  
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
