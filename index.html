@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -334,15 +334,19 @@
             document.getElementById('loo-scripture').innerText = loo.note || "Available public facility.";
         }
 
-        /* UPDATED: Navigates cleanly into Google Maps App or new Tab */
+        /* Navigates cleanly into Google Maps App or new Tab */
         function openDirections() { 
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`, '_blank'); 
         }
 
-        /* UPDATED: Embeds Street View natively inside the app! */
+        /* Embeds Street View natively, but disables gyroscope/VR tracking! */
         function openStreetView() { 
             const panorama = map.getStreetView();
-            panorama.setPosition({ lat: currentLoo.lat, lng: currentLoo.lon });
+            panorama.setOptions({
+                position: { lat: currentLoo.lat, lng: currentLoo.lon },
+                motionTracking: false,
+                motionTrackingControl: false
+            });
             panorama.setVisible(true);
             
             // Drop the menu so they can see the full street view
@@ -380,6 +384,7 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
+ 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
 </html>
