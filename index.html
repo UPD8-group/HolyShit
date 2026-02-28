@@ -100,9 +100,12 @@
 
         /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
         @media (max-width: 800px) {
-            .bento-wrapper { display: block; padding: 0; height: 100vh; position: fixed; width: 100vw; top: 0; left: 0; }
-            .bento-card { border-radius: 0; border: none; }
-            #map { height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 1; }
+            .bento-wrapper { display: block; padding: 0; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; overflow: hidden; }
+            
+            /* Give the map card explicit full dimensions so the map doesn't get squished */
+            .bento-card { border-radius: 0; border: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: visible; }
+            
+            #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
 
@@ -111,9 +114,9 @@
 
             .header-row { display: none; }
 
-            /* Fixed Bottom Sheet */
+            /* Fixed Bottom Sheet - Needs explicit height: auto to override the 100% height from bento-card */
             .sidebar { 
-                position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999;
+                position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999; height: auto;
                 background: rgba(253, 246, 232, 0.98); backdrop-filter: blur(15px);
                 max-height: 85vh; padding: 15px 20px 30px; 
                 border-radius: 25px 25px 0 0; border: 1px solid var(--border); border-bottom: none;
@@ -157,6 +160,20 @@
 
     <div class="bento-wrapper">
         
+        <div class="bento-card">
+            <div id="map"></div>
+            <div class="map-ctrl">
+                <button id="btn-install" onclick="installPWA()">📲 Install App</button>
+
+                <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
+                    <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
+                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
+                    </svg>
+                </button>
+                <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View" style="font-size: 1.1rem;">🛰️</button>
+            </div>
+        </div>
+
         <div class="bento-card sidebar" id="app-sidebar">
             <div class="mobile-peek" onclick="toggleMobileMenu()">
                 <h1 class="mobile-peek-title">HolyShit</h1>
@@ -188,19 +205,6 @@
             </div>
         </div>
 
-        <div class="bento-card">
-            <div id="map"></div>
-            <div class="map-ctrl">
-                <button id="btn-install" onclick="installPWA()">📲 Install App</button>
-
-                <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
-                    <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
-                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
-                    </svg>
-                </button>
-                <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View" style="font-size: 1.1rem;">🛰️</button>
-            </div>
-        </div>
     </div>
 
     <div id="report-modal">
@@ -221,7 +225,7 @@
     <script>
         let map, currentLoo, markers = [], allLoos = [];
         let userMarker = null; 
-        let deferredPrompt; // For PWA Installation
+        let deferredPrompt; 
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -339,7 +343,7 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('btn-install').style.display = 'flex'; // Show the install button
+            document.getElementById('btn-install').style.display = 'flex';
         });
 
         function installPWA() {
@@ -352,7 +356,6 @@
                     deferredPrompt = null;
                 });
             } else {
-                // Fallback for iOS users who have to do it manually
                 alert("To install on iPhone: Tap the 'Share' button at the bottom of Safari, then tap 'Add to Home Screen'.");
             }
         }
