@@ -81,9 +81,9 @@
 
         /* ACTION BUTTONS */
         .action-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 20px;}
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-primary:active { transform: scale(0.98); background: var(--primary-hover); }
-        .btn-secondary { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-secondary { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-secondary:active { transform: scale(0.98); background: #E5E7EB; }
 
         /* Loo Details View */
@@ -156,7 +156,7 @@
             
             .hud-grid { margin-top: 10px; }
             .action-group { flex-direction: row; }
-            .btn-primary, .btn-secondary { width: 100%; font-size: 1rem; padding: 16px;}
+            .btn-primary, .btn-secondary { font-size: 1rem; padding: 16px;}
         }
     </style>
 </head>
@@ -228,8 +228,7 @@
                 <div class="location-note" id="loo-scripture"></div>
                 
                 <div class="action-group" style="padding-top: 0; margin-top: 0;">
-                    <button class="btn-primary" style="width: 100%" onclick="openDirections()">Navigate</button>
-                    <button class="btn-secondary" style="width: 100%" onclick="openStreetView()">Street View</button>
+                    <button class="btn-primary" onclick="openDirections()">Navigate</button>
                 </div>
                 
                 <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue</button>
@@ -369,17 +368,6 @@
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`, '_blank'); 
         }
 
-        function openStreetView() { 
-            const panorama = map.getStreetView();
-            panorama.setOptions({
-                position: { lat: currentLoo.lat, lng: currentLoo.lon },
-                motionTracking: false,
-                motionTrackingControl: false
-            });
-            panorama.setVisible(true);
-            document.getElementById('app-sidebar').classList.remove('menu-open');
-        }
-
         /* --- PWA LOGIC --- */
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
@@ -410,7 +398,7 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
-   
+     
    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
