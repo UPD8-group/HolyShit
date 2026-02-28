@@ -45,38 +45,31 @@
         .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
         .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #888; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
 
-        /* --- BENTO LAYOUT --- */
+        /* --- BENTO LAYOUT (Desktop) --- */
         .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; }
         .bento-card { background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
-        /* --- LEFT SIDEBAR (DASHBOARD) --- */
+        /* --- SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
         
-        /* Dashboard Header Area */
-        .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
+        .mobile-peek { display: none; } /* Hidden on desktop */
+        .header-row { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; }
-        .mobile-menu-toggle { display: none; font-size: 1.8rem; background: none; border: none; color: var(--gold); cursor: pointer; padding: 0; margin: 0; }
 
-        #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; transition: opacity 0.3s; }
+        #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
         
         /* The Book of Relief Sermon */
         .sermon-text { font-size: 1.15rem; line-height: 1.8; color: var(--text); font-style: italic; background: rgba(226, 206, 173, 0.2); padding: 20px; border-radius: 15px; border-left: 4px solid var(--gold); }
         .sermon-title { font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 1px; font-style: normal; }
 
-        /* The Giant Dashboard Panic Button */
+        /* The Saviour Button (Standard size inside menu) */
         .btn-saviour { 
-            background: var(--red); color: white; border: none; padding: 20px; border-radius: 15px; 
-            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.3rem; cursor: pointer; 
-            width: 100%; margin-top: 30px; box-shadow: 0 6px 0 #601a25, 0 15px 20px rgba(139, 38, 53, 0.3); 
-            transition: all 0.1s; animation: holy-pulse 2s infinite; display: flex; align-items: center; justify-content: center; gap: 10px; 
+            background: var(--red); color: white; border: none; padding: 18px; border-radius: 15px; 
+            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem; cursor: pointer; 
+            width: 100%; margin-top: 25px; box-shadow: 0 5px 0 #601a25; 
+            transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; 
         }
-        .btn-saviour:active { transform: translateY(6px); box-shadow: 0 0px 0 #601a25, 0 5px 10px rgba(139, 38, 53, 0.4); animation: none; }
-        
-        @keyframes holy-pulse {
-            0% { box-shadow: 0 6px 0 #601a25, 0 0 0 0 rgba(139, 38, 53, 0.6); }
-            70% { box-shadow: 0 6px 0 #601a25, 0 0 0 15px rgba(139, 38, 53, 0); }
-            100% { box-shadow: 0 6px 0 #601a25, 0 0 0 0 rgba(139, 38, 53, 0); }
-        }
+        .btn-saviour:active { transform: translateY(4px); box-shadow: 0 1px 0 #601a25; }
 
         /* Loo Details View */
         #loo-details { display: none; }
@@ -90,8 +83,12 @@
 
         /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
         #map { height: 100%; width: 100%; border-radius: 30px; }
-        .map-ctrl { position: absolute; right: 20px; top: 90px; z-index: 100; }
-        .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* The Google Crosshair SVG Icon */
+        .icon-crosshair { width: 22px; height: 22px; fill: #666; }
+        .ctrl-btn:active .icon-crosshair { fill: #4285F4; } /* Turns blue when tapped */
 
         /* --- REPORT MODAL --- */
         #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; }
@@ -101,37 +98,44 @@
         .btn-submit { background: var(--red); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
         .btn-cancel { background: transparent; color: var(--text); border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
 
-        /* --- RESPONSIVE MOBILE LAYOUT --- */
+        /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
         @media (max-width: 800px) {
-            .bento-wrapper { display: block; padding: 0; height: 100vh; }
-            #map { border-radius: 0; height: 100vh; }
-            .map-ctrl { top: 90px; }
+            .bento-wrapper { display: block; padding: 0; height: 100vh; position: relative; }
+            .bento-card { border-radius: 0; border: none; }
+            #map { height: 100vh; width: 100vw; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
 
-            /* Dashboard converts to a floating top-bar */
-            .sidebar { 
-                position: absolute; top: 10px; left: 10px; right: 10px; 
-                background: rgba(253, 246, 232, 0.95); backdrop-filter: blur(10px);
-                max-height: 70px; padding: 15px 20px; border-radius: 20px; 
-                transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--border);
-            }
-            
-            .sidebar.menu-open { max-height: 70vh; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-            
-            .header-row { margin-bottom: 0; border-bottom: none; padding-bottom: 0; transition: margin 0.3s; }
-            .sidebar.menu-open .header-row { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-            
-            .mobile-menu-toggle { display: block; }
+            /* Map controls move above the bottom sheet */
+            .map-ctrl { top: auto; bottom: 90px; right: 15px; }
 
-            /* Pull the Saviour button out of the dashboard and pin it to the bottom of the map */
-            .btn-saviour {
-                position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-                width: 85%; max-width: 350px; z-index: 2100; margin-top: 0;
-                border-radius: 30px; font-size: 1.2rem;
+            /* Hide desktop header */
+            .header-row { display: none; }
+
+            /* The sliding bottom sheet */
+            .sidebar { 
+                position: absolute; bottom: 0; left: 0; right: 0; top: auto; 
+                background: rgba(253, 246, 232, 0.96); backdrop-filter: blur(15px);
+                max-height: 85vh; padding: 15px 20px 30px; 
+                border-radius: 25px 25px 0 0; border: 1px solid var(--border); border-bottom: none;
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+                transform: translateY(calc(100% - 65px)); /* Only 65px peeks out normally */
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
-            .btn-saviour:active { transform: translateX(-50%) translateY(4px); }
+            
+            .sidebar.menu-open { transform: translateY(0); } /* Slides up completely */
+
+            /* The peek handle that they tap to open the menu */
+            .mobile-peek { 
+                display: flex; align-items: center; justify-content: center; 
+                height: 35px; margin-bottom: 10px; cursor: pointer; position: relative;
+            }
+            .mobile-peek::before {
+                content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+                width: 40px; height: 5px; background: #D1BFA4; border-radius: 5px;
+            }
+            .mobile-peek-title { font-family: 'Cinzel Decorative', cursive; color: var(--red); font-size: 1.4rem; margin: 0; }
+            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.2rem; color: var(--gold); }
         }
     </style>
 </head>
@@ -156,9 +160,14 @@
     <div class="bento-wrapper">
         
         <div class="bento-card sidebar" id="app-sidebar">
+            
+            <div class="mobile-peek" onclick="toggleMobileMenu()">
+                <h1 class="mobile-peek-title">HolyShit</h1>
+                <span class="mobile-peek-icon">☰</span>
+            </div>
+
             <div class="header-row">
                 <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
             </div>
             
             <div id="default-menu">
@@ -167,7 +176,7 @@
                     "Blessed are the desperate, for they shall find an open stall. We have mapped over 25,000 porcelain thrones across this great land. Fear no evil, just tap the button below and be delivered."
                 </div>
                 
-                <button class="btn-saviour" id="btn-near-me" onclick="geolocate()">🕊️ Find Thee Saviour</button>
+                <button class="btn-saviour" id="btn-saviour-menu" onclick="geolocate()">🕊️ Find Thee Saviour</button>
             </div>
 
             <div id="loo-details">
@@ -188,7 +197,12 @@
         <div class="bento-card">
             <div id="map"></div>
             <div class="map-ctrl">
-                <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View">🛰️</button>
+                <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
+                    <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
+                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
+                    </svg>
+                </button>
+                <button class="ctrl-btn" onclick="toggleMapType()" title="Satellite View" style="font-size: 1.1rem;">🛰️</button>
             </div>
         </div>
     </div>
@@ -210,6 +224,7 @@
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
+        let userMarker = null; // Stores the classic "Blue Dot"
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -225,7 +240,7 @@
         function resetSidebar() {
             document.getElementById('loo-details').style.display = 'none';
             document.getElementById('default-menu').style.display = 'flex';
-            document.getElementById('app-sidebar').classList.add('menu-open'); // Auto-open menu when hitting back
+            document.getElementById('app-sidebar').classList.add('menu-open'); 
         }
 
         async function initMap() {
@@ -235,25 +250,50 @@
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
             map.addListener("click", () => {
-                document.getElementById('app-sidebar').classList.remove('menu-open'); // Auto-close menu on map click
+                document.getElementById('app-sidebar').classList.remove('menu-open'); // Auto-close menu on map tap
             });
             map.addListener("idle", renderVisibleMarkers);
             loadData();
         }
 
         function geolocate() {
-            const btn = document.getElementById("btn-near-me");
-            btn.innerHTML = "⏳ Consulting heavens...";
+            const btn = document.getElementById("btn-saviour-menu");
+            if(btn) btn.innerHTML = "⏳ Consulting heavens...";
             
-            // Auto close mobile menu when seeking
             document.getElementById('app-sidebar').classList.remove('menu-open');
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    map.panTo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                    map.setZoom(15); btn.innerHTML = "🕊️ Find Thee Saviour"; renderVisibleMarkers();
-                }, () => { btn.innerHTML = "🕊️ Find Thee Saviour"; alert("Enable location to find your nearest sanctuary."); });
-            } else btn.innerHTML = "🕊️ Find Thee Saviour";
+                    const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    
+                    map.panTo(userLoc);
+                    map.setZoom(15); 
+                    
+                    // Drop the classic Google "Blue Dot" for the user's location
+                    if (userMarker) userMarker.setMap(null);
+                    userMarker = new google.maps.Marker({
+                        position: userLoc,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: '#4285F4',
+                            fillOpacity: 1,
+                            strokeColor: '#ffffff',
+                            strokeWeight: 2,
+                        },
+                        zIndex: 9999
+                    });
+
+                    if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
+                    renderVisibleMarkers();
+                }, () => { 
+                    if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
+                    alert("Enable location to find your nearest sanctuary."); 
+                });
+            } else {
+                if(btn) btn.innerHTML = "🕊️ Find Thee Saviour";
+            }
         }
 
         function toggleMapType() {
@@ -283,7 +323,7 @@
                 
                 marker.addListener("click", () => {
                     populateSidebar(loo);
-                    document.getElementById('app-sidebar').classList.add('menu-open'); // Auto-open details on mobile
+                    document.getElementById('app-sidebar').classList.add('menu-open'); 
                 });
                 markers.push(marker);
             });
