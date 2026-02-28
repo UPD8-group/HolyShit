@@ -141,8 +141,8 @@
             .mobile-peek-title span.orange { color: var(--primary); letter-spacing: -1px; }
             
             .hud-grid { margin-top: 10px; }
-            .action-group { flex-direction: row; }
-            .btn-primary, .btn-secondary { font-size: 1rem; padding: 16px; }
+            .action-group { flex-direction: column; } /* Stack buttons vertically on mobile */
+            .btn-primary, .btn-secondary { font-size: 1rem; padding: 16px; width: 100%; }
         }
     </style>
 </head>
@@ -205,7 +205,7 @@
             </div>
 
             <div id="loo-details">
-                <button class="btn-back" onclick="resetSidebar()">← Back to Dashboard</button>
+                <button class="btn-back" onclick="resetSidebar()">← Back</button>
                 <span id="loo-tier" class="tier-label">Facility Identified</span>
                 <h2 id="loo-name" style="font-family: 'Montserrat', sans-serif; font-weight: 900; margin: 0 0 5px 0; font-size: 1.4rem;">Restroom</h2>
                 <p id="loo-address" style="color: var(--text-muted); font-size: 0.95rem; margin: 0; font-weight: 600;"></p>
@@ -214,6 +214,7 @@
                 
                 <div class="action-group" style="padding-top: 0; margin-top: 0;">
                     <button class="btn-primary" onclick="openDirections()">Navigate</button>
+                    <button class="btn-secondary" onclick="openStreetView()">Street View</button>
                 </div>
                 
                 <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue</button>
@@ -241,7 +242,7 @@
         let map, currentLoo, markers = [], allLoos = [];
         let userMarker = null; 
         let deferredPrompt; 
-        let directionsService, directionsRenderer; // For in-app navigation
+        let directionsService, directionsRenderer; 
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -258,7 +259,7 @@
             document.getElementById('loo-details').style.display = 'none';
             document.getElementById('default-menu').style.display = 'flex';
             document.getElementById('app-sidebar').classList.add('menu-open'); 
-            if (directionsRenderer) directionsRenderer.setDirections({routes: []}); // Clear route when going back
+            if (directionsRenderer) directionsRenderer.setDirections({routes: []}); 
         }
 
         async function initMap() {
@@ -268,12 +269,11 @@
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
 
-            // Initialize the in-app routing engine
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer({
                 map: map,
-                suppressMarkers: true, // Don't overwrite our custom poo markers
-                polylineOptions: { strokeColor: '#FC4C02', strokeWeight: 6, strokeOpacity: 0.8 } // Racing Orange line
+                suppressMarkers: true, 
+                polylineOptions: { strokeColor: '#FC4C02', strokeWeight: 6, strokeOpacity: 0.8 } 
             });
 
             map.addListener("click", () => {
@@ -351,18 +351,14 @@
             
             const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
             
-            // CLEANED UP TAGS: Only showing Accessible, Water, and Open Hours
             if (loo.t) {
                 if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Accessible</span>';
-                if (loo.t.f && !loo.t.m) tags.innerHTML += '<span class="tag">🚺 Female Only</span>';
-                if (loo.t.m && !loo.t.f) tags.innerHTML += '<span class="tag">🚹 Male Only</span>';
                 if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Drinking Water</span>';
                 if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             }
             document.getElementById('loo-scripture').innerText = loo.note || "";
         }
 
-        /* IN-APP NAVIGATION: Draws the running path directly on the map */
         function openDirections() { 
             if (!userMarker) {
                 alert("Please hit 'Start' on the dashboard first so we can find your location!");
@@ -375,16 +371,27 @@
             directionsService.route({
                 origin: origin,
                 destination: destination,
-                travelMode: google.maps.TravelMode.WALKING // Perfect for runners
+                travelMode: google.maps.TravelMode.WALKING 
             }, (response, status) => {
                 if (status === 'OK') {
                     directionsRenderer.setDirections(response);
-                    // Drop the menu so they can see the full path
                     document.getElementById('app-sidebar').classList.remove('menu-open');
                 } else {
                     alert('Could not calculate a running route to this location.');
                 }
             });
+        }
+
+        /* Brings back the Street View without the gyro glitch */
+        function openStreetView() { 
+            const panorama = map.getStreetView();
+            panorama.setOptions({
+                position: { lat: currentLoo.lat, lng: currentLoo.lon },
+                motionTracking: false,
+                motionTrackingControl: false
+            });
+            panorama.setVisible(true);
+            document.getElementById('app-sidebar').classList.remove('menu-open');
         }
 
         /* --- PWA LOGIC --- */
@@ -416,8 +423,6 @@
         
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
-    
-
    
    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
