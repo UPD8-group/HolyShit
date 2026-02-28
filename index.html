@@ -3,125 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HolyShit.app — Seek Sanctuary</title>
+    <title>HolyShit.app — Runner's Relief</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💩</text></svg>">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#EAE6DF">
+    <meta name="theme-color" content="#F1F5F9">
     
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #EAE6DF; --card-bg: #FDF6E8; --border: #E2CEAD;
-            --text: #2A1A0A; --gold: #B8841E; --red: #8B2635;
+            --bg-color: #F1F5F9;     /* Track Grey */
+            --card-bg: #FFFFFF;      /* Clean White */
+            --border: #E2E8F0;       /* Light border */
+            --text: #0F172A;         /* Slate Black */
+            --accent: #2563EB;       /* Athletic Blue */
+            --primary: #EA580C;      /* High-Viz Orange */
+            --water: #06B6D4;        /* Cyan for water */
         }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Nunito', sans-serif; background: var(--bg-color); overflow: hidden; }
 
         /* --- SPLASH PAGE --- */
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: radial-gradient(circle at center, #FFFDF0 0%, #E2CEAD 100%);
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
             z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.8s ease;
+            text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease;
         }
-        .divine-glow {
-            position: absolute; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%; z-index: 1; animation: pulse-glow 4s infinite alternate;
+        .majestic-poo { font-size: 6rem; z-index: 2; margin-bottom: 0px; animation: bounce-run 1s infinite alternate; }
+        @keyframes bounce-run {
+            0% { transform: translateY(0px) rotate(-5deg); }
+            100% { transform: translateY(-15px) rotate(5deg); }
         }
-        @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 50px rgba(255, 215, 0, 0.4); }
-            100% { transform: scale(1.6); opacity: 1; box-shadow: 0 0 150px rgba(255, 255, 255, 0.8), 0 0 200px rgba(255, 215, 0, 0.6); }
-        }
-        .majestic-poo { font-size: 7rem; z-index: 2; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2)); animation: float 3.5s ease-in-out infinite; margin-bottom: 10px; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        #splash h1 { font-family: 'Cinzel Decorative', cursive; font-size: 4.5rem; color: var(--red); margin: 0; text-shadow: 3px 3px var(--border); z-index: 2; position: relative; }
-        #splash p { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); margin: 15px 0 40px; font-weight: bold; letter-spacing: 1px; z-index: 2; position: relative; }
-        .btn-enter { position: relative; z-index: 2; background: var(--red); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #601a25; transition: all 0.1s; }
-        .btn-enter:active { transform: translateY(4px); box-shadow: 0 2px 0 #601a25; }
-        .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #888; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
+        #splash h1 { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 4.5rem; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: -2px; z-index: 2; }
+        #splash p { font-family: 'Nunito', sans-serif; font-size: 1.2rem; color: var(--text); margin: 5px 0 40px; font-weight: 700; z-index: 2; }
+        .btn-enter { position: relative; z-index: 2; background: var(--text); color: white; border: none; padding: 20px 50px; border-radius: 40px; font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; }
+        .btn-enter:active { transform: scale(0.95); }
+        .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #64748B; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
 
         /* --- BENTO LAYOUT (Desktop) --- */
         .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; position: relative; }
-        .bento-card { background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; position: relative; }
+        .bento-card { background: var(--card-bg); border-radius: 24px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
         /* --- SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
         
         .mobile-peek { display: none; } 
         .header-row { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; }
+        .logo-small { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 2.2rem; color: var(--primary); margin: 0; cursor: pointer; text-transform: uppercase; letter-spacing: -1px; }
 
         #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
         
-        .sermon-text { font-size: 1.15rem; line-height: 1.8; color: var(--text); font-style: italic; background: rgba(226, 206, 173, 0.2); padding: 20px; border-radius: 15px; border-left: 4px solid var(--gold); }
-        .sermon-title { font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 1px; font-style: normal; }
+        .helpful-text { font-size: 1.1rem; line-height: 1.6; color: var(--text); background: #F8FAFC; padding: 20px; border-radius: 16px; border-left: 5px solid var(--accent); }
+        .helpful-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--text); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 0.5px; }
 
-        .btn-saviour { 
-            background: var(--red); color: white; border: none; padding: 18px; border-radius: 15px; 
-            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem; cursor: pointer; 
-            width: 100%; margin-top: 25px; box-shadow: 0 5px 0 #601a25; 
+        .btn-relief { 
+            background: var(--primary); color: white; border: none; padding: 18px; border-radius: 16px; 
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.2rem; cursor: pointer; 
+            width: 100%; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px;
             transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; 
         }
-        .btn-saviour:active { transform: translateY(4px); box-shadow: 0 1px 0 #601a25; }
+        .btn-relief:active { transform: translateY(4px); background: #C2410C; }
 
         /* Loo Details View */
         #loo-details { display: none; }
-        .tier-label { font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1.5px;}
-        .tags-container { display: flex; flex-wrap: wrap; gap: 5px; margin: 15px 0; }
-        .tag { padding: 6px 10px; background: rgba(226, 206, 173, 0.3); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 5px; }
-        .scripture { font-style: italic; color: var(--gold); margin: 20px 0; border-left: 4px solid var(--gold); padding-left: 15px; font-size: 1rem; line-height: 1.5; }
-        .btn-action { background: var(--red); color: white; border: none; padding: 16px; border-radius: 12px; font-family: 'Cinzel', serif; font-weight: bold; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 0 #601a25; }
-        .btn-back { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: bold; }
-        .btn-report { background: transparent; color: #888; border: 1px dashed #ccc; padding: 10px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; font-family: 'Nunito'; font-size: 0.9rem; }
+        .tier-label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8rem; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px;}
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+        .tag { padding: 6px 12px; background: #F1F5F9; border: 1px solid var(--border); border-radius: 12px; font-size: 0.85rem; font-family: 'Nunito', sans-serif; font-weight: 700; display: flex; align-items: center; gap: 5px; color: var(--text); }
+        .tag-water { background: #ECFEFF; border-color: #67E8F9; color: #0E7490; } 
+        
+        .location-note { color: #64748B; margin: 20px 0; font-size: 1rem; line-height: 1.5; font-weight: 600; }
+        .btn-action { background: var(--text); color: white; border: none; padding: 16px; border-radius: 14px; font-family: 'Montserrat', sans-serif; font-weight: 700; width: 100%; margin-top: 12px; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
+        .btn-back { background: transparent; border: 2px solid var(--border); color: var(--text); padding: 10px 15px; border-radius: 12px; cursor: pointer; margin-bottom: 20px; font-family: 'Nunito'; font-weight: 700; display: inline-block; }
+        .btn-report { background: transparent; color: #94A3B8; border: 1px dashed #CBD5E1; padding: 12px; border-radius: 12px; width: 100%; margin-top: 20px; cursor: pointer; font-family: 'Nunito'; font-weight: 600; font-size: 0.9rem; }
 
         /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
-        #map { height: 100%; width: 100%; border-radius: 30px; }
+        #map { height: 100%; width: 100%; border-radius: 24px; }
         .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;}
-        .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .ctrl-btn { background: white; border: 1px solid var(--border); width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1); }
         
-        .icon-crosshair { width: 22px; height: 22px; fill: #666; }
-        .ctrl-btn:active .icon-crosshair { fill: #4285F4; }
+        .icon-crosshair { width: 22px; height: 22px; fill: #475569; }
+        .ctrl-btn:active .icon-crosshair { fill: var(--accent); }
 
-        /* PWA Install Button */
-        #btn-install { display: none; background: var(--card-bg); border: 2px solid var(--gold); color: var(--text); font-family: 'Nunito', sans-serif; font-weight: bold; padding: 0 15px; height: 45px; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); align-items: center; gap: 8px; white-space: nowrap; }
+        #btn-install { display: none; background: var(--card-bg); border: 2px solid var(--accent); color: var(--accent); font-family: 'Montserrat', sans-serif; font-weight: 700; padding: 0 16px; height: 48px; border-radius: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1); align-items: center; gap: 8px; white-space: nowrap; text-transform: uppercase; font-size: 0.9rem; }
 
         /* --- REPORT MODAL --- */
-        #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; border: 2px solid var(--border); text-align: center; }
-        .modal-content h3 { font-family: 'Cinzel', serif; color: var(--red); margin-top: 0; }
-        .modal-content select { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); font-family: 'Nunito'; font-size: 1rem; }
-        .btn-submit { background: var(--red); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
-        .btn-cancel { background: transparent; color: var(--text); border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+        #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
+        .modal-content h3 { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--primary); margin-top: 0; text-transform: uppercase; }
+        .modal-content select { width: 100%; padding: 14px; margin: 15px 0; border-radius: 12px; border: 1px solid var(--border); font-family: 'Nunito'; font-size: 1rem; font-weight: 600; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 12px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; width: 100%; font-size: 1rem; text-transform: uppercase;}
+        .btn-cancel { background: transparent; color: #64748B; border: none; margin-top: 15px; cursor: pointer; font-family: 'Nunito'; font-weight: 700; }
 
         /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
         @media (max-width: 800px) {
             .bento-wrapper { display: block; padding: 0; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; overflow: hidden; }
-            
-            /* Give the map card explicit full dimensions so the map doesn't get squished */
             .bento-card { border-radius: 0; border: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: visible; }
-            
             #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
 
-            /* Map controls move to bottom right, above the sheet */
-            .map-ctrl { top: auto; bottom: 100px; right: 15px; z-index: 5000; }
-
+            .map-ctrl { top: auto; bottom: 105px; right: 15px; z-index: 5000; }
             .header-row { display: none; }
 
-            /* Fixed Bottom Sheet - Needs explicit height: auto to override the 100% height from bento-card */
+            /* Fixed Bottom Sheet */
             .sidebar { 
                 position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999; height: auto;
-                background: rgba(253, 246, 232, 0.98); backdrop-filter: blur(15px);
+                background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
                 max-height: 85vh; padding: 15px 20px 30px; 
-                border-radius: 25px 25px 0 0; border: 1px solid var(--border); border-bottom: none;
-                box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
-                transform: translateY(calc(100% - 75px)); /* 75px peeks out */
+                border-radius: 30px 30px 0 0; border: 1px solid var(--border); border-bottom: none;
+                box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.1);
+                transform: translateY(calc(100% - 75px)); 
                 transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
             
@@ -133,10 +128,10 @@
             }
             .mobile-peek::before {
                 content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-                width: 45px; height: 5px; background: #D1BFA4; border-radius: 5px;
+                width: 45px; height: 5px; background: #CBD5E1; border-radius: 5px;
             }
-            .mobile-peek-title { font-family: 'Cinzel Decorative', cursive; color: var(--red); font-size: 1.5rem; margin: 0; }
-            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.4rem; color: var(--gold); }
+            .mobile-peek-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: var(--primary); font-size: 1.5rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; }
+            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.4rem; color: var(--text); }
         }
     </style>
 </head>
@@ -148,11 +143,10 @@
     </form>
 
     <div id="splash">
-        <div class="divine-glow"></div>
         <div class="majestic-poo">💩</div>
         <h1>HolyShit</h1>
-        <p>Seek Sanctuary. Find Deliverance.</p>
-        <button class="btn-enter" onclick="dismissSplash()">Enter the Gates</button>
+        <p>Save your strides. Find relief.</p>
+        <button class="btn-enter" onclick="dismissSplash()">Start Tracking</button>
         <div class="splash-footer">
             © 2026 The Upd8 Group <br> Data provided by the National Public Toilet Map
         </div>
@@ -163,8 +157,7 @@
         <div class="bento-card">
             <div id="map"></div>
             <div class="map-ctrl">
-                <button id="btn-install" onclick="installPWA()">📲 Install App</button>
-
+                <button id="btn-install" onclick="installPWA()">📲 Get App</button>
                 <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
                     <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
                         <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
@@ -185,23 +178,23 @@
             </div>
             
             <div id="default-menu">
-                <div class="sermon-text">
-                    <span class="sermon-title">The Book of Relief</span>
-                    "Blessed are the desperate, for they shall find an open stall. We have mapped over 25,000 porcelain thrones across this great land. Fear no evil, just tap the button below and be delivered."
+                <div class="helpful-text">
+                    <span class="helpful-title">Because Every Second Counts</span>
+                    Beat your personal best, not your bladder. We've mapped over 25,000 public restrooms and water fountains across Australia so you never have to break pace.
                 </div>
-                <button class="btn-saviour" id="btn-saviour-menu" onclick="geolocate()">🕊️ Find Thee Saviour</button>
+                <button class="btn-relief" id="btn-relief-menu" onclick="geolocate()">🏃‍♂️ Find Relief Near Me</button>
             </div>
 
             <div id="loo-details">
                 <button class="btn-back" onclick="resetSidebar()">← Back</button>
-                <span id="loo-tier" class="tier-label">House of Relief</span>
-                <h2 id="loo-name" style="font-family: 'Cinzel', serif; margin: 0 0 5px 0; font-size: 1.6rem;">Sanctuary</h2>
-                <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
+                <span id="loo-tier" class="tier-label">Public Facility</span>
+                <h2 id="loo-name" style="font-family: 'Montserrat', sans-serif; font-weight: 900; margin: 0 0 5px 0; font-size: 1.5rem; color: var(--text);">Restroom</h2>
+                <p id="loo-address" style="color: #64748B; font-size: 0.95rem; margin: 0; font-weight: 600;"></p>
                 <div id="loo-tags" class="tags-container"></div>
-                <div class="scripture" id="loo-scripture"></div>
-                <button class="btn-action" onclick="openDirections()">Navigate to Peace</button>
-                <button class="btn-action" style="background: var(--gold); box-shadow: 0 4px 0 #8c6316;" onclick="openStreetView()">Behold the Entrance</button>
-                <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this Sanctuary</button>
+                <div class="location-note" id="loo-scripture"></div>
+                <button class="btn-action" style="background: var(--primary);" onclick="openDirections()">Navigate to Target</button>
+                <button class="btn-action" style="background: var(--text);" onclick="openStreetView()">View Street Level</button>
+                <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this location</button>
             </div>
         </div>
 
@@ -210,14 +203,14 @@
     <div id="report-modal">
         <div class="modal-content">
             <h3>Report Issue</h3>
-            <p style="font-size: 0.9rem; color: #666;">Is there a false prophet among us? Let us know if this data is wrong.</p>
+            <p style="font-size: 0.9rem; color: #64748B;">Help the community keep the pace. Let us know if this data is wrong.</p>
             <select id="report-reason">
                 <option value="closed">Location is permanently closed</option>
                 <option value="does_not_exist">Location doesn't exist here</option>
                 <option value="wrong_details">Features/Tags are incorrect</option>
                 <option value="unsafe">Location feels unsafe</option>
             </select>
-            <button class="btn-submit" onclick="submitReport()">Submit to the Gatekeeper</button>
+            <button class="btn-submit" onclick="submitReport()">Submit Report</button>
             <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
         </div>
     </div>
@@ -230,7 +223,7 @@
         function dismissSplash() {
             const splash = document.getElementById('splash');
             splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; geolocate(); }, 800);
+            setTimeout(() => { splash.style.display = 'none'; geolocate(); }, 500);
         }
 
         function toggleMobileMenu() {
@@ -258,8 +251,8 @@
         }
 
         function geolocate() {
-            const btn = document.getElementById("btn-saviour-menu");
-            if(btn) btn.innerHTML = "⏳ Consulting heavens...";
+            const btn = document.getElementById("btn-relief-menu");
+            if(btn) btn.innerHTML = "⏳ Scanning route...";
             
             document.getElementById('app-sidebar').classList.remove('menu-open');
 
@@ -272,16 +265,16 @@
                     if (userMarker) userMarker.setMap(null);
                     userMarker = new google.maps.Marker({
                         position: userLoc, map: map, zIndex: 9999,
-                        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }
+                        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#2563EB', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }
                     });
 
-                    if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
+                    if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; 
                     renderVisibleMarkers();
                 }, () => { 
-                    if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
-                    alert("Enable location to find your nearest sanctuary."); 
+                    if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; 
+                    alert("Enable location to find your nearest restroom."); 
                 });
-            } else { if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; }
+            } else { if(btn) btn.innerHTML = "🏃‍♂️ Find Relief Near Me"; }
         }
 
         function toggleMapType() {
@@ -320,7 +313,7 @@
             document.getElementById('default-menu').style.display = 'none';
             document.getElementById('loo-details').style.display = 'block';
 
-            document.getElementById('loo-name').innerText = loo.n || "House of Relief";
+            document.getElementById('loo-name').innerText = loo.n || "Public Restroom";
             document.getElementById('loo-address').innerText = loo.a || "Location detailed on map";
             
             const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
@@ -330,10 +323,13 @@
                 if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ All Gender</span>';
                 if (loo.t.f && !loo.t.u) tags.innerHTML += '<span class="tag">🚺 Female</span>';
                 if (loo.t.m && !loo.t.u) tags.innerHTML += '<span class="tag">🚹 Male</span>';
-                if (loo.t.d) tags.innerHTML += '<span class="tag">💧 Water</span>';
-                if (loo.t.o) tags.innerHTML += `<span class="tag" style="background: rgba(184, 132, 30, 0.2); border-color: var(--gold);">🕒 ${loo.t.o}</span>`;
+                
+                // Highlight the water fountain tag specially for runners
+                if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Drinking Water</span>';
+                
+                if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             }
-            document.getElementById('loo-scripture').innerText = loo.note || "A humble, public sanctuary.";
+            document.getElementById('loo-scripture').innerText = loo.note || "Available public facility.";
         }
 
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
@@ -350,14 +346,10 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('btn-install').style.display = 'none';
-                    }
+                    if (choiceResult.outcome === 'accepted') { document.getElementById('btn-install').style.display = 'none'; }
                     deferredPrompt = null;
                 });
-            } else {
-                alert("To install on iPhone: Tap the 'Share' button at the bottom of Safari, then tap 'Add to Home Screen'.");
-            }
+            } else { alert("To install on iPhone: Tap the 'Share' button at the bottom of Safari, then tap 'Add to Home Screen'."); }
         }
 
         /* --- REPORTING LOGIC --- */
@@ -367,7 +359,7 @@
             fetch("/", {
                 method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ "form-name": "report-loo", "loo_name": (currentLoo.n || "Unknown") + " (Lat: " + currentLoo.lat + ")", "issue": document.getElementById('report-reason').value }).toString()
-            }).then(() => { alert("Thank you. The Gatekeeper has been notified."); closeReportModal(); })
+            }).then(() => { alert("Thank you. The report has been sent."); closeReportModal(); })
               .catch(() => { alert("Error sending report."); closeReportModal(); });
         }
         
