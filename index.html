@@ -16,15 +16,15 @@
 
     <style>
         :root {
-            --bg-color: #F3F4F6;       /* Track Slate Gray */
-            --card-bg: #FFFFFF;        /* Crisp White */
-            --border: #E5E7EB;         /* Subtle Line */
-            --text-main: #111827;      /* Deep Charcoal Black */
-            --text-muted: #6B7280;     /* Secondary Gray */
-            --primary: #FC4C02;        /* High-Viz Racing Orange (Strava style) */
+            --bg-color: #F3F4F6;       
+            --card-bg: #FFFFFF;        
+            --border: #E5E7EB;         
+            --text-main: #111827;      
+            --text-muted: #6B7280;     
+            --primary: #FC4C02;        
             --primary-hover: #E34402;
-            --secondary: #2563EB;      /* Athletic Blue */
-            --water: #06B6D4;          /* Cyan */
+            --secondary: #2563EB;      
+            --water: #06B6D4;          
         }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-color); overflow: hidden; color: var(--text-main); }
 
@@ -35,43 +35,33 @@
             color: var(--text-main); display: flex; align-items: center; justify-content: center;
         }
         .app-logo span.orange { color: var(--primary); letter-spacing: -1px; }
-        
-        /* Tightly kerned, scaled-up solid emoji */
-        .poo-emoji { 
-            font-style: normal; 
-            display: inline-block; 
-            font-size: 1.2em; /* 20% bigger than the text */
-            margin: 0 -0.05em; /* Sucks the H and LY in tightly */
-            transform: translateY(1px); /* Perfect baseline snap */
-        }
+        .poo-emoji { font-style: normal; display: inline-block; font-size: 1.2em; margin: 0 -0.05em; transform: translateY(1px); }
 
         /* --- SPLASH PAGE --- */
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: var(--text-main); /* Dark mode splash for contrast */
+            background: var(--text-main); 
             z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s ease;
         }
-        /* Splash specific logo size and color override */
         #splash .app-logo { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 5px; }
         #splash .poo-emoji { transform: translateY(4px); }
-        
         #splash p { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #9CA3AF; margin: 10px 0 40px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .btn-enter { background: var(--primary); color: white; border: none; padding: 18px 45px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
         .btn-enter:active { transform: scale(0.96); background: var(--primary-hover); }
 
-        /* --- BENTO LAYOUT (Desktop) --- */
+        /* --- BENTO LAYOUT --- */
         .bento-wrapper { display: grid; grid-template-columns: 380px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; position: relative; }
         .bento-card { background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
-        /* --- SIDEBAR (DASHBOARD) --- */
-        .sidebar { padding: 25px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
+        /* --- SIDEBAR --- */
+        .sidebar { padding: 25px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; box-sizing: border-box; }
         .mobile-peek { display: none; } 
         .header-row { margin-bottom: 25px; display: flex; align-items: center; justify-content: center; }
 
         #default-menu { display: flex; flex-direction: column; justify-content: flex-start; height: 100%; gap: 20px;}
         
-        /* THE RUNNER HUD (Stats Grid) */
+        /* HUD */
         .hud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .hud-box { background: #F9FAFB; border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
         .hud-box.full-width { grid-column: span 2; }
@@ -80,14 +70,14 @@
         .hud-unit { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
 
         /* ACTION BUTTONS */
-        .action-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 20px;}
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .action-group { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 20px; width: 100%; box-sizing: border-box; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; }
         .btn-primary:active { transform: scale(0.98); background: var(--primary-hover); }
-        .btn-secondary { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .btn-secondary { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 18px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; }
         .btn-secondary:active { transform: scale(0.98); background: #E5E7EB; }
 
         /* Loo Details View */
-        #loo-details { display: none; flex-direction: column; height: 100%; }
+        #loo-details { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box;}
         .tier-label { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.75rem; color: var(--secondary); text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 1px;}
         .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
         .tag { padding: 6px 12px; background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 5px; color: var(--text-main); }
@@ -95,9 +85,9 @@
         
         .location-note { color: var(--text-muted); margin: 20px 0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; }
         .btn-back { background: transparent; border: none; color: var(--text-muted); padding: 0; cursor: pointer; margin-bottom: 20px; font-family: 'Inter'; font-weight: 700; display: flex; align-items: center; gap: 5px; font-size: 0.9rem;}
-        .btn-report { background: transparent; color: var(--text-muted); border: 1px dashed var(--border); padding: 12px; border-radius: 12px; width: 100%; margin-top: auto; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .btn-report { background: transparent; color: var(--text-muted); border: 1px dashed var(--border); padding: 12px; border-radius: 12px; width: 100%; margin-top: auto; cursor: pointer; font-weight: 600; font-size: 0.85rem; box-sizing: border-box;}
 
-        /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
+        /* --- RIGHT SIDEBAR (MAP) --- */
         #map { height: 100%; width: 100%; border-radius: 20px; }
         .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;}
         .ctrl-btn { background: white; border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -108,35 +98,32 @@
 
         /* --- REPORT MODAL --- */
         #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(17, 24, 39, 0.8); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);}
-        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
-        .modal-content select { width: 100%; padding: 14px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); font-family: 'Inter'; font-size: 1rem; font-weight: 600; outline: none;}
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); box-sizing: border-box;}
+        .modal-content select { width: 100%; padding: 14px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); font-family: 'Inter'; font-size: 1rem; font-weight: 600; outline: none; box-sizing: border-box;}
 
-        /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
+        /* --- RESPONSIVE MOBILE LAYOUT --- */
         @media (max-width: 800px) {
             .bento-wrapper { display: block; padding: 0; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; overflow: hidden; }
             .bento-card { border-radius: 0; border: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: visible; }
             #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
             
-            /* Splash mobile adjustments */
             #splash .app-logo { font-size: 3.5rem; }
 
             .map-ctrl { top: auto; bottom: 130px; right: 15px; z-index: 5000; }
             .header-row { display: none; }
 
-            /* Fixed Bottom Sheet */
             .sidebar { 
                 position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999; height: auto;
                 background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
                 max-height: 85vh; padding: 10px 20px 30px; 
                 border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: none;
                 box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
-                transform: translateY(calc(100% - 90px)); /* Peek height */
+                transform: translateY(calc(100% - 90px));
                 transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
             
             .sidebar.menu-open { transform: translateY(0); }
 
-            /* Sleek pill handle */
             .mobile-peek { 
                 display: flex; align-items: center; justify-content: center; 
                 height: 40px; margin-bottom: 10px; cursor: pointer; position: relative;
@@ -146,7 +133,6 @@
                 width: 40px; height: 4px; background: #D1D5DB; border-radius: 4px;
             }
             
-            /* Peek Logo adjustments */
             .mobile-peek-title { 
                 font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; 
                 color: var(--text-main); font-size: 1.8rem; margin: 0; text-transform: uppercase; 
@@ -156,7 +142,7 @@
             
             .hud-grid { margin-top: 10px; }
             .action-group { flex-direction: row; }
-            .btn-primary, .btn-secondary { font-size: 1rem; padding: 16px;}
+            .btn-primary, .btn-secondary { font-size: 1rem; padding: 16px; }
         }
     </style>
 </head>
@@ -174,7 +160,6 @@
     </div>
 
     <div class="bento-wrapper">
-        
         <div class="bento-card">
             <div id="map"></div>
             <div class="map-ctrl">
@@ -247,7 +232,7 @@
                 <option value="wrong_details">Features/Tags are incorrect</option>
                 <option value="unsafe">Location feels unsafe</option>
             </select>
-            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="submitReport()">Submit Report</button>
+            <button class="btn-primary" style="margin-top: 10px;" onclick="submitReport()">Submit Report</button>
             <button class="btn-back" style="width: 100%; justify-content: center; margin-top: 15px;" onclick="closeReportModal()">Cancel</button>
         </div>
     </div>
@@ -256,6 +241,7 @@
         let map, currentLoo, markers = [], allLoos = [];
         let userMarker = null; 
         let deferredPrompt; 
+        let directionsService, directionsRenderer; // For in-app navigation
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -272,6 +258,7 @@
             document.getElementById('loo-details').style.display = 'none';
             document.getElementById('default-menu').style.display = 'flex';
             document.getElementById('app-sidebar').classList.add('menu-open'); 
+            if (directionsRenderer) directionsRenderer.setDirections({routes: []}); // Clear route when going back
         }
 
         async function initMap() {
@@ -280,6 +267,15 @@
                 zoom: 14, disableDefaultUI: true,
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
+
+            // Initialize the in-app routing engine
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true, // Don't overwrite our custom poo markers
+                polylineOptions: { strokeColor: '#FC4C02', strokeWeight: 6, strokeOpacity: 0.8 } // Racing Orange line
+            });
+
             map.addListener("click", () => {
                 document.getElementById('app-sidebar').classList.remove('menu-open'); 
             });
@@ -354,18 +350,41 @@
             document.getElementById('loo-address').innerText = loo.a || "Location detailed on map";
             
             const tags = document.getElementById('loo-tags'); tags.innerHTML = '';
+            
+            // CLEANED UP TAGS: Only showing Accessible, Water, and Open Hours
             if (loo.t) {
                 if (loo.t.w) tags.innerHTML += '<span class="tag">♿ Accessible</span>';
-                if (loo.t.b) tags.innerHTML += '<span class="tag">🍼 Baby</span>';
-                if (loo.t.u) tags.innerHTML += '<span class="tag">⚧️ Unisex</span>';
-                if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Water</span>';
+                if (loo.t.f && !loo.t.m) tags.innerHTML += '<span class="tag">🚺 Female Only</span>';
+                if (loo.t.m && !loo.t.f) tags.innerHTML += '<span class="tag">🚹 Male Only</span>';
+                if (loo.t.d) tags.innerHTML += '<span class="tag tag-water">💧 Drinking Water</span>';
                 if (loo.t.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
             }
             document.getElementById('loo-scripture').innerText = loo.note || "";
         }
 
+        /* IN-APP NAVIGATION: Draws the running path directly on the map */
         function openDirections() { 
-            window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`, '_blank'); 
+            if (!userMarker) {
+                alert("Please hit 'Start' on the dashboard first so we can find your location!");
+                return;
+            }
+
+            const origin = userMarker.getPosition();
+            const destination = { lat: currentLoo.lat, lng: currentLoo.lon };
+
+            directionsService.route({
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.WALKING // Perfect for runners
+            }, (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    // Drop the menu so they can see the full path
+                    document.getElementById('app-sidebar').classList.remove('menu-open');
+                } else {
+                    alert('Could not calculate a running route to this location.');
+                }
+            });
         }
 
         /* --- PWA LOGIC --- */
@@ -398,7 +417,8 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
-     
+
+   
    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
