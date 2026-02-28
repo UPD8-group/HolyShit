@@ -30,7 +30,8 @@
 
         /* --- THE NEW ATHLETIC LOGO --- */
         .app-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 2.2rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: var(--text-main); }
-        .app-logo span { color: var(--primary); }
+        .app-logo span.orange { color: var(--primary); }
+        .poo-o { font-style: normal; display: inline-block; transform: translateY(4px) scale(0.9); } /* Perfects the alignment of the emoji O */
 
         /* --- SPLASH PAGE --- */
         #splash {
@@ -39,7 +40,7 @@
             z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.4s ease;
         }
-        #splash .app-logo { font-size: 4rem; color: #FFFFFF; }
+        #splash .app-logo { font-size: 4rem; color: #FFFFFF; margin-bottom: 5px; }
         #splash p { font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #9CA3AF; margin: 10px 0 40px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .btn-enter { background: var(--primary); color: white; border: none; padding: 18px 45px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
         .btn-enter:active { transform: scale(0.96); background: var(--primary-hover); }
@@ -128,8 +129,7 @@
                 width: 40px; height: 4px; background: #D1D5DB; border-radius: 4px;
             }
             .mobile-peek-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: var(--text-main); font-size: 1.6rem; margin: 0; text-transform: uppercase; letter-spacing: -1px; margin-top: 10px;}
-            .mobile-peek-title span { color: var(--primary); }
-            .mobile-peek-icon { display: none; } /* Hid the hamburger menu for a cleaner look */
+            .mobile-peek-title span.orange { color: var(--primary); }
             
             .hud-grid { margin-top: 10px; }
             .action-group { flex-direction: row; }
@@ -145,7 +145,7 @@
     </form>
 
     <div id="splash">
-        <h1 class="app-logo">HOLY<span>SHIT</span></h1>
+        <h1 class="app-logo">H<span class="poo-o">💩</span>LY<span class="orange">SHIT</span></h1>
         <p>Relief Radar Active</p>
         <button class="btn-enter" onclick="dismissSplash()">Launch</button>
     </div>
@@ -167,11 +167,11 @@
 
         <div class="bento-card sidebar" id="app-sidebar">
             <div class="mobile-peek" onclick="toggleMobileMenu()">
-                <h1 class="mobile-peek-title">HOLY<span>SHIT</span></h1>
+                <h1 class="mobile-peek-title">H<span class="poo-o">💩</span>LY<span class="orange">SHIT</span></h1>
             </div>
 
             <div class="header-row">
-                <h1 class="app-logo">HOLY<span>SHIT</span></h1>
+                <h1 class="app-logo">H<span class="poo-o">💩</span>LY<span class="orange">SHIT</span></h1>
             </div>
             
             <div id="default-menu">
@@ -388,7 +388,6 @@
     </script>
     
    
- 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
 </body>
 </html>
