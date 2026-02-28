@@ -25,7 +25,7 @@
         #splash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: radial-gradient(circle at center, #FFFDF0 0%, #E2CEAD 100%);
-            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.8s ease;
         }
         .divine-glow {
@@ -46,23 +46,21 @@
         .splash-footer { position: absolute; bottom: 20px; font-size: 0.8rem; color: #888; font-family: 'Nunito', sans-serif; z-index: 2; width: 100%; text-align: center; }
 
         /* --- BENTO LAYOUT (Desktop) --- */
-        .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; }
+        .bento-wrapper { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: 100vh; box-sizing: border-box; max-width: 1600px; margin: 0 auto; position: relative; }
         .bento-card { background: var(--card-bg); border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; position: relative; }
 
         /* --- SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; z-index: 2000; }
         
-        .mobile-peek { display: none; } /* Hidden on desktop */
+        .mobile-peek { display: none; } 
         .header-row { margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; }
 
         #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
         
-        /* The Book of Relief Sermon */
         .sermon-text { font-size: 1.15rem; line-height: 1.8; color: var(--text); font-style: italic; background: rgba(226, 206, 173, 0.2); padding: 20px; border-radius: 15px; border-left: 4px solid var(--gold); }
         .sermon-title { font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 1px; font-style: normal; }
 
-        /* The Saviour Button (Standard size inside menu) */
         .btn-saviour { 
             background: var(--red); color: white; border: none; padding: 18px; border-radius: 15px; 
             font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem; cursor: pointer; 
@@ -83,12 +81,14 @@
 
         /* --- RIGHT SIDEBAR (MAP & CONTROLS) --- */
         #map { height: 100%; width: 100%; border-radius: 30px; }
-        .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .map-ctrl { position: absolute; right: 20px; top: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;}
         .ctrl-btn { background: white; border: 2px solid var(--border); width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        /* The Google Crosshair SVG Icon */
         .icon-crosshair { width: 22px; height: 22px; fill: #666; }
-        .ctrl-btn:active .icon-crosshair { fill: #4285F4; } /* Turns blue when tapped */
+        .ctrl-btn:active .icon-crosshair { fill: #4285F4; }
+
+        /* PWA Install Button */
+        #btn-install { display: none; background: var(--card-bg); border: 2px solid var(--gold); color: var(--text); font-family: 'Nunito', sans-serif; font-weight: bold; padding: 0 15px; height: 45px; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); align-items: center; gap: 8px; white-space: nowrap; }
 
         /* --- REPORT MODAL --- */
         #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; }
@@ -100,42 +100,40 @@
 
         /* --- RESPONSIVE MOBILE LAYOUT (The Bottom Sheet) --- */
         @media (max-width: 800px) {
-            .bento-wrapper { display: block; padding: 0; height: 100vh; position: relative; }
+            .bento-wrapper { display: block; padding: 0; height: 100vh; position: fixed; width: 100vw; top: 0; left: 0; }
             .bento-card { border-radius: 0; border: none; }
-            #map { height: 100vh; width: 100vw; }
+            #map { height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 1; }
             #splash h1 { font-size: 3.5rem; }
             .majestic-poo { font-size: 5rem; }
 
-            /* Map controls move above the bottom sheet */
-            .map-ctrl { top: auto; bottom: 90px; right: 15px; }
+            /* Map controls move to bottom right, above the sheet */
+            .map-ctrl { top: auto; bottom: 100px; right: 15px; z-index: 5000; }
 
-            /* Hide desktop header */
             .header-row { display: none; }
 
-            /* The sliding bottom sheet */
+            /* Fixed Bottom Sheet */
             .sidebar { 
-                position: absolute; bottom: 0; left: 0; right: 0; top: auto; 
-                background: rgba(253, 246, 232, 0.96); backdrop-filter: blur(15px);
+                position: fixed; bottom: 0; left: 0; right: 0; top: auto; z-index: 9999;
+                background: rgba(253, 246, 232, 0.98); backdrop-filter: blur(15px);
                 max-height: 85vh; padding: 15px 20px 30px; 
                 border-radius: 25px 25px 0 0; border: 1px solid var(--border); border-bottom: none;
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
-                transform: translateY(calc(100% - 65px)); /* Only 65px peeks out normally */
+                box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
+                transform: translateY(calc(100% - 75px)); /* 75px peeks out */
                 transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
             
-            .sidebar.menu-open { transform: translateY(0); } /* Slides up completely */
+            .sidebar.menu-open { transform: translateY(0); }
 
-            /* The peek handle that they tap to open the menu */
             .mobile-peek { 
                 display: flex; align-items: center; justify-content: center; 
-                height: 35px; margin-bottom: 10px; cursor: pointer; position: relative;
+                height: 40px; margin-bottom: 5px; cursor: pointer; position: relative;
             }
             .mobile-peek::before {
                 content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-                width: 40px; height: 5px; background: #D1BFA4; border-radius: 5px;
+                width: 45px; height: 5px; background: #D1BFA4; border-radius: 5px;
             }
-            .mobile-peek-title { font-family: 'Cinzel Decorative', cursive; color: var(--red); font-size: 1.4rem; margin: 0; }
-            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.2rem; color: var(--gold); }
+            .mobile-peek-title { font-family: 'Cinzel Decorative', cursive; color: var(--red); font-size: 1.5rem; margin: 0; }
+            .mobile-peek-icon { position: absolute; right: 0; font-size: 1.4rem; color: var(--gold); }
         }
     </style>
 </head>
@@ -160,7 +158,6 @@
     <div class="bento-wrapper">
         
         <div class="bento-card sidebar" id="app-sidebar">
-            
             <div class="mobile-peek" onclick="toggleMobileMenu()">
                 <h1 class="mobile-peek-title">HolyShit</h1>
                 <span class="mobile-peek-icon">☰</span>
@@ -175,7 +172,6 @@
                     <span class="sermon-title">The Book of Relief</span>
                     "Blessed are the desperate, for they shall find an open stall. We have mapped over 25,000 porcelain thrones across this great land. Fear no evil, just tap the button below and be delivered."
                 </div>
-                
                 <button class="btn-saviour" id="btn-saviour-menu" onclick="geolocate()">🕊️ Find Thee Saviour</button>
             </div>
 
@@ -186,10 +182,8 @@
                 <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
                 <div id="loo-tags" class="tags-container"></div>
                 <div class="scripture" id="loo-scripture"></div>
-                
                 <button class="btn-action" onclick="openDirections()">Navigate to Peace</button>
                 <button class="btn-action" style="background: var(--gold); box-shadow: 0 4px 0 #8c6316;" onclick="openStreetView()">Behold the Entrance</button>
-                
                 <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this Sanctuary</button>
             </div>
         </div>
@@ -197,6 +191,8 @@
         <div class="bento-card">
             <div id="map"></div>
             <div class="map-ctrl">
+                <button id="btn-install" onclick="installPWA()">📲 Install App</button>
+
                 <button class="ctrl-btn" onclick="geolocate()" title="Locate Me">
                     <svg focusable="false" viewBox="0 0 24 24" class="icon-crosshair">
                         <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
@@ -224,7 +220,8 @@
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
-        let userMarker = null; // Stores the classic "Blue Dot"
+        let userMarker = null; 
+        let deferredPrompt; // For PWA Installation
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -250,7 +247,7 @@
                 styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
             });
             map.addListener("click", () => {
-                document.getElementById('app-sidebar').classList.remove('menu-open'); // Auto-close menu on map tap
+                document.getElementById('app-sidebar').classList.remove('menu-open'); 
             });
             map.addListener("idle", renderVisibleMarkers);
             loadData();
@@ -265,24 +262,13 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    
                     map.panTo(userLoc);
                     map.setZoom(15); 
                     
-                    // Drop the classic Google "Blue Dot" for the user's location
                     if (userMarker) userMarker.setMap(null);
                     userMarker = new google.maps.Marker({
-                        position: userLoc,
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 8,
-                            fillColor: '#4285F4',
-                            fillOpacity: 1,
-                            strokeColor: '#ffffff',
-                            strokeWeight: 2,
-                        },
-                        zIndex: 9999
+                        position: userLoc, map: map, zIndex: 9999,
+                        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }
                     });
 
                     if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
@@ -291,9 +277,7 @@
                     if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; 
                     alert("Enable location to find your nearest sanctuary."); 
                 });
-            } else {
-                if(btn) btn.innerHTML = "🕊️ Find Thee Saviour";
-            }
+            } else { if(btn) btn.innerHTML = "🕊️ Find Thee Saviour"; }
         }
 
         function toggleMapType() {
@@ -313,9 +297,7 @@
             const bounds = map.getBounds();
             markers.forEach(m => m.setMap(null)); markers = [];
 
-            let visible = allLoos.filter(loo => {
-                return bounds.contains({lat: loo.lat, lng: loo.lon});
-            });
+            let visible = allLoos.filter(loo => { return bounds.contains({lat: loo.lat, lng: loo.lon}); });
             
             visible.slice(0, 80).forEach(loo => {
                 const iconConfig = { url: `data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="0" y="24" font-size="28">💩</text></svg>`, anchor: new google.maps.Point(16, 24) };
@@ -353,34 +335,40 @@
         function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
         function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
 
+        /* --- PWA INSTALLATION LOGIC --- */
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('btn-install').style.display = 'flex'; // Show the install button
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('btn-install').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // Fallback for iOS users who have to do it manually
+                alert("To install on iPhone: Tap the 'Share' button at the bottom of Safari, then tap 'Add to Home Screen'.");
+            }
+        }
+
         /* --- REPORTING LOGIC --- */
         function openReportModal() { document.getElementById('report-modal').style.display = 'flex'; }
         function closeReportModal() { document.getElementById('report-modal').style.display = 'none'; }
-        
         function submitReport() {
-            const reason = document.getElementById('report-reason').value;
-            const looName = currentLoo.n || "Unknown Location";
-            
             fetch("/", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({
-                    "form-name": "report-loo",
-                    "loo_name": looName + " (Lat: " + currentLoo.lat + ", Lon: " + currentLoo.lon + ")",
-                    "issue": reason
-                }).toString()
-            }).then(() => {
-                alert("Thank you. The Gatekeeper has been notified and will review this location.");
-                closeReportModal();
-            }).catch((error) => {
-                alert("Error sending report. Please try again.");
-                closeReportModal();
-            });
+                method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ "form-name": "report-loo", "loo_name": (currentLoo.n || "Unknown") + " (Lat: " + currentLoo.lat + ")", "issue": document.getElementById('report-reason').value }).toString()
+            }).then(() => { alert("Thank you. The Gatekeeper has been notified."); closeReportModal(); })
+              .catch(() => { alert("Error sending report."); closeReportModal(); });
         }
         
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
     </script>
     
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&callback=initMap" async defer></script>
