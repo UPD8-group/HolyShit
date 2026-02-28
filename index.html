@@ -193,7 +193,9 @@
                 <div id="loo-tags" class="tags-container"></div>
                 <div class="location-note" id="loo-scripture"></div>
                 <button class="btn-action" style="background: var(--primary);" onclick="openDirections()">Navigate to Target</button>
+                
                 <button class="btn-action" style="background: var(--text);" onclick="openStreetView()">View Street Level</button>
+                
                 <button class="btn-report" onclick="openReportModal()">⚠️ Report an Issue with this location</button>
             </div>
         </div>
@@ -332,8 +334,20 @@
             document.getElementById('loo-scripture').innerText = loo.note || "Available public facility.";
         }
 
-        function openDirections() { window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`); }
-        function openStreetView() { window.open(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentLoo.lat},${currentLoo.lon}`); }
+        /* UPDATED: Navigates cleanly into Google Maps App or new Tab */
+        function openDirections() { 
+            window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentLoo.lat},${currentLoo.lon}`, '_blank'); 
+        }
+
+        /* UPDATED: Embeds Street View natively inside the app! */
+        function openStreetView() { 
+            const panorama = map.getStreetView();
+            panorama.setPosition({ lat: currentLoo.lat, lng: currentLoo.lon });
+            panorama.setVisible(true);
+            
+            // Drop the menu so they can see the full street view
+            document.getElementById('app-sidebar').classList.remove('menu-open');
+        }
 
         /* --- PWA INSTALLATION LOGIC --- */
         window.addEventListener('beforeinstallprompt', (e) => {
