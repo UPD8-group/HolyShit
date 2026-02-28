@@ -52,15 +52,10 @@
         /* --- LEFT SIDEBAR (DASHBOARD) --- */
         .sidebar { padding: 30px; display: flex; flex-direction: column; overflow-y: auto; }
         .logo-small { font-family: 'Cinzel Decorative', cursive; font-size: 2.2rem; color: var(--red); margin: 0 0 20px 0; text-shadow: 1px 1px 0px var(--border); cursor: pointer; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        #default-menu p { font-size: 1.05rem; line-height: 1.6; color: var(--text); }
-        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 20px; font-size: 1.1rem; }
         
-        .filter-section { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; }
-        .filter-section h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .filter-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .filter-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 20px; font-family: 'Nunito', sans-serif; font-weight: bold; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 0.9rem; }
-        .filter-btn:active { transform: scale(0.95); }
-        .filter-btn.active-feature { background: var(--gold); color: white; border-color: var(--gold); }
+        #default-menu { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        #default-menu p { font-size: 1.15rem; line-height: 1.8; color: var(--text); }
+        .gospel-quote { color: var(--gold); font-style: italic; font-family: 'Cinzel', serif; text-align: center; margin-top: 40px; font-size: 1.2rem; }
 
         /* Loo Details View */
         #loo-details { display: none; }
@@ -123,21 +118,12 @@
             <h1 class="logo-small" onclick="resetSidebar()">HolyShit</h1>
             
             <div id="default-menu">
-                <p>Welcome to your sanctuary. We have mapped over 25,000 public restrooms across Australia so you never have to panic again.</p>
-                <div class="filter-section">
-                    <h3>Filter by Need</h3>
-                    <div class="filter-grid">
-                        <button class="filter-btn" id="btn-access" onclick="toggleFilter('access')">♿ Accessible</button>
-                        <button class="filter-btn" id="btn-baby" onclick="toggleFilter('baby')">🍼 Baby Change</button>
-                        <button class="filter-btn" id="btn-unisex" onclick="toggleFilter('unisex')">⚧️ All Gender</button>
-                        <button class="filter-btn" id="btn-open24" onclick="toggleFilter('open24')">🕒 24/7 Access</button>
-                    </div>
-                </div>
+                <p><strong>Welcome to your sanctuary.</strong><br><br>We have mapped over 25,000 public restrooms across Australia so you never have to panic again.<br><br>Tap the button to find relief near you.</p>
                 <p class="gospel-quote">"Never wander the wilderness again."</p>
             </div>
 
             <div id="loo-details">
-                <button class="btn-back" onclick="resetSidebar()">← Back to Dashboard</button>
+                <button class="btn-back" onclick="resetSidebar()">← Back</button>
                 <span id="loo-tier" class="tier-label">House of Relief</span>
                 <h2 id="loo-name" style="font-family: 'Cinzel', serif; margin: 0 0 5px 0; font-size: 1.6rem;">Sanctuary</h2>
                 <p id="loo-address" style="color: #666; font-size: 0.95rem; margin: 0;"></p>
@@ -179,7 +165,6 @@
 
     <script>
         let map, currentLoo, markers = [], allLoos = [];
-        let filters = { baby: false, access: false, unisex: false, open24: false };
 
         function dismissSplash() {
             const splash = document.getElementById('splash');
@@ -189,14 +174,7 @@
 
         function resetSidebar() {
             document.getElementById('loo-details').style.display = 'none';
-            document.getElementById('default-menu').style.display = 'block';
-        }
-
-        function toggleFilter(type) {
-            filters[type] = !filters[type]; 
-            const btn = document.getElementById('btn-' + type);
-            btn.classList.toggle('active-feature');
-            renderVisibleMarkers(); 
+            document.getElementById('default-menu').style.display = 'flex';
         }
 
         async function initMap() {
@@ -238,15 +216,9 @@
             const bounds = map.getBounds();
             markers.forEach(m => m.setMap(null)); markers = [];
 
+            // ONLY logic here now is checking if it's on the screen! No filters.
             let visible = allLoos.filter(loo => {
-                if (!bounds.contains({lat: loo.lat, lng: loo.lon})) return false;
-                if (!loo.t && (filters.baby || filters.access || filters.unisex || filters.open24)) return false;
-                
-                if (filters.baby && !loo.t.b) return false;
-                if (filters.access && !loo.t.w) return false;
-                if (filters.unisex && !loo.t.u) return false;
-                if (filters.open24 && (!loo.t.o || !loo.t.o.includes('24'))) return false;
-                return true;
+                return bounds.contains({lat: loo.lat, lng: loo.lon});
             });
             
             visible.slice(0, 80).forEach(loo => {
