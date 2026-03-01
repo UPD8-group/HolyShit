@@ -666,32 +666,19 @@ async function initMap() {
         zoom: 15,
         mapTypeId: 'hybrid',
         gestureHandling: 'greedy',
-        disableDefaultUI: false,
-        mapTypeControl: false,  // using custom toggle instead
-        rotateControl: false,
-        tiltControl: false,
-        zoomControl: false,          // we don't need zoom buttons on mobile
-        streetViewControl: false,
-        fullscreenControl: false,
-        myLocationButton: false,
+        disableDefaultUI: true,   // clean slate — we own every control
     });
 
     geocoder         = new google.maps.Geocoder();
     directionsService = new google.maps.DirectionsService();
-
-    // Define AFTER Maps API is ready
-    window.POO_SVG_MARKER = {
-        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="30">💩</text></svg>'),
-        scaledSize: new google.maps.Size(40, 40),
-        anchor: new google.maps.Point(20, 20)
-    };
 
     // Apply locale labels to HUD
     document.getElementById('hud-dist-lbl').innerText = UNITS.distLong;
     document.getElementById('hud-pace-lbl').innerText = UNITS.pace;
 
     // Build the 💩 marker icon once
-    pooIcon = buildPooIcon(36);
+    pooIcon   = buildEmojiIcon('💩', 36);
+    goldenIcon = buildEmojiIcon('⭐', 40);
 
     map.addListener('click', handleMapClick);
     map.addListener('idle', renderVisibleMarkers);
@@ -701,31 +688,19 @@ async function initMap() {
 }
 
 // ════════════════════════════════════════
-// 💩 MARKER ICON — canvas rendered
+// EMOJI MARKER ICON — canvas + DPR for retina sharpness
 // ════════════════════════════════════════
-function buildPooIcon(size) {
+function buildEmojiIcon(char, size) {
+    const dpr = window.devicePixelRatio || 1;
     const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
+    canvas.width  = size * dpr;
+    canvas.height = size * dpr;
     const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
     ctx.font = `${size * 0.82}px serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('💩', size / 2, size / 2 + 1);
-    return {
-        url: canvas.toDataURL(),
-        scaledSize: new google.maps.Size(size, size),
-        anchor: new google.maps.Point(size / 2, size / 2),
-    };
-}
-
-function buildGoldenIcon(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    ctx.font = `${size * 0.8}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('⭐', size / 2, size / 2 + 1);
+    ctx.fillText(char, size / 2, size / 2 + 1);
     return {
         url: canvas.toDataURL(),
         scaledSize: new google.maps.Size(size, size),
@@ -740,6 +715,7 @@ async function loadData() {
     try {
         const res = await fetch('toilets-au.json');
         allLoos = await res.json();
+        renderVisibleMarkers(); // paint immediately once data arrives
     } catch(e) {
         allLoos = [];
     }
@@ -749,21 +725,21 @@ async function loadData() {
 // MARKERS
 // ════════════════════════════════════════
 function renderVisibleMarkers() {
-    if (plannerActive && routeMarkers.length > 0) return;
+    if (plannerActive || isRunning) return; // don't flicker markers during active modes
     const bounds = map.getBounds();
+    if (!bounds) return;
     markers.forEach(m => m.setMap(null));
     markers = [];
     allLoos
         .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
-        .slice(0, 80)
+        .slice(0, 60) // perf cap
         .forEach(loo => {
-            const icon = loo.golden ? buildGoldenIcon(40) : pooIcon;
             const marker = new google.maps.Marker({
                 position: { lat: loo.lat, lng: loo.lon },
                 map,
-                icon,
+                icon: loo.golden ? goldenIcon : pooIcon,
                 title: loo.n,
-                optimized: false // needed for emoji canvas icons
+                optimized: false // required for canvas emoji icons
             });
             marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
             markers.push(marker);
@@ -1017,7 +993,7 @@ function filterFacilitiesOnRoute(routePath) {
     const TOLERANCE = 0.0009;
     routeFacilities = allLoos.filter(loo => google.maps.geometry.poly.isLocationOnEdge(new google.maps.LatLng(loo.lat, loo.lon), polyline, TOLERANCE));
     routeFacilities.forEach(loo => {
-        const icon = loo.golden ? buildGoldenIcon(44) : buildPooIcon(40);
+        const icon = loo.golden ? goldenIcon : pooIcon;
         const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, optimized: false, zIndex: 500 });
         marker.addListener('click', () => openSheet(loo));
         routeMarkers.push(marker);
