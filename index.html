@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HolyShit.app — Relief Radar for Runners & Cyclists</title>
+    <meta name="description" content="Find public toilets along your run or ride. Real-time GPS, route planning, and bathroom locations for runners, cyclists and parents.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="HolyShit">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: #1c1c1e; background: #fff; overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ NAV ══ */
+    #nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid #e5e5e5;
+        height: 64px; display: flex; align-items: center;
+        padding: 0 32px; gap: 32px;
+    }
+    .nav-logo { display: flex; align-items: center; flex-shrink: 0; }
+    .nav-logo img { height: 34px; width: auto; mix-blend-mode: multiply; }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; list-style: none; }
+    .nav-links a {
+        font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2px;
+        color: #3c3c43; padding: 8px 13px; border-radius: 7px;
+        transition: background 0.15s; white-space: nowrap;
+    }
+    .nav-links a:hover { background: #f2f2f7; color: #1c1c1e; }
+    .nav-cta {
+        background: #FC4C02 !important; color: #fff !important;
+        padding: 9px 18px !important; border-radius: 7px !important;
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-weight: 900 !important; font-style: italic !important;
+        font-size: 0.95rem !important; letter-spacing: 0.5px !important;
+        box-shadow: 0 2px 0 #a32e00;
+        transition: transform 0.1s !important; display: inline-block;
+    }
+    .nav-cta:hover { transform: translateY(-1px); background: #e04300 !important; }
+    .nav-cta-desktop { flex-shrink: 0; }
+
+    /* Hamburger */
+    #hamburger {
+        display: none; flex-direction: column; gap: 5px;
+        background: none; border: none; cursor: pointer; padding: 6px; flex-shrink: 0;
+    }
+    #hamburger span { display: block; width: 22px; height: 2px; background: #1c1c1e; border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+    #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #hamburger.open span:nth-child(2) { opacity: 0; }
+    #hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    #mobile-menu {
+        position: fixed; top: 56px; left: 0; right: 0; z-index: 999;
+        background: #fff; border-bottom: 1px solid #e5e5e5;
+        padding: 12px 20px 20px;
+        transform: translateY(-110%);
+        transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.1);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    #mobile-menu.open { transform: translateY(0); }
+    #mobile-menu a { display: block; padding: 13px 0; font-size: 0.97rem; font-weight: 600; color: #1c1c1e; border-bottom: 1px solid #f2f2f7; }
+    #mobile-menu a:last-of-type { border-bottom: none; }
+    .mob-cta {
+        display: block !important; margin-top: 14px;
+        background: #FC4C02; color: #fff !important;
+        text-align: center; padding: 15px !important;
+        border-radius: 10px; border-bottom: none !important;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.2rem; letter-spacing: 1px;
+        box-shadow: 0 4px 0 #a32e00;
+    }
+
+    /* ══ HERO ══ */
+    #hero {
+        position: relative; margin-top: 64px;
+        width: 100%; height: calc(100vh - 64px);
+        min-height: 480px; max-height: 900px; overflow: hidden;
+    }
+    #hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+    #hero::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.72) 100%);
+    }
+    .hero-content {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        z-index: 2; padding: 0 40px 52px; text-align: center;
+    }
+    .hero-eyebrow {
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+        font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase;
+        color: rgba(255,255,255,0.7); margin-bottom: 10px;
+    }
+    .hero-headline {
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic;
+        font-size: clamp(2.2rem, 5.5vw, 4.2rem); line-height: 1.05;
+        color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.4); margin-bottom: 12px;
+    }
+    .hero-sub {
+        font-size: clamp(0.87rem, 2vw, 1.05rem); color: rgba(255,255,255,0.82);
+        max-width: 500px; margin: 0 auto 28px; line-height: 1.55;
+    }
+    .hero-launch-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .featured-label {
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+        font-size: 0.68rem; letter-spacing: 4px; text-transform: uppercase;
+        color: rgba(255,255,255,0.55); margin-bottom: 8px;
+    }
+    #launch-btn {
+        background: #FC4C02; color: #fff; border: none;
+        padding: 17px 68px; border-radius: 4px;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.35rem; letter-spacing: 2px; cursor: pointer;
+        box-shadow: 0 5px 0 #a32e00, 0 12px 40px rgba(252,76,2,0.5);
+        transition: transform 0.1s, box-shadow 0.1s; display: inline-block;
+    }
+    #launch-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #a32e00, 0 18px 48px rgba(252,76,2,0.55); }
+    #launch-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #a32e00; }
+    .launch-arrow {
+        margin-top: 10px; width: 0; height: 0;
+        border-left: 16px solid transparent; border-right: 16px solid transparent;
+        border-top: 12px solid #FC4C02; opacity: 0.85;
+    }
+
+    /* ══ SECTIONS ══ */
+    section { padding: 76px 32px; }
+    .section-label {
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+        font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+        color: #8e8e93; margin-bottom: 8px; text-align: center;
+    }
+    .section-title {
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic;
+        font-size: clamp(1.9rem, 3.5vw, 2.9rem); line-height: 1.1;
+        color: #1c1c1e; text-align: center; margin-bottom: 44px;
+    }
+
+    /* ══ FEATURES ══ */
+    #features { background: #fff; }
+    .features-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 20px; max-width: 1080px; margin: 0 auto;
+    }
+    .feature-card {
+        background: #f2f2f7; border-radius: 14px; padding: 28px 22px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.07); }
+    .feature-icon { font-size: 2rem; margin-bottom: 12px; }
+    .feature-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.18rem; color: #1c1c1e; margin-bottom: 5px; }
+    .feature-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
+
+    /* ══ AUDIENCE ══ */
+    #audience { background: #1c1c1e; }
+    #audience .section-label { color: rgba(255,255,255,0.35); }
+    #audience .section-title { color: #fff; }
+    .audience-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px; max-width: 900px; margin: 0 auto;
+    }
+    .audience-card {
+        background: #2c2c2e; border-radius: 14px; padding: 28px 18px;
+        border: 1px solid #3a3a3c; transition: border-color 0.2s;
+    }
+    .audience-card:hover { border-color: #FC4C02; }
+    .audience-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .audience-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.15rem; color: #fff; margin-bottom: 5px; }
+    .audience-desc { font-size: 0.8rem; color: #8e8e93; line-height: 1.5; }
+
+    /* ══ HOW IT WORKS ══ */
+    #how { background: #fff; }
+    .steps { display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; }
+    .step { display: flex; align-items: flex-start; gap: 18px; padding: 24px 0; border-bottom: 1px solid #f2f2f7; }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+        width: 40px; height: 40px; border-radius: 50%; background: #FC4C02; color: #fff;
+        font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.15rem;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1c1c1e; margin-bottom: 3px; }
+    .step-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
+
+    /* ══ ABOUT ══ */
+    #about { background: #f2f2f7; }
+    .about-inner { max-width: 660px; margin: 0 auto; text-align: center; }
+    .about-inner p { font-size: 0.97rem; line-height: 1.72; color: #3c3c43; margin-bottom: 14px; }
+    .about-inner p:last-child { margin-bottom: 0; }
+    .about-inner strong { color: #1c1c1e; }
+
+    /* ══ FOOTER CTA ══ */
+    #footer-cta { background: #1c1c1e; text-align: center; }
+    #footer-cta .section-title { color: #fff; }
+    #footer-cta p { color: #8e8e93; font-size: 0.88rem; margin-bottom: 28px; }
+    .footer-launch {
+        display: inline-block; background: #FC4C02; color: #fff;
+        padding: 17px 68px; border-radius: 4px;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.35rem; letter-spacing: 2px;
+        box-shadow: 0 4px 0 #a32e00; transition: transform 0.1s;
+    }
+    .footer-launch:hover { transform: translateY(-2px); }
+
+    /* ══ FOOTER ══ */
+    footer {
+        background: #000; padding: 24px 32px;
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    footer img { height: 22px; mix-blend-mode: screen; opacity: 0.65; }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.73rem; color: #636366; }
+    .footer-links a:hover { color: #8e8e93; }
+    .footer-copy { font-size: 0.7rem; color: #48484a; }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 768px) {
+        #nav { padding: 0 16px; gap: 0; justify-content: space-between; height: 56px; }
+        .nav-links, .nav-cta-desktop { display: none; }
+        #hamburger { display: flex; }
+        /* Logo centred on mobile */
+        .nav-logo { position: absolute; left: 50%; transform: translateX(-50%); }
+
+        #hero { margin-top: 56px; height: calc(100svh - 56px); }
+        .hero-content { padding: 0 20px 44px; }
+        #launch-btn { padding: 15px 48px; font-size: 1.2rem; }
+
+        section { padding: 52px 20px; }
+        .features-grid { grid-template-columns: 1fr 1fr; }
+        .audience-grid { grid-template-columns: 1fr 1fr; }
+
+        footer { flex-direction: column; align-items: flex-start; padding: 20px; }
+    }
+    @media (max-width: 480px) {
+        .features-grid, .audience-grid { grid-template-columns: 1fr; }
+        .hero-headline { font-size: 2rem; }
+    }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+    <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+    <a href="/" class="nav-logo">
+        <img src="logo.png" alt="HolyShit.app">
+    </a>
+    <ul class="nav-links">
+        <li><a href="#audience">For Runners</a></li>
+        <li><a href="#audience">For Cyclists</a></li>
+        <li><a href="#audience">For Parents</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#about">About</a></li>
+    </ul>
+    <a href="app.html" class="nav-cta nav-cta-desktop">LAUNCH APP</a>
+</nav>
+
+<!-- Mobile menu -->
+<div id="mobile-menu">
+    <a href="#audience" onclick="toggleMenu()">🏃 For Runners</a>
+    <a href="#audience" onclick="toggleMenu()">🚴 For Cyclists</a>
+    <a href="#audience" onclick="toggleMenu()">👶 For Parents</a>
+    <a href="#how" onclick="toggleMenu()">❓ How It Works</a>
+    <a href="#about" onclick="toggleMenu()">💬 About</a>
+    <a href="app.html" class="mob-cta">💩 LAUNCH APP</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+    <img id="hero-img" src="HollyShitBanner.jpg" alt="HolyShit.app — Relief Radar Active">
+    <div class="hero-content">
+        <p class="hero-eyebrow">Relief Radar Active</p>
+        <h1 class="hero-headline">Never Get Caught<br>Without a Bathroom Again</h1>
+        <p class="hero-sub">Real-time public toilet finder built for runners, cyclists and parents on the go. Free. No account. Just relief.</p>
+        <div class="hero-launch-wrap">
+            <span class="featured-label">Featured</span>
+            <a href="app.html" id="launch-btn">LAUNCH</a>
+            <div class="launch-arrow"></div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <p class="section-label">What It Does</p>
+    <h2 class="section-title">Everything You Need.<br>Nothing You Don't.</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📍</div>
+            <div class="feature-name">Near Me Now</div>
+            <div class="feature-desc">One tap finds the closest public toilet to you right now. No fuss, no delays.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🗺️</div>
+            <div class="feature-name">Route Planner</div>
+            <div class="feature-desc">Set start and finish. See every bathroom within 100m of your route before you leave.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">▶️</div>
+            <div class="feature-name">Live Run Tracker</div>
+            <div class="feature-desc">GPS distance, pace, and a live pit stop count as you move. Like Strava, but with toilets.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👁️</div>
+            <div class="feature-name">Street View</div>
+            <div class="feature-desc">Preview the exact location before you sprint for it. No more arriving at a locked gate.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">♿</div>
+            <div class="feature-name">Accessibility Info</div>
+            <div class="feature-desc">Accessible toilets, baby change, 24/7 access and drinking water all clearly marked.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📲</div>
+            <div class="feature-name">Install as App</div>
+            <div class="feature-desc">Add to home screen on iPhone or Android. Full app experience, zero App Store needed.</div>
+        </div>
+    </div>
+</section>
+
+<!-- AUDIENCE -->
+<section id="audience">
+    <p class="section-label">Who It's For</p>
+    <h2 class="section-title">Built for People<br>Who Keep Moving.</h2>
+    <div class="audience-grid">
+        <div class="audience-card">
+            <div class="audience-icon">🏃</div>
+            <div class="audience-name">Runners</div>
+            <div class="audience-desc">Plan your route around facilities. Know every pit stop before your shoes hit the pavement.</div>
+        </div>
+        <div class="audience-card">
+            <div class="audience-icon">🚴</div>
+            <div class="audience-name">Cyclists</div>
+            <div class="audience-desc">Long rides need pit stops. Map facilities along your route before you clip in and roll.</div>
+        </div>
+        <div class="audience-card">
+            <div class="audience-icon">👶</div>
+            <div class="audience-name">Parents</div>
+            <div class="audience-desc">Days out with kids mean constant emergencies. Find the nearest bathroom in seconds.</div>
+        </div>
+        <div class="audience-card">
+            <div class="audience-icon">🥾</div>
+            <div class="audience-name">Hikers</div>
+            <div class="audience-desc">Know where the facilities are on your trail before you're desperate and deep in the bush.</div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">Three Taps.<br>Total Relief.</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+                <div class="step-title">Open the App</div>
+                <div class="step-desc">Tap LAUNCH. Relief Radar activates instantly — no account, no signup, no nonsense.</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+                <div class="step-title">Find or Plan</div>
+                <div class="step-desc">Tap Near Me for the closest bathroom right now, or use Plan to map a route with every facility along the way.</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+                <div class="step-title">Go with Confidence</div>
+                <div class="step-desc">Start your run or ride knowing exactly where every pit stop is. Track your activity in real time.</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+                <div class="step-title">Never Panic Again</div>
+                <div class="step-desc">The live HUD shows nearby pit stops as you move. If nature calls, you're always one tap from relief.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <p class="section-label">The Story</p>
+    <h2 class="section-title">Born at a Ball.<br>Built for Everyone.</h2>
+    <div class="about-inner">
+        <p>HolyShit.app started as a conversation at a black tie ball — a friend who runs mentioned she'd never found a good way to plan routes around bathroom access. By the time the band finished their second set, the concept was locked in.</p>
+        <p><strong>Free for users. Useful for athletes. Built for real life.</strong> We're Australian, we don't take ourselves too seriously, and we think finding a toilet when you desperately need one should be the easiest thing in the world.</p>
+        <p>Hence the name. Hence the 💩.</p>
+        <p style="margin-top:20px; color:#FC4C02; font-weight:600;">Interested in partnering or integrating? <a href="mailto:hello@holyshit.app" style="color:#FC4C02; text-decoration:underline;">hello@holyshit.app</a></p>
+    </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section id="footer-cta">
+    <p class="section-label">Ready?</p>
+    <h2 class="section-title">Stop Worrying.<br>Start Moving.</h2>
+    <p>Free. No account. No tracking. Just toilets.</p>
+    <a href="app.html" class="footer-launch">💩 LAUNCH APP</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <img src="logo.png" alt="HolyShit.app">
+    <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Use</a>
+        <a href="mailto:hello@holyshit.app">Contact</a>
+    </div>
+    <span class="footer-copy">© 2026 The UPD8 GROUP PTY LTD— All rights reserved</span>
+</footer>
+
+<script>
+function toggleMenu() {
+    document.getElementById('hamburger').classList.toggle('open');
+    document.getElementById('mobile-menu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+    if (!e.target.closest('#nav') && !e.target.closest('#mobile-menu')) {
+        document.getElementById('hamburger').classList.remove('open');
+        document.getElementById('mobile-menu').classList.remove('open');
+    }
+});
+</script>
+</body>
+</html>
