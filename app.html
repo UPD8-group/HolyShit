@@ -170,10 +170,10 @@
         transform: translateY(100%);
         background: white;
         border-top: 2px solid var(--orange);
-        border-radius: 14px 14px 0 0;
+        border-radius: 12px 12px 0 0;
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 2000;
-        padding: 4px 14px 12px;
+        padding: 4px 16px 10px;
         box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
         color: #1C1C1E;
     }
@@ -183,40 +183,50 @@
         content: ''; display: block;
         width: 28px; height: 3px;
         background: #E5E5EA; border-radius: 2px;
-        margin: 5px auto 8px;
+        margin: 4px auto 6px;
     }
+    /* Top row: text left, buttons right */
+    .sheet-inner {
+        display: flex; align-items: center; gap: 12px;
+    }
+    .sheet-text { flex: 1; min-width: 0; }
+    .sheet-actions { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
     .facility-type {
         font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700; font-size: 0.62rem;
+        font-weight: 700; font-size: 0.58rem;
         letter-spacing: 2px; text-transform: uppercase;
-        color: var(--orange); margin-bottom: 2px;
+        color: var(--orange); margin-bottom: 1px;
     }
     .facility-name {
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 1.1rem; line-height: 1.1;
-        margin: 0 0 2px; color: #1C1C1E;
+        font-size: 1rem; line-height: 1.1;
+        margin: 0 0 1px; color: #1C1C1E;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .facility-address { color: #8E8E93; font-size: 0.72rem; margin: 0 0 7px; }
-    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .facility-address {
+        color: #8E8E93; font-size: 0.68rem; margin: 0 0 5px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 3px; }
     .tag {
         display: inline-flex; align-items: center; gap: 3px;
-        padding: 3px 8px;
-        background: #F2F2F7; border-radius: 5px;
-        font-size: 0.68rem; font-weight: 600; color: #3C3C43;
+        padding: 2px 7px;
+        background: #F2F2F7; border-radius: 4px;
+        font-size: 0.63rem; font-weight: 600; color: #3C3C43;
         border: 1px solid #E5E5EA;
     }
     .tag.open-24 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
     .tag.accessible { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.08); }
     .btn-action {
-        width: 100%; padding: 9px; border-radius: 8px; border: none;
+        padding: 7px 14px; border-radius: 7px; border: none;
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 0.9rem; cursor: pointer; margin-top: 5px;
-        transition: transform 0.1s;
+        font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+        transition: transform 0.1s; width: 110px; text-align: center;
     }
-    .btn-action:active { transform: scale(0.98); }
-    .btn-primary { background: var(--orange); color: white; box-shadow: 0 3px 0 var(--orange-dk); }
+    .btn-action:active { transform: scale(0.97); }
+    .btn-primary { background: var(--orange); color: white; box-shadow: 0 2px 0 var(--orange-dk); }
     .btn-secondary { background: #F2F2F7; color: #3C3C43; }
 
     /* ════════════════════════════════════════
@@ -445,12 +455,18 @@
 
 <!-- Facility sheet -->
 <div id="sheet">
-    <div class="facility-type" id="facility-type">PUBLIC FACILITY</div>
-    <h2 class="facility-name" id="loo-name">—</h2>
-    <p class="facility-address" id="loo-address"></p>
-    <div class="tags" id="loo-tags"></div>
-    <button class="btn-action btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
-    <button class="btn-action btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
+    <div class="sheet-inner">
+        <div class="sheet-text">
+            <div class="facility-type" id="facility-type">PUBLIC FACILITY</div>
+            <h2 class="facility-name" id="loo-name">—</h2>
+            <p class="facility-address" id="loo-address"></p>
+            <div class="tags" id="loo-tags"></div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn-action btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
+            <button class="btn-action btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
+        </div>
+    </div>
 </div>
 
 <!-- Route summary -->
@@ -504,7 +520,7 @@
 <!-- Bottom nav -->
 <nav id="bottom-nav">
     <button class="nav-tab" id="tab-near" onclick="navTap('near')">
-        <div class="nav-icon">📍</div>
+        <div class="nav-icon">💩</div>
         <div class="nav-label">Near Me</div>
     </button>
     <button class="nav-tab" id="tab-plan" onclick="navTap('plan')">
@@ -512,7 +528,7 @@
         <div class="nav-label">Plan</div>
     </button>
     <button class="nav-tab" id="tab-home" onclick="navTap('home')">
-        <div class="nav-icon">💩</div>
+        <div class="nav-icon">🏠</div>
         <div class="nav-label">Home</div>
     </button>
     <button class="nav-tab" id="tab-run" onclick="navTap('run')">
