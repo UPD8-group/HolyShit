@@ -16,6 +16,8 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; overflow-x: hidden; }
@@ -69,14 +71,12 @@
         white-space: nowrap;
     }
     .nav-cta:hover { background: #e04300; transform: translateY(-1px); }
-    .nav-cta-desktop { }
 
     /* Hamburger */
     #hamburger {
         display: none; flex-direction: column; gap: 5px;
         background: none; border: none; cursor: pointer; padding: 6px; flex-shrink: 0;
     }
-    /* Always hidden on desktop */
     @media (min-width: 769px) { #hamburger { display: none !important; } }
     #hamburger span { display: block; width: 22px; height: 2px; background: #1c1c1e; border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
     #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -106,24 +106,15 @@
         box-shadow: 0 4px 0 #a32e00;
     }
 
-    /* ══ HERO — true full bleed, kisses nav bottom ══ */
+    /* ══ HERO ══ */
     #hero {
-        position: relative;
-        width: 100%;
-        height: 100vh;
-        min-height: 480px;
-        overflow: hidden;
-        /* Push down so image starts right under the fixed nav */
-        margin-top: 0;
-        padding-top: 64px;
+        position: relative; width: 100%; height: 100vh; min-height: 480px;
+        overflow: hidden; padding-top: 64px;
     }
     #hero-img {
-        position: absolute;
-        top: 64px; left: 0; right: 0; bottom: 0;
+        position: absolute; top: 64px; left: 0; right: 0; bottom: 0;
         width: 100%; height: calc(100% - 64px);
-        object-fit: cover;
-        object-position: center center;
-        display: block;
+        object-fit: cover; object-position: center center; display: block;
     }
     .hero-content {
         position: absolute; bottom: 0; left: 0; right: 0;
@@ -194,10 +185,9 @@
         width: 52px; height: 52px; margin-bottom: 18px;
         border-radius: 14px;
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
+        flex-shrink: 0; font-size: 1.8rem;
     }
     .feature-icon svg { width: 26px; height: 26px; stroke-width: 1.75; }
-    .feature-icon img { width: 30px; height: 30px; }
     .feature-icon.orange { background: #fff1ec; }
     .feature-icon.blue   { background: #eff6ff; }
     .feature-icon.green  { background: #f0fdf4; }
@@ -206,59 +196,19 @@
     .feature-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.18rem; color: #1c1c1e; margin-bottom: 5px; }
     .feature-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
 
-    /* ══ AUDIENCE — photo cards ══ */
+    /* ══ AUDIENCE ══ */
     #audience { background: #111; }
     #audience .section-label { color: rgba(255,255,255,0.35); }
     #audience .section-title { color: #fff; }
-    .audience-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0;
-        max-width: 100%;
-        margin: 0 auto;
-    }
-    .audience-card {
-        position: relative;
-        height: 520px;
-        background-size: cover;
-        background-position: center;
-        overflow: hidden;
-        cursor: pointer;
-    }
-    .audience-overlay {
-        position: absolute; inset: 0;
-        background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%);
-        transition: background 0.3s;
-    }
-    .audience-card:hover .audience-overlay {
-        background: linear-gradient(to bottom, transparent 10%, rgba(0,0,0,0.75) 100%);
-    }
-    .audience-content {
-        position: absolute; bottom: 0; left: 0; right: 0;
-        padding: 28px 24px;
-        z-index: 2;
-        transform: translateY(4px);
-        transition: transform 0.3s;
-    }
+    .audience-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; max-width: 100%; margin: 0 auto; }
+    .audience-card { position: relative; height: 520px; background-size: cover; background-position: center; overflow: hidden; cursor: pointer; }
+    .audience-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%); transition: background 0.3s; }
+    .audience-card:hover .audience-overlay { background: linear-gradient(to bottom, transparent 10%, rgba(0,0,0,0.75) 100%); }
+    .audience-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 28px 24px; z-index: 2; transform: translateY(4px); transition: transform 0.3s; }
     .audience-card:hover .audience-content { transform: translateY(0); }
-    .audience-name {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 900; font-style: italic;
-        font-size: 1.8rem; color: #fff;
-        margin-bottom: 6px;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-    .audience-desc {
-        font-size: 0.82rem; color: rgba(255,255,255,0.85);
-        line-height: 1.5; max-width: 220px;
-    }
-    /* thin orange line on hover — bottom of card */
-    .audience-card::after {
-        content: '';
-        position: absolute; bottom: 0; left: 0; right: 0;
-        height: 3px; background: #FC4C02;
-        transform: scaleX(0); transition: transform 0.3s;
-    }
+    .audience-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.8rem; color: #fff; margin-bottom: 6px; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .audience-desc { font-size: 0.82rem; color: rgba(255,255,255,0.85); line-height: 1.5; max-width: 220px; }
+    .audience-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #FC4C02; transform: scaleX(0); transition: transform 0.3s; }
     .audience-card:hover::after { transform: scaleX(1); }
 
     /* ══ HOW IT WORKS ══ */
@@ -266,11 +216,7 @@
     .steps { display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; }
     .step { display: flex; align-items: flex-start; gap: 18px; padding: 24px 0; border-bottom: 1px solid #f2f2f7; }
     .step:last-child { border-bottom: none; }
-    .step-num {
-        width: 40px; height: 40px; border-radius: 50%; background: #FC4C02; color: #fff;
-        font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.15rem;
-        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; background: #FC4C02; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.1rem; color: #1c1c1e; margin-bottom: 3px; }
     .step-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
 
@@ -285,22 +231,11 @@
     #footer-cta { background: #1c1c1e; text-align: center; }
     #footer-cta .section-title { color: #fff; }
     #footer-cta p { color: #8e8e93; font-size: 0.88rem; margin-bottom: 28px; }
-    .footer-launch {
-        display: inline-block; background: #FC4C02; color: #fff;
-        padding: 17px 68px; border-radius: 4px;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 900; font-style: italic;
-        font-size: 1.35rem; letter-spacing: 2px;
-        box-shadow: 0 4px 0 #a32e00; transition: transform 0.1s;
-    }
+    .footer-launch { display: inline-block; background: #FC4C02; color: #fff; padding: 17px 68px; border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.35rem; letter-spacing: 2px; box-shadow: 0 4px 0 #a32e00; transition: transform 0.1s; }
     .footer-launch:hover { transform: translateY(-2px); }
 
     /* ══ FOOTER ══ */
-    footer {
-        background: #000; padding: 24px 32px;
-        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    }
-    footer img { height: 22px; mix-blend-mode: screen; opacity: 0.65; }
+    footer { background: #000; padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .footer-links a { font-size: 0.73rem; color: #636366; }
     .footer-links a:hover { color: #8e8e93; }
@@ -308,20 +243,14 @@
 
     /* ══ MOBILE ══ */
     @media (max-width: 768px) {
-        #nav {
-            grid-template-columns: auto 1fr auto;
-            height: 56px; padding: 0 16px;
-        }
+        #nav { grid-template-columns: auto 1fr auto; height: 56px; padding: 0 16px; }
         .nav-links { display: none; }
         #hamburger { display: flex; }
-
-        #hero { margin-top: 56px; height: calc(100svh - 56px); }
+        #hero { margin-top: 56px; height: calc(100svh - 56px); padding-top: 0; }
         #hero-img { object-position: center 10%; top: 56px; height: calc(100% - 56px); }
         .hero-content { padding: 0 20px 44px; }
         #launch-btn { padding: 15px 48px; font-size: 1.2rem; }
         #mobile-menu { top: 56px; }
-        #hero { padding-top: 56px; }
-
         section { padding: 52px 20px; }
         .features-grid { grid-template-columns: 1fr 1fr; }
         .audience-grid { grid-template-columns: 1fr 1fr; }
@@ -334,18 +263,14 @@
         .hero-headline { font-size: 2rem; }
     }
     </style>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
-<!-- NAV -->
 <nav id="nav">
-    <!-- Left: Logo -->
     <a href="/" class="nav-logo">
         <img src="logo.png" alt="HolyShit.app">
     </a>
 
-    <!-- Centre: Links (desktop) -->
     <ul class="nav-links">
         <li><a href="#audience">For Runners</a></li>
         <li><a href="#audience">For Cyclists</a></li>
@@ -354,7 +279,6 @@
         <li><a href="#about">About</a></li>
     </ul>
 
-    <!-- Right: hamburger only (desktop: white space) -->
     <div class="nav-right">
         <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
@@ -362,7 +286,6 @@
     </div>
 </nav>
 
-<!-- Mobile menu -->
 <div id="mobile-menu">
     <a href="#audience" onclick="toggleMenu()">🏃 For Runners</a>
     <a href="#audience" onclick="toggleMenu()">🚴 For Cyclists</a>
@@ -372,7 +295,6 @@
     <a href="app.html" class="mob-cta">💩 LAUNCH APP</a>
 </div>
 
-<!-- HERO -->
 <section id="hero">
     <img id="hero-img" src="HollyShitBanner.jpg" alt="HolyShit.app — Relief Radar Active">
     <div class="hero-content">
@@ -387,15 +309,12 @@
     </div>
 </section>
 
-<!-- FEATURES -->
 <section id="features">
     <p class="section-label">What It Does</p>
     <h2 class="section-title">Everything You Need.<br>Nothing You Don't.</h2>
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon orange">
-                <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4a9.svg" alt="💩">
-            </div>
+            <div class="feature-icon orange">💩</div>
             <div class="feature-name">Near Me Now</div>
             <div class="feature-desc">One tap finds the closest public toilet to you right now. No fuss, no delays.</div>
         </div>
@@ -449,38 +368,37 @@
                 <div class="feature-name" style="color:#FC4C02;">Coming Soon</div>
                 <div class="feature-desc" style="margin-bottom:16px;">We're always building. Got an idea for something that would make your run, ride or day out easier? We want to hear it.</div>
             </div>
-            <a href="/cdn-cgi/l/email-protection#3c54595050537c545350454f545548125d4c4c034f495e56595f48017a595d48494e591c7558595d1c5a534e1c745350456f545548125d4c4c" style="display:block; text-align:center; background:#FC4C02; color:#fff; padding:10px 16px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-style:italic; font-size:0.95rem; letter-spacing:0.5px; box-shadow: 0 3px 0 #a32e00;">💡 SUGGEST A FEATURE</a>
+            <a href="mailto:hello@holyshit.app" style="display:block; text-align:center; background:#FC4C02; color:#fff; padding:10px 16px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-style:italic; font-size:0.95rem; letter-spacing:0.5px; box-shadow: 0 3px 0 #a32e00;">💡 SUGGEST A FEATURE</a>
         </div>
     </div>
 </section>
 
-<!-- AUDIENCE -->
 <section id="audience">
     <p class="section-label">Who It's For</p>
     <h2 class="section-title">Built for People<br>Who Keep Moving.</h2>
     <div class="audience-grid">
-        <div class="audience-card" style="background-image: url('https://holyshit.app/runner.jpg');">
+        <div class="audience-card" style="background-image: url('runner.jpg');">
             <div class="audience-overlay"></div>
             <div class="audience-content">
                 <div class="audience-name">Runners</div>
                 <div class="audience-desc">Plan your route around facilities. Know every pit stop before your shoes hit the pavement.</div>
             </div>
         </div>
-        <div class="audience-card" style="background-image: url('https://holyshit.app/cyclist.jpg');">
+        <div class="audience-card" style="background-image: url('cyclist.jpg');">
             <div class="audience-overlay"></div>
             <div class="audience-content">
                 <div class="audience-name">Cyclists</div>
                 <div class="audience-desc">Long rides need pit stops. Map facilities along your route before you clip in and roll.</div>
             </div>
         </div>
-        <div class="audience-card" style="background-image: url('https://holyshit.app/parents.jpg');">
+        <div class="audience-card" style="background-image: url('parents.jpg');">
             <div class="audience-overlay"></div>
             <div class="audience-content">
                 <div class="audience-name">Parents</div>
                 <div class="audience-desc">Days out with kids mean constant emergencies. Find the nearest bathroom in seconds.</div>
             </div>
         </div>
-        <div class="audience-card" style="background-image: url('https://holyshit.app/hiker.jpg');">
+        <div class="audience-card" style="background-image: url('hiker.jpg');">
             <div class="audience-overlay"></div>
             <div class="audience-content">
                 <div class="audience-name">Hikers</div>
@@ -490,7 +408,6 @@
     </div>
 </section>
 
-<!-- HOW IT WORKS -->
 <section id="how">
     <p class="section-label">How It Works</p>
     <h2 class="section-title">Three Taps.<br>Total Relief.</h2>
@@ -526,7 +443,6 @@
     </div>
 </section>
 
-<!-- ABOUT -->
 <section id="about">
     <p class="section-label">The Story</p>
     <h2 class="section-title">Born at a Ball.<br>Built for Everyone.</h2>
@@ -534,11 +450,10 @@
         <p>HolyShit.app started as a conversation at a black tie ball — a friend who runs mentioned she'd never found a good way to plan routes around bathroom access. By the time the band finished their second set, the concept was locked in.</p>
         <p><strong>Free for users. Useful for athletes. Built for real life.</strong> We're Australian, we don't take ourselves too seriously, and we think finding a toilet when you desperately need one should be the easiest thing in the world.</p>
         <p>Hence the name. Hence the 💩.</p>
-        <p style="margin-top:20px; color:#FC4C02; font-weight:600;">Interested in partnering or integrating? <a href="/cdn-cgi/l/email-protection#94fcf1f8f8fbd4fcfbf8ede7fcfde0baf5e4e4" style="color:#FC4C02; text-decoration:underline;"><span class="__cf_email__" data-cfemail="274f424b4b48674f484b5e544f4e5309465757">[email&#160;protected]</span></a></p>
+        <p style="margin-top:20px; color:#FC4C02; font-weight:600;">Interested in partnering or integrating? <a href="mailto:hello@holyshit.app" style="color:#FC4C02; text-decoration:underline;">hello@holyshit.app</a></p>
     </div>
 </section>
 
-<!-- FOOTER CTA -->
 <section id="footer-cta">
     <p class="section-label">Ready?</p>
     <h2 class="section-title">Stop Worrying.<br>Start Moving.</h2>
@@ -546,12 +461,11 @@
     <a href="app.html" class="footer-launch">💩 LAUNCH APP</a>
 </section>
 
-<!-- FOOTER -->
 <footer>
     <div class="footer-links">
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Use</a>
-        <a href="/cdn-cgi/l/email-protection#c2aaa7aeaead82aaadaebbb1aaabb6eca3b2b2">Contact</a>
+        <a href="mailto:hello@holyshit.app">Contact</a>
     </div>
     <span class="footer-copy">© 2026 <a href="https://upd8.group" target="_blank" style="color:#636366; text-decoration:underline;">The UPD8 GROUP Pty Ltd</a> — All rights reserved</span>
 </footer>
@@ -567,7 +481,12 @@ document.addEventListener('click', e => {
         document.getElementById('mobile-menu').classList.remove('open');
     }
 });
-window.addEventListener('load', () => lucide.createIcons());
+// Initialize Lucide Icons
+window.addEventListener('load', () => {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
 </script>
 </body>
 </html>
