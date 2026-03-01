@@ -49,7 +49,7 @@
         height: 100vh; width: 100vw;
     }
 
-    /* Push ALL Google native controls above bottom nav */
+        /* Push ALL Google native controls above bottom nav */
     .gm-bundled-control { bottom: calc(var(--nav-h) + 12px) !important; }
     .gmnoprint.gm-bundled-control-on-bottom { bottom: calc(var(--nav-h) + 12px) !important; }
     /* Map type control (Map / Satellite toggle) — push below safe area at top */
@@ -430,6 +430,8 @@
 
 
 
+
+
 <!-- Run HUD -->
 <div id="run-hud">
     <div class="hud-cell"><div class="hud-value" id="hud-dist">0.00</div><div class="hud-label" id="hud-dist-lbl">KM</div></div>
@@ -606,24 +608,6 @@ function checkIosInstall() {
 function dismissIosNudge() { document.getElementById('ios-nudge').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 
-// Garmin-style dark map
-const DARK_MAP_STYLES = [
-    { elementType: "geometry",            stylers: [{ color: "#0D1628" }] },
-    { elementType: "labels.text.stroke",  stylers: [{ color: "#0D1628" }] },
-    { elementType: "labels.text.fill",    stylers: [{ color: "#8A9BB5" }] },
-    { featureType: "road",                elementType: "geometry",        stylers: [{ color: "#1A2740" }] },
-    { featureType: "road",                elementType: "geometry.stroke", stylers: [{ color: "#243350" }] },
-    { featureType: "road.highway",        elementType: "geometry",        stylers: [{ color: "#243350" }] },
-    { featureType: "road.highway",        elementType: "geometry.stroke", stylers: [{ color: "#FC4C02" }, { weight: 0.4 }] },
-    { featureType: "water",               elementType: "geometry",        stylers: [{ color: "#06324F" }] },
-    { featureType: "poi",                 stylers: [{ visibility: "off" }] },
-    { featureType: "poi.park",            stylers: [{ visibility: "on" }] },
-    { featureType: "poi.park",            elementType: "labels",          stylers: [{ visibility: "off" }] },
-    { featureType: "poi.park",            elementType: "geometry",        stylers: [{ color: "#0B2318" }] },
-    { featureType: "transit",             stylers: [{ visibility: "off" }] },
-    { featureType: "administrative",      elementType: "geometry.stroke", stylers: [{ color: "#243350" }] }
-];
-
 // ════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════
@@ -680,15 +664,12 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
-        styles: DARK_MAP_STYLES,
+        mapTypeId: 'hybrid',
         gestureHandling: 'greedy',
         disableDefaultUI: false,
-        // Keep only what we need from Google's native controls
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.DEFAULT,
-            position: google.maps.ControlPosition.BOTTOM_LEFT
-        },
+        mapTypeControl: false,  // using custom toggle instead
+        rotateControl: false,
+        tiltControl: false,
         zoomControl: false,          // we don't need zoom buttons on mobile
         streetViewControl: false,
         fullscreenControl: false,
