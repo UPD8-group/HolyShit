@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HolyShit.app — Relief Radar for Everyone</title>
+    <title>HolyShit.app — Relief Radar for Runners & Cyclists</title>
     <meta name="description" content="Find public toilets along your run or ride. Real-time GPS, route planning, and bathroom locations for runners, cyclists and parents.">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
@@ -18,6 +18,7 @@
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; overflow-x: hidden; }
     html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; color: #1c1c1e; background: #fff; overflow-x: hidden; }
     img { display: block; max-width: 100%; }
@@ -105,25 +106,24 @@
         box-shadow: 0 4px 0 #a32e00;
     }
 
-    /* ══ HERO — full bleed, flush to nav ══ */
+    /* ══ HERO — true full bleed, kisses nav bottom ══ */
     #hero {
         position: relative;
-        margin-top: 64px;        /* exactly nav height — no gap */
-        width: 100vw;            /* full viewport width */
-        left: 50%; right: 50%;
-        margin-left: -50vw; margin-right: -50vw;
-        height: calc(100vh - 64px);
-        min-height: 480px; overflow: hidden;
+        width: 100%;
+        height: 100vh;
+        min-height: 480px;
+        overflow: hidden;
+        /* Push down so image starts right under the fixed nav */
+        margin-top: 0;
+        padding-top: 64px;
     }
     #hero-img {
-        width: 100%; height: 100%;
+        position: absolute;
+        top: 64px; left: 0; right: 0; bottom: 0;
+        width: 100%; height: calc(100% - 64px);
         object-fit: cover;
-        object-position: center top;  /* show top of image — people's faces */
+        object-position: center center;
         display: block;
-    }
-    #hero::after {
-        content: ''; position: absolute; inset: 0;
-        background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.72) 100%);
     }
     .hero-content {
         position: absolute; bottom: 0; left: 0; right: 0;
@@ -300,7 +300,8 @@
 <nav id="nav">
     <!-- Left: Logo -->
     <a href="/" class="nav-logo">
-        </a>
+        <img src="logo.png" alt="HolyShit.app">
+    </a>
 
     <!-- Centre: Links (desktop) -->
     <ul class="nav-links">
