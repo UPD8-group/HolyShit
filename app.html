@@ -805,6 +805,10 @@ async function initMap() {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
         mapTypeId: 'hybrid',
+        styles: [
+            { featureType: 'poi',     stylers: [{ visibility: 'off' }] },
+            { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+        ],
         gestureHandling: 'greedy',
         disableDefaultUI: true,   // clean slate — we own every control
     });
@@ -980,8 +984,8 @@ function openSheet(loo) {
             <div class="iw-address">${loo.a || ''}</div>
             ${tagsHtml ? `<div class="iw-tags">${tagsHtml}</div>` : ''}
             <div class="iw-actions">
-                <button class="iw-btn iw-btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
-                <button class="iw-btn iw-btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
+                <button class="iw-btn iw-btn-secondary" onclick="openDirections()">▶ NAVIGATE</button>
+                <button class="iw-btn iw-btn-primary" onclick="openStreetView()">👁 STREET VIEW</button>
             </div>
         </div>`;
 
