@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HolyShit.app — Relief Radar</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="shortcut icon" href="favicon.png">
     <meta name="theme-color" content="#0D1628">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -45,25 +49,18 @@
         height: 100vh; width: 100vw;
     }
 
-    /* Nudge Google's native controls above our bottom nav */
+    /* Push ALL Google native controls above bottom nav */
     .gm-bundled-control { bottom: calc(var(--nav-h) + 12px) !important; }
     .gmnoprint.gm-bundled-control-on-bottom { bottom: calc(var(--nav-h) + 12px) !important; }
+    /* Map type control (Map / Satellite toggle) — push below safe area at top */
+    .gm-style-mtc-bbw,
+    .gm-style .gm-style-mtc,
+    div[style*="position: absolute"][style*="top"] .gmnoprint { top: calc(env(safe-area-inset-top, 0px) + 12px) !important; }
+    /* Full-screen & other bottom-right controls */
+    .gm-fullscreen-control { bottom: calc(var(--nav-h) + 12px) !important; }
+    .gm-svpc { bottom: calc(var(--nav-h) + 12px) !important; }
 
-    /* ════════════════════════════════════════
-       LOGO HEADER (on map)
-    ════════════════════════════════════════ */
-    #map-header {
-        position: fixed;
-        top: env(safe-area-inset-top, 12px);
-        left: 50%; transform: translateX(-50%);
-        z-index: 800;
-        pointer-events: none;
-    }
-    #map-header img {
-        height: 38px; width: auto;
-        mix-blend-mode: multiply;
-        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
-    }
+
 
     /* ════════════════════════════════════════
        BOTTOM NAV BAR
@@ -172,54 +169,54 @@
         position: fixed; bottom: calc(var(--nav-h) - 4px); left: 0; right: 0;
         transform: translateY(100%);
         background: white;
-        border-top: 3px solid var(--orange);
-        border-radius: 20px 20px 0 0;
+        border-top: 2px solid var(--orange);
+        border-radius: 14px 14px 0 0;
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 2000;
-        padding: 8px 20px 20px;
-        box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+        padding: 4px 14px 12px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
         color: #1C1C1E;
     }
     #sheet.open { transform: translateY(0); }
     #sheet.golden { border-top-color: #FFD700; }
     #sheet::before {
         content: ''; display: block;
-        width: 36px; height: 4px;
+        width: 28px; height: 3px;
         background: #E5E5EA; border-radius: 2px;
-        margin: 8px auto 14px;
+        margin: 5px auto 8px;
     }
     .facility-type {
         font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700; font-size: 0.7rem;
+        font-weight: 700; font-size: 0.62rem;
         letter-spacing: 2px; text-transform: uppercase;
-        color: var(--orange); margin-bottom: 4px;
+        color: var(--orange); margin-bottom: 2px;
     }
     .facility-name {
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 1.8rem; line-height: 1.1;
-        margin: 0 0 3px; color: #1C1C1E;
+        font-size: 1.1rem; line-height: 1.1;
+        margin: 0 0 2px; color: #1C1C1E;
     }
-    .facility-address { color: #8E8E93; font-size: 0.83rem; margin: 0 0 12px; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .facility-address { color: #8E8E93; font-size: 0.72rem; margin: 0 0 7px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
     .tag {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px;
-        background: #F2F2F7; border-radius: 6px;
-        font-size: 0.76rem; font-weight: 600; color: #3C3C43;
+        display: inline-flex; align-items: center; gap: 3px;
+        padding: 3px 8px;
+        background: #F2F2F7; border-radius: 5px;
+        font-size: 0.68rem; font-weight: 600; color: #3C3C43;
         border: 1px solid #E5E5EA;
     }
     .tag.open-24 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
     .tag.accessible { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.08); }
     .btn-action {
-        width: 100%; padding: 14px; border-radius: 12px; border: none;
+        width: 100%; padding: 9px; border-radius: 8px; border: none;
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 1.1rem; cursor: pointer; margin-top: 8px;
+        font-size: 0.9rem; cursor: pointer; margin-top: 5px;
         transition: transform 0.1s;
     }
     .btn-action:active { transform: scale(0.98); }
-    .btn-primary { background: var(--orange); color: white; box-shadow: 0 4px 0 var(--orange-dk); }
+    .btn-primary { background: var(--orange); color: white; box-shadow: 0 3px 0 var(--orange-dk); }
     .btn-secondary { background: #F2F2F7; color: #3C3C43; }
 
     /* ════════════════════════════════════════
@@ -421,10 +418,7 @@
 <!-- ════════════ MAP ════════════ -->
 <div id="map"></div>
 
-<!-- Logo on map -->
-<div id="map-header">
-    <img src="logo.png" alt="H💩LYSHIT">
-</div>
+
 
 <!-- Run HUD -->
 <div id="run-hud">
@@ -657,7 +651,7 @@ async function initMap() {
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.DEFAULT,
-            position: google.maps.ControlPosition.TOP_RIGHT
+            position: google.maps.ControlPosition.BOTTOM_LEFT
         },
         zoomControl: false,          // we don't need zoom buttons on mobile
         streetViewControl: false,
@@ -718,16 +712,12 @@ function buildGoldenIcon(size) {
 // ════════════════════════════════════════
 // DATA
 // ════════════════════════════════════════
-const GOLDEN_THRONES = [
-    { id:'maccas_cbr', n:"McDonald's Canberra Centre", a:"Canberra Centre, Bunda St", lat:-35.2796, lon:149.1320, t:{w:1,b:1,f:1,o:'24/7'}, golden:true }
-];
-
 async function loadData() {
     try {
         const res = await fetch('toilets-au.json');
-        allLoos = [...GOLDEN_THRONES, ...await res.json()];
+        allLoos = await res.json();
     } catch(e) {
-        allLoos = [...GOLDEN_THRONES];
+        allLoos = [];
     }
 }
 
