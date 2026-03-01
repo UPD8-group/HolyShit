@@ -163,71 +163,88 @@
     }
 
     /* ════════════════════════════════════════
-       FACILITY BOTTOM SHEET
+       GOOGLE MAPS STYLE POPUP CARD
     ════════════════════════════════════════ */
-    #sheet {
-        position: fixed; bottom: calc(var(--nav-h) - 4px); left: 0; right: 0;
-        transform: translateY(100%);
-        background: white;
-        border-top: 2px solid var(--orange);
-        border-radius: 12px 12px 0 0;
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 2000;
-        padding: 4px 16px 10px;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    /* Hide default InfoWindow chrome */
+    .gm-style .gm-style-iw-c {
+        padding: 0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+        max-width: 300px !important;
+    }
+    .gm-style .gm-style-iw-d {
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+    .gm-style .gm-style-iw-t::after {
+        background: white !important;
+    }
+    /* Hide the default X button — we have our own */
+    .gm-style .gm-ui-hover-effect {
+        display: none !important;
+    }
+
+    /* Our card content */
+    .iw-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 14px 16px 12px;
+        width: 260px;
+        font-family: 'Inter', sans-serif;
         color: #1C1C1E;
+        position: relative;
     }
-    #sheet.open { transform: translateY(0); }
-    #sheet.golden { border-top-color: #FFD700; }
-    #sheet::before {
-        content: ''; display: block;
-        width: 28px; height: 3px;
-        background: #E5E5EA; border-radius: 2px;
-        margin: 4px auto 6px;
+    .iw-close {
+        position: absolute; top: 10px; right: 10px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: #F2F2F7; border: none; cursor: pointer;
+        font-size: 0.75rem; color: #636366;
+        display: flex; align-items: center; justify-content: center;
+        line-height: 1; padding: 0;
     }
-    /* Top row: text left, buttons right */
-    .sheet-inner {
-        display: flex; align-items: center; gap: 12px;
-    }
-    .sheet-text { flex: 1; min-width: 0; }
-    .sheet-actions { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
-    .facility-type {
+    .iw-close:hover { background: #E5E5EA; }
+    .iw-type {
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 700; font-size: 0.58rem;
         letter-spacing: 2px; text-transform: uppercase;
-        color: var(--orange); margin-bottom: 1px;
+        color: var(--orange); margin-bottom: 2px;
     }
-    .facility-name {
+    .iw-name {
         font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 800; font-style: italic;
-        font-size: 1rem; line-height: 1.1;
-        margin: 0 0 1px; color: #1C1C1E;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-weight: 900; font-style: italic;
+        font-size: 1.15rem; line-height: 1.15;
+        color: #1C1C1E; margin: 0 20px 2px 0;
     }
-    .facility-address {
-        color: #8E8E93; font-size: 0.68rem; margin: 0 0 5px;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .iw-address {
+        font-size: 0.72rem; color: #8E8E93;
+        margin: 0 0 8px; line-height: 1.4;
     }
-    .tags { display: flex; flex-wrap: wrap; gap: 3px; }
-    .tag {
+    .iw-tags {
+        display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px;
+    }
+    .iw-tag {
         display: inline-flex; align-items: center; gap: 3px;
-        padding: 2px 7px;
-        background: #F2F2F7; border-radius: 4px;
-        font-size: 0.63rem; font-weight: 600; color: #3C3C43;
+        padding: 2px 7px; background: #F2F2F7;
+        border-radius: 4px; font-size: 0.62rem;
+        font-weight: 600; color: #3C3C43;
         border: 1px solid #E5E5EA;
     }
-    .tag.open-24 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
-    .tag.accessible { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.08); }
-    .btn-action {
-        padding: 7px 14px; border-radius: 7px; border: none;
+    .iw-tag.t-24  { border-color: #22C55E; color: #22C55E; background: rgba(34,197,94,0.08); }
+    .iw-tag.t-acc { border-color: #4285F4; color: #4285F4; background: rgba(66,133,244,0.08); }
+    .iw-actions {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 7px;
+    }
+    .iw-btn {
+        padding: 8px 6px; border-radius: 8px; border: none;
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 0.82rem; cursor: pointer; white-space: nowrap;
-        transition: transform 0.1s; width: 110px; text-align: center;
+        font-size: 0.85rem; cursor: pointer; text-align: center;
+        transition: transform 0.1s; letter-spacing: 0.3px;
+        -webkit-tap-highlight-color: transparent;
     }
-    .btn-action:active { transform: scale(0.97); }
-    .btn-primary { background: var(--orange); color: white; box-shadow: 0 2px 0 var(--orange-dk); }
-    .btn-secondary { background: #F2F2F7; color: #3C3C43; }
+    .iw-btn:active { transform: scale(0.96); }
+    .iw-btn-primary  { background: var(--orange); color: #fff; box-shadow: 0 2px 0 var(--orange-dk); }
+    .iw-btn-secondary { background: #F2F2F7; color: #3C3C43; }
 
     /* ════════════════════════════════════════
        ROUTE PLANNER BAR (slides from top)
@@ -455,21 +472,7 @@
 <!-- Tap toast -->
 <div id="pick-toast">📍 Tap the map to set your start</div>
 
-<!-- Facility sheet -->
-<div id="sheet">
-    <div class="sheet-inner">
-        <div class="sheet-text">
-            <div class="facility-type" id="facility-type">PUBLIC FACILITY</div>
-            <h2 class="facility-name" id="loo-name">—</h2>
-            <p class="facility-address" id="loo-address"></p>
-            <div class="tags" id="loo-tags"></div>
-        </div>
-        <div class="sheet-actions">
-            <button class="btn-action btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
-            <button class="btn-action btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
-        </div>
-    </div>
-</div>
+<!-- InfoWindow rendered by JS -->
 
 <!-- Route summary -->
 <div id="route-summary">
@@ -642,7 +645,7 @@ function navTap(tab) {
 }
 
 function closeAll() {
-    document.getElementById('sheet').classList.remove('open');
+    closeSheet();
     document.getElementById('route-summary').classList.remove('open');
     document.getElementById('more-sheet').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
@@ -816,28 +819,52 @@ function findNearest() {
 }
 
 // ════════════════════════════════════════
-// FACILITY SHEET
+// GOOGLE MAPS STYLE INFOWINDOW
 // ════════════════════════════════════════
+let infoWindow = null;
+
 function openSheet(loo) {
     currentLoo = loo;
-    document.getElementById('loo-name').innerText    = loo.n;
-    document.getElementById('loo-address').innerText = loo.a || '';
-    document.getElementById('facility-type').innerText = loo.golden ? '⭐ FEATURED' : '💩 PUBLIC FACILITY';
-    const tags = document.getElementById('loo-tags');
-    tags.innerHTML = '';
-    if (loo.t?.w) tags.innerHTML += '<span class="tag accessible">♿ Accessible</span>';
-    if (loo.t?.b) tags.innerHTML += '<span class="tag">🍼 Baby Change</span>';
-    if (loo.t?.o === '24/7') tags.innerHTML += '<span class="tag open-24">🟢 24/7</span>';
-    else if (loo.t?.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
-    if (loo.t?.f) tags.innerHTML += '<span class="tag">💧 Water</span>';
-    const sheet = document.getElementById('sheet');
-    sheet.classList.add('open');
-    sheet.classList.toggle('golden', !!loo.golden);
+    if (infoWindow) infoWindow.close();
+
+    // Build tags
+    let tagsHtml = '';
+    if (loo.t?.w) tagsHtml += '<span class="iw-tag t-acc">♿ Accessible</span>';
+    if (loo.t?.b) tagsHtml += '<span class="iw-tag">🍼 Baby Change</span>';
+    if (loo.t?.o === '24/7') tagsHtml += '<span class="iw-tag t-24">🟢 24/7</span>';
+    else if (loo.t?.o) tagsHtml += `<span class="iw-tag">🕒 ${loo.t.o}</span>`;
+    if (loo.t?.f) tagsHtml += '<span class="iw-tag">💧 Water</span>';
+
+    const content = `
+        <div class="iw-card">
+            <button class="iw-close" onclick="closeSheet()">✕</button>
+            <div class="iw-type">${loo.golden ? '⭐ FEATURED' : '💩 PUBLIC FACILITY'}</div>
+            <div class="iw-name">${loo.n}</div>
+            <div class="iw-address">${loo.a || ''}</div>
+            ${tagsHtml ? `<div class="iw-tags">${tagsHtml}</div>` : ''}
+            <div class="iw-actions">
+                <button class="iw-btn iw-btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
+                <button class="iw-btn iw-btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
+            </div>
+        </div>`;
+
+    infoWindow = new google.maps.InfoWindow({
+        content,
+        pixelOffset: new google.maps.Size(0, -8),
+        disableAutoPan: false,
+    });
+    infoWindow.open(map);
+    infoWindow.setPosition({ lat: loo.lat, lng: loo.lon });
+}
+
+function closeSheet() {
+    if (infoWindow) { infoWindow.close(); infoWindow = null; }
+    currentLoo = null;
 }
 
 function handleMapClick(e) {
     if (pickingStep) handlePickTap(e.latLng);
-    else closeAll();
+    else { closeSheet(); closeAll(); }
 }
 
 function openDirections() {
