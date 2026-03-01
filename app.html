@@ -39,8 +39,6 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--navy); overflow: hidden; color: var(--white); }
 
-
-
     /* ════════════════════════════════════════
        MAP
     ════════════════════════════════════════ */
@@ -60,8 +58,6 @@
     .gm-fullscreen-control { bottom: calc(var(--nav-h) + 12px) !important; }
     .gm-svpc { bottom: calc(var(--nav-h) + 12px) !important; }
 
-
-
     /* ════════════════════════════════════════
        BOTTOM NAV BAR
     ════════════════════════════════════════ */
@@ -70,15 +66,15 @@
         bottom: 0; left: 0; right: 0;
         height: var(--nav-h);
         z-index: 2500;
-        background: rgba(255,255,255,0.92);
+        background: rgba(13, 22, 40, 0.95);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(0,0,0,0.08);
+        border-top: 1px solid var(--navy-line);
         display: flex;
         align-items: flex-start;
         padding-top: 8px;
         padding-bottom: env(safe-area-inset-bottom, 0px);
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
     }
     .nav-tab {
         flex: 1;
@@ -102,11 +98,11 @@
         font-size: 0.6rem;
         font-weight: 600;
         letter-spacing: 0.3px;
-        color: #8E8E93;
+        color: var(--grey);
         transition: color 0.15s;
         white-space: nowrap;
     }
-    .nav-tab.active .nav-icon { background: rgba(252,76,2,0.12); }
+    .nav-tab.active .nav-icon { background: rgba(252,76,2,0.15); }
     .nav-tab.active .nav-label { color: var(--orange); }
     .nav-tab:active .nav-icon { transform: scale(0.9); }
 
@@ -119,15 +115,6 @@
     @keyframes pulse-green {
         0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
         50%       { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
-    }
-
-    /* More tab badge for future features */
-    .nav-badge {
-        position: absolute; top: 4px; right: calc(50% - 20px);
-        background: var(--orange); color: white;
-        font-size: 0.5rem; font-weight: 700;
-        padding: 1px 4px; border-radius: 6px;
-        line-height: 1.4;
     }
 
     /* ════════════════════════════════════════
@@ -163,112 +150,112 @@
     }
 
     /* ════════════════════════════════════════
-       FACILITY BOTTOM SHEET
+       GARMIN-STYLE FACILITY BOTTOM SHEET
     ════════════════════════════════════════ */
     #sheet {
         position: fixed; bottom: calc(var(--nav-h) - 4px); left: 0; right: 0;
         transform: translateY(100%);
-        background: white;
-        border-top: 2px solid var(--orange);
-        border-radius: 12px 12px 0 0;
+        background: var(--navy-card);
+        border-top: 3px solid var(--orange);
+        border-radius: 16px 16px 0 0;
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 2000;
-        padding: 4px 16px 10px;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
-        color: #1C1C1E;
+        padding: 8px 20px 24px;
+        box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+        color: var(--white);
     }
     #sheet.open { transform: translateY(0); }
     #sheet.golden { border-top-color: #FFD700; }
     #sheet::before {
         content: ''; display: block;
-        width: 28px; height: 3px;
-        background: #E5E5EA; border-radius: 2px;
-        margin: 4px auto 6px;
+        width: 36px; height: 4px;
+        background: var(--navy-line); border-radius: 2px;
+        margin: 4px auto 16px;
     }
-    /* Top row: text left, buttons right */
-    .sheet-inner {
-        display: flex; align-items: center; gap: 12px;
-    }
-    .sheet-text { flex: 1; min-width: 0; }
-    .sheet-actions { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+    
     .facility-type {
         font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700; font-size: 0.58rem;
+        font-weight: 800; font-size: 0.75rem;
         letter-spacing: 2px; text-transform: uppercase;
-        color: var(--orange); margin-bottom: 1px;
+        color: var(--orange); margin-bottom: 4px;
     }
     .facility-name {
         font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 800; font-style: italic;
-        font-size: 1rem; line-height: 1.1;
-        margin: 0 0 1px; color: #1C1C1E;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-weight: 900; font-style: italic;
+        font-size: 1.8rem; line-height: 1.1;
+        margin: 0 0 6px; color: var(--white);
+        white-space: normal;
     }
     .facility-address {
-        color: #8E8E93; font-size: 0.68rem; margin: 0 0 5px;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        color: var(--grey); font-size: 0.85rem; margin: 0 0 16px;
     }
-    .tags { display: flex; flex-wrap: wrap; gap: 3px; }
+    
+    /* High-tech tags */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
     .tag {
-        display: inline-flex; align-items: center; gap: 3px;
-        padding: 2px 7px;
-        background: #F2F2F7; border-radius: 4px;
-        font-size: 0.63rem; font-weight: 600; color: #3C3C43;
-        border: 1px solid #E5E5EA;
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: rgba(255,255,255,0.05); border-radius: 6px;
+        font-size: 0.75rem; font-weight: 600; color: var(--grey-lt);
+        border: 1px solid var(--navy-line);
     }
-    .tag.open-24 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
-    .tag.accessible { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.08); }
+    .tag.open-24 { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.1); }
+    .tag.accessible { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.1); }
+    
+    /* Action Buttons */
+    .sheet-actions {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
     .btn-action {
-        padding: 7px 14px; border-radius: 7px; border: none;
+        padding: 14px 10px; border-radius: 10px; border: none;
         font-family: 'Barlow Condensed', sans-serif;
         font-weight: 800; font-style: italic;
-        font-size: 0.82rem; cursor: pointer; white-space: nowrap;
-        transition: transform 0.1s; width: 110px; text-align: center;
+        font-size: 1rem; cursor: pointer; white-space: nowrap;
+        transition: transform 0.1s; text-align: center; letter-spacing: 0.5px;
     }
     .btn-action:active { transform: scale(0.97); }
-    .btn-primary { background: var(--orange); color: white; box-shadow: 0 2px 0 var(--orange-dk); }
-    .btn-secondary { background: #F2F2F7; color: #3C3C43; }
+    .btn-primary { background: var(--orange); color: white; box-shadow: 0 4px 0 var(--orange-dk); }
+    .btn-secondary { background: var(--navy); border: 1px solid var(--navy-line); color: var(--white); }
 
     /* ════════════════════════════════════════
-       ROUTE PLANNER BAR (slides from top)
+       ROUTE PLANNER BAR
     ════════════════════════════════════════ */
     #planner-bar {
         position: fixed; top: 0; left: 0; right: 0;
         z-index: 1400;
         display: flex; align-items: stretch;
-        background: rgba(255,255,255,0.97);
+        background: rgba(13,22,40,0.97);
         backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-        border-bottom: 2px solid #E5E5EA;
+        border-bottom: 2px solid var(--navy-line);
         transform: translateY(-110%);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         padding-top: env(safe-area-inset-top, 0px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        color: #1C1C1E;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
     #planner-bar.active { transform: translateY(0); }
     .planner-step {
         flex: 1; padding: 14px 12px 12px;
         display: flex; align-items: center; gap: 10px;
-        border-right: 1px solid #E5E5EA; cursor: pointer;
+        border-right: 1px solid var(--navy-line); cursor: pointer;
     }
     .planner-step:last-of-type { border-right: none; }
     .step-dot {
         width: 28px; height: 28px; border-radius: 50%;
-        border: 2px solid #C7C7CC;
+        border: 2px solid var(--navy-line);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.72rem; font-weight: 700; color: #8E8E93;
+        font-size: 0.72rem; font-weight: 700; color: var(--grey);
         flex-shrink: 0; transition: all 0.2s;
     }
-    .planner-step.current .step-dot { border-color: var(--orange); color: var(--orange); background: rgba(252,76,2,0.1); }
-    .planner-step.done .step-dot    { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.1); }
-    .step-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8E8E93; margin-bottom: 2px; }
-    .step-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; color: #1C1C1E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .planner-step.current .step-dot { border-color: var(--orange); color: var(--orange); background: rgba(252,76,2,0.15); }
+    .planner-step.done .step-dot    { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.15); }
+    .step-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-bottom: 2px; }
+    .step-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .planner-step.current .step-value { color: var(--orange); }
     .planner-step.done    .step-value { color: var(--green); font-size: 0.8rem; }
     #planner-close {
         width: 48px; display: flex; align-items: center; justify-content: center;
-        color: #8E8E93; font-size: 1.1rem; cursor: pointer;
-        border-left: 1px solid #E5E5EA;
+        color: var(--grey); font-size: 1.1rem; cursor: pointer;
+        border-left: 1px solid var(--navy-line);
     }
 
     /* Tap toast */
@@ -277,8 +264,9 @@
         top: calc(env(safe-area-inset-top, 0px) + 72px);
         left: 50%; transform: translateX(-50%) translateY(-8px);
         z-index: 1600;
-        background: rgba(28,28,30,0.88);
+        background: rgba(13,22,40,0.95);
         color: white; padding: 10px 20px;
+        border: 1px solid var(--orange);
         border-radius: 50px; font-size: 0.83rem; font-weight: 600;
         white-space: nowrap; pointer-events: none;
         opacity: 0; transition: opacity 0.2s, transform 0.2s;
@@ -293,80 +281,76 @@
         position: fixed;
         bottom: calc(var(--nav-h) - 4px); left: 0; right: 0;
         z-index: 1900;
-        background: white; color: #1C1C1E;
+        background: var(--navy-card);
         border-top: 3px solid var(--green);
         border-radius: 20px 20px 0 0;
         padding: 8px 20px 20px;
-        box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+        box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
         transform: translateY(100%);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     #route-summary.open { transform: translateY(0); }
     #route-summary::before {
         content: ''; display: block; width: 36px; height: 4px;
-        background: #E5E5EA; border-radius: 2px; margin: 8px auto 14px;
+        background: var(--navy-line); border-radius: 2px; margin: 8px auto 14px;
     }
     .summary-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-    .summary-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.6rem; line-height: 1; color: #1C1C1E; }
-    .summary-meta { font-size: 0.78rem; color: #8E8E93; margin-top: 3px; }
-    #summary-clear { background: none; border: 1px solid #E5E5EA; color: #8E8E93; padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0; margin-left: 12px; }
+    .summary-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.6rem; line-height: 1; color: var(--white); }
+    .summary-meta { font-size: 0.78rem; color: var(--grey); margin-top: 3px; }
+    #summary-clear { background: none; border: 1px solid var(--navy-line); color: var(--grey); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0; margin-left: 12px; }
     .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
-    .stat-card { background: #F2F2F7; border-radius: 10px; padding: 12px 6px; text-align: center; }
+    .stat-card { background: var(--navy); border: 1px solid var(--navy-line); border-radius: 10px; padding: 12px 6px; text-align: center; }
     .stat-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.5rem; line-height: 1; }
     .stat-value.orange { color: var(--orange); }
     .stat-value.green  { color: var(--green); }
     .stat-value.cyan   { color: var(--cyan); }
-    .stat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8E8E93; margin-top: 3px; }
+    .stat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-top: 3px; }
     #route-facilities { max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .route-facility-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid #F2F2F7; cursor: pointer; }
+    .route-facility-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--navy-line); cursor: pointer; }
     .route-facility-item:last-child { border-bottom: none; }
-    .rf-icon { width: 34px; height: 34px; border-radius: 8px; background: #F2F2F7; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-    .rf-icon.water { background: rgba(6,182,212,0.1); }
+    .rf-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--navy); border: 1px solid var(--navy-line); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .rf-icon.water { background: rgba(6,182,212,0.1); border-color: var(--cyan); }
     .rf-info { flex: 1; min-width: 0; }
-    .rf-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; color: #1C1C1E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .rf-meta { font-size: 0.73rem; color: #8E8E93; }
-    .rf-dist { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.83rem; color: #3C3C43; flex-shrink: 0; }
+    .rf-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rf-meta { font-size: 0.73rem; color: var(--grey); }
+    .rf-dist { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.83rem; color: var(--grey-lt); flex-shrink: 0; }
     .btn-go { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--orange); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 0 var(--orange-dk); margin-top: 14px; }
 
     /* ════════════════════════════════════════
        MORE SHEET (slide up)
     ════════════════════════════════════════ */
     #more-sheet {
-        position: fixed; bottom: 0; left: 0; right: 0;
+        position: fixed; bottom: var(--nav-h); left: 0; right: 0;
         z-index: 3500;
-        background: white; color: #1C1C1E;
+        background: var(--navy-card); color: var(--white);
         border-radius: 20px 20px 0 0;
         padding: 8px 0 calc(env(safe-area-inset-bottom, 16px) + 20px);
-        box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+        box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
         transform: translateY(100%);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     #more-sheet.open { transform: translateY(0); }
-    #more-sheet::before { content: ''; display: block; width: 36px; height: 4px; background: #E5E5EA; border-radius: 2px; margin: 8px auto 4px; }
-    .more-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1.2rem; padding: 10px 20px 14px; color: #1C1C1E; border-bottom: 1px solid #F2F2F7; }
+    #more-sheet::before { content: ''; display: block; width: 36px; height: 4px; background: var(--navy-line); border-radius: 2px; margin: 8px auto 4px; }
+    .more-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1.2rem; padding: 10px 20px 14px; color: var(--white); border-bottom: 1px solid var(--navy-line); }
     .more-item {
         display: flex; align-items: center; gap: 14px;
-        padding: 16px 20px; border-bottom: 1px solid #F2F2F7;
+        padding: 16px 20px; border-bottom: 1px solid var(--navy-line);
         cursor: pointer; transition: background 0.1s;
     }
-    .more-item:active { background: #F2F2F7; }
+    .more-item:active { background: var(--navy); }
     .more-item:last-child { border-bottom: none; }
     .more-item.disabled { opacity: 0.4; pointer-events: none; }
-    .more-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
-    .more-icon.orange { background: rgba(252,76,2,0.1); }
-    .more-icon.blue   { background: rgba(66,133,244,0.1); }
-    .more-icon.green  { background: rgba(34,197,94,0.1); }
-    .more-icon.grey   { background: #F2F2F7; }
+    .more-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; background: var(--navy); border: 1px solid var(--navy-line); }
     .more-text { flex: 1; }
-    .more-name { font-weight: 600; font-size: 0.95rem; color: #1C1C1E; }
-    .more-desc { font-size: 0.76rem; color: #8E8E93; margin-top: 1px; }
-    .more-arrow { color: #C7C7CC; font-size: 1rem; }
-    .soon-badge { background: #F2F2F7; color: #8E8E93; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.5px; }
+    .more-name { font-weight: 600; font-size: 0.95rem; color: var(--white); }
+    .more-desc { font-size: 0.76rem; color: var(--grey); margin-top: 1px; }
+    .more-arrow { color: var(--grey-lt); font-size: 1rem; }
+    .soon-badge { background: var(--navy); color: var(--grey); font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.5px; border: 1px solid var(--navy-line); }
 
     /* Overlay behind sheets */
     #overlay {
         position: fixed; inset: 0; z-index: 1800;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0.6);
         opacity: 0; pointer-events: none;
         transition: opacity 0.3s;
     }
@@ -385,59 +369,18 @@
     #sv-prev { left: 14px; } #sv-next { right: 14px; }
     #sv-panorama a[href*="maps.google"], #sv-panorama a[href*="google.com/maps"], #sv-panorama .gm-style-cc { display: none !important; }
 
-    /* ════════════════════════════════════════
-       PWA INSTALL BANNER
-    ════════════════════════════════════════ */
-    #install-banner {
-        position: fixed;
-        bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px;
-        z-index: 3000;
-        display: flex; align-items: center; gap: 12px;
-        background: var(--navy-card); border: 1px solid var(--orange);
-        border-radius: 16px; padding: 12px 14px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        opacity: 0; pointer-events: none;
-        transform: translateY(12px);
-        transition: opacity 0.3s, transform 0.3s;
-    }
-    #install-banner.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .install-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .install-text strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1rem; color: white; }
-    .install-text span { font-size: 0.73rem; color: var(--grey); }
-    #install-btn { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
-    #install-dismiss { background: none; border: none; color: var(--grey); font-size: 1rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
-
-    #ios-nudge {
-        position: fixed; bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px;
-        z-index: 3000; background: var(--navy-card); border: 1px solid var(--navy-line);
-        border-radius: 16px; padding: 16px 18px; text-align: center;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        opacity: 0; pointer-events: none; transform: translateY(12px);
-        transition: opacity 0.3s, transform 0.3s;
-    }
-    #ios-nudge.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    #ios-nudge p { margin: 0 0 6px; font-size: 0.83rem; color: var(--grey-lt); line-height: 1.4; }
-    #ios-nudge strong { color: white; }
-    #ios-nudge-close { background: none; border: 1px solid var(--navy-line); color: var(--grey); padding: 6px 20px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-
-
-<!-- ════════════ MAP ════════════ -->
 <div id="map"></div>
 
-
-
-<!-- Run HUD -->
 <div id="run-hud">
     <div class="hud-cell"><div class="hud-value" id="hud-dist">0.00</div><div class="hud-label" id="hud-dist-lbl">KM</div></div>
     <div class="hud-cell"><div class="hud-value hl" id="hud-pace">--:--</div><div class="hud-label" id="hud-pace-lbl">MIN/KM</div></div>
     <div class="hud-cell"><div class="hud-value" id="hud-pits">0</div><div class="hud-label">PIT STOPS</div></div>
 </div>
 
-<!-- Planner bar -->
 <div id="planner-bar">
     <div class="planner-step" id="step-start" onclick="activateStep('start')">
         <div class="step-dot">A</div>
@@ -450,26 +393,20 @@
     <div id="planner-close" onclick="closePlanner()">✕</div>
 </div>
 
-<!-- Tap toast -->
 <div id="pick-toast">📍 Tap the map to set your start</div>
 
-<!-- Facility sheet -->
 <div id="sheet">
-    <div class="sheet-inner">
-        <div class="sheet-text">
-            <div class="facility-type" id="facility-type">PUBLIC FACILITY</div>
-            <h2 class="facility-name" id="loo-name">—</h2>
-            <p class="facility-address" id="loo-address"></p>
-            <div class="tags" id="loo-tags"></div>
-        </div>
-        <div class="sheet-actions">
-            <button class="btn-action btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
-            <button class="btn-action btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
-        </div>
+    <div class="facility-type" id="facility-type">PUBLIC FACILITY</div>
+    <h2 class="facility-name" id="loo-name">—</h2>
+    <p class="facility-address" id="loo-address"></p>
+    <div class="tags" id="loo-tags"></div>
+    
+    <div class="sheet-actions">
+        <button class="btn-action btn-primary" onclick="openDirections()">▶ NAVIGATE</button>
+        <button class="btn-action btn-secondary" onclick="openStreetView()">👁 STREET VIEW</button>
     </div>
 </div>
 
-<!-- Route summary -->
 <div id="route-summary">
     <div class="summary-header">
         <div><div class="summary-title" id="summary-title">ROUTE READY</div><div class="summary-meta" id="summary-meta"></div></div>
@@ -484,40 +421,27 @@
     <button class="btn-go" onclick="startRunFromPlan()">▶ START RUN</button>
 </div>
 
-<!-- Dim overlay (behind more sheet / sheets) -->
 <div id="overlay" onclick="closeAll()"></div>
 
-<!-- More sheet -->
 <div id="more-sheet">
     <div class="more-title">More Features</div>
     <div class="more-item" onclick="closeMore(); openPlanner();">
-        <div class="more-icon orange">🗺️</div>
-        <div class="more-text"><div class="more-name">Plan a Route</div><div class="more-desc">Set start &amp; finish, see toilets along the way</div></div>
+        <div class="more-icon" style="color:var(--orange);">🗺️</div>
+        <div class="more-text"><div class="more-name">Plan a Route</div><div class="more-desc">Set start & finish, see toilets along the way</div></div>
         <div class="more-arrow">›</div>
     </div>
     <div class="more-item" onclick="closeMore(); findNearest();">
-        <div class="more-icon green">💩</div>
+        <div class="more-icon" style="color:var(--green);">💩</div>
         <div class="more-text"><div class="more-name">Find Nearest</div><div class="more-desc">Closest bathroom to you right now</div></div>
         <div class="more-arrow">›</div>
     </div>
     <div class="more-item disabled">
-        <div class="more-icon blue">🏆</div>
+        <div class="more-icon" style="color:var(--blue);">🏆</div>
         <div class="more-text"><div class="more-name">Leaderboard</div><div class="more-desc">Compare runs with other users</div></div>
-        <span class="soon-badge">SOON</span>
-    </div>
-    <div class="more-item disabled">
-        <div class="more-icon grey">⚙️</div>
-        <div class="more-text"><div class="more-name">Settings</div><div class="more-desc">Units, display &amp; preferences</div></div>
-        <span class="soon-badge">SOON</span>
-    </div>
-    <div class="more-item disabled">
-        <div class="more-icon grey">📤</div>
-        <div class="more-text"><div class="more-name">Share Run</div><div class="more-desc">Post your route to social media</div></div>
         <span class="soon-badge">SOON</span>
     </div>
 </div>
 
-<!-- Bottom nav -->
 <nav id="bottom-nav">
     <button class="nav-tab" id="tab-near" onclick="navTap('near')">
         <div class="nav-icon">💩</div>
@@ -527,7 +451,7 @@
         <div class="nav-icon">🗺️</div>
         <div class="nav-label">Plan</div>
     </button>
-    <button class="nav-tab" id="tab-home" onclick="navTap('home')">
+    <button class="nav-tab active" id="tab-home" onclick="navTap('home')">
         <div class="nav-icon">🏠</div>
         <div class="nav-label">Home</div>
     </button>
@@ -541,20 +465,6 @@
     </button>
 </nav>
 
-<!-- PWA banners -->
-<div id="install-banner">
-    <div class="install-icon">💩</div>
-    <div class="install-text"><strong>Install HolyShit.app</strong><span>Add to home screen — runs like a native app</span></div>
-    <button id="install-btn" onclick="triggerInstall()">INSTALL</button>
-    <button id="install-dismiss" onclick="dismissInstall()">✕</button>
-</div>
-<div id="ios-nudge">
-    <p><strong>Install HolyShit.app 💩</strong></p>
-    <p>Tap <strong>⬆️</strong> then <strong>"Add to Home Screen"</strong></p>
-    <button id="ios-nudge-close" onclick="dismissIosNudge()">Got it</button>
-</div>
-
-<!-- Street view modal -->
 <div id="sv-modal">
     <div id="sv-panorama"></div>
     <div id="sv-toolbar">
@@ -583,30 +493,6 @@ const UNITS = (function() {
 })();
 
 // ════════════════════════════════════════
-// PWA INSTALL
-// ════════════════════════════════════════
-let deferredInstallPrompt = null;
-const INSTALL_KEY = 'hs_install_dismissed';
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault(); deferredInstallPrompt = e;
-    if (!sessionStorage.getItem(INSTALL_KEY))
-        setTimeout(() => document.getElementById('install-banner').classList.add('show'), 4000);
-});
-window.addEventListener('appinstalled', () => document.getElementById('install-banner').classList.remove('show'));
-function triggerInstall() {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    deferredInstallPrompt.userChoice.then(() => { document.getElementById('install-banner').classList.remove('show'); deferredInstallPrompt = null; });
-}
-function dismissInstall() { document.getElementById('install-banner').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
-function checkIosInstall() {
-    if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !sessionStorage.getItem(INSTALL_KEY))
-        setTimeout(() => document.getElementById('ios-nudge').classList.add('show'), 5000);
-}
-function dismissIosNudge() { document.getElementById('ios-nudge').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-
-// ════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════
 let map, markers = [], allLoos = [], currentLoo = null;
@@ -619,15 +505,35 @@ let planStart = null, planEnd = null;
 let planStartMarker = null, planEndMarker = null;
 let routePolyline = null, routeFacilities = [], routeMarkers = [];
 let geocoder, directionsService;
-let pooIcon = null; // canvas-rendered 💩 marker icon
 
+// Restored Garmin-style map colors
+const DARK_MAP_STYLES = [
+    { elementType: "geometry",            stylers: [{ color: "#0D1628" }] },
+    { elementType: "labels.text.stroke",  stylers: [{ color: "#0D1628" }] },
+    { elementType: "labels.text.fill",    stylers: [{ color: "#8A9BB5" }] },
+    { featureType: "road",                elementType: "geometry",        stylers: [{ color: "#1A2740" }] },
+    { featureType: "road",                elementType: "geometry.stroke", stylers: [{ color: "#243350" }] },
+    { featureType: "road.highway",        elementType: "geometry",        stylers: [{ color: "#243350" }] },
+    { featureType: "road.highway",        elementType: "geometry.stroke", stylers: [{ color: "#FC4C02" }, { weight: 0.4 }] },
+    { featureType: "water",               elementType: "geometry",        stylers: [{ color: "#06324F" }] },
+    { featureType: "poi",                 elementType: "geometry",        stylers: [{ color: "#121E35" }] },
+    { featureType: "poi.business",        stylers: [{ visibility: "off" }] },
+    { featureType: "poi.park",            elementType: "geometry",        stylers: [{ color: "#0B2318" }] },
+    { featureType: "transit",             stylers: [{ visibility: "off" }] },
+    { featureType: "administrative",      elementType: "geometry.stroke", stylers: [{ color: "#243350" }] },
+];
 
+// SVG fallback for 💩 marker (Fixes broken emojis)
+const POO_SVG_MARKER = {
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="24">💩</text></svg>'),
+    scaledSize: new google.maps.Size(32, 32),
+    anchor: new google.maps.Point(16, 16)
+};
 
 // ════════════════════════════════════════
 // BOTTOM NAV
 // ════════════════════════════════════════
 function navTap(tab) {
-    // Clear active state on all except run (run is toggled)
     if (tab !== 'run') {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
@@ -663,13 +569,13 @@ async function initMap() {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
         disableDefaultUI: false,
-        // Keep only what we need from Google's native controls
+        styles: DARK_MAP_STYLES, // Restored the dark style here
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.DEFAULT,
             position: google.maps.ControlPosition.BOTTOM_LEFT
         },
-        zoomControl: false,          // we don't need zoom buttons on mobile
+        zoomControl: false,
         streetViewControl: false,
         fullscreenControl: false,
         myLocationButton: false,
@@ -678,62 +584,22 @@ async function initMap() {
     geocoder         = new google.maps.Geocoder();
     directionsService = new google.maps.DirectionsService();
 
-    // Apply locale labels to HUD
     document.getElementById('hud-dist-lbl').innerText = UNITS.distLong;
     document.getElementById('hud-pace-lbl').innerText = UNITS.pace;
-
-    // Build the 💩 marker icon once
-    pooIcon = buildPooIcon(36);
 
     map.addListener('click', handleMapClick);
     map.addListener('idle', renderVisibleMarkers);
     loadData();
     startBlueDot();
-    checkIosInstall();
 }
 
-// ════════════════════════════════════════
-// 💩 MARKER ICON — canvas rendered
-// ════════════════════════════════════════
-function buildPooIcon(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    ctx.font = `${size * 0.82}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('💩', size / 2, size / 2 + 1);
-    return {
-        url: canvas.toDataURL(),
-        scaledSize: new google.maps.Size(size, size),
-        anchor: new google.maps.Point(size / 2, size / 2),
-    };
-}
-
-function buildGoldenIcon(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    ctx.font = `${size * 0.8}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('⭐', size / 2, size / 2 + 1);
-    return {
-        url: canvas.toDataURL(),
-        scaledSize: new google.maps.Size(size, size),
-        anchor: new google.maps.Point(size / 2, size / 2),
-    };
-}
-
-// ════════════════════════════════════════
-// DATA
-// ════════════════════════════════════════
 async function loadData() {
     try {
         const res = await fetch('toilets-au.json');
         allLoos = await res.json();
+        renderVisibleMarkers();
     } catch(e) {
-        allLoos = [];
+        console.error("Failed to load toilets", e);
     }
 }
 
@@ -749,13 +615,11 @@ function renderVisibleMarkers() {
         .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
         .slice(0, 80)
         .forEach(loo => {
-            const icon = loo.golden ? buildGoldenIcon(40) : pooIcon;
             const marker = new google.maps.Marker({
                 position: { lat: loo.lat, lng: loo.lon },
                 map,
-                icon,
+                icon: POO_SVG_MARKER, // Using the SVG fallback
                 title: loo.n,
-                optimized: false // needed for emoji canvas icons
             });
             marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
             markers.push(marker);
@@ -763,7 +627,7 @@ function renderVisibleMarkers() {
 }
 
 // ════════════════════════════════════════
-// BLUE DOT — persistent user location
+// BLUE DOT
 // ════════════════════════════════════════
 function startBlueDot() {
     if (!navigator.geolocation) return;
@@ -773,28 +637,17 @@ function startBlueDot() {
             const latLng = { lat, lng };
 
             if (!blueDotMarker) {
-                // Accuracy circle
                 blueDotAccuracy = new google.maps.Circle({
-                    map, center: latLng,
-                    radius: accuracy,
+                    map, center: latLng, radius: accuracy,
                     fillColor: '#4285F4', fillOpacity: 0.1,
                     strokeColor: '#4285F4', strokeOpacity: 0.3, strokeWeight: 1,
                     clickable: false, zIndex: 1
                 });
-                // Blue dot
                 blueDotMarker = new google.maps.Marker({
                     position: latLng, map,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        fillColor: '#4285F4', fillOpacity: 1,
-                        strokeColor: '#FFFFFF', strokeWeight: 3,
-                        scale: 9
-                    },
-                    title: 'Your location',
-                    zIndex: 10,
-                    clickable: false
+                    icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#FFFFFF', strokeWeight: 3, scale: 9 },
+                    title: 'Your location', zIndex: 10, clickable: false
                 });
-                // Centre map on first fix
                 map.panTo(latLng);
             } else {
                 blueDotMarker.setPosition(latLng);
@@ -808,15 +661,17 @@ function startBlueDot() {
 }
 
 function centreOnUser() {
-    if (blueDotMarker) map.panTo(blueDotMarker.getPosition());
-    else if (navigator.geolocation)
-        navigator.geolocation.getCurrentPosition(p => map.panTo({ lat: p.coords.latitude, lng: p.coords.longitude }));
+    if (blueDotMarker) {
+        map.panTo(blueDotMarker.getPosition());
+        map.setZoom(16);
+    }
 }
 
 // ════════════════════════════════════════
 // FIND NEAREST
 // ════════════════════════════════════════
 function findNearest() {
+    closeAll();
     if (!blueDotMarker) { alert('Waiting for GPS fix...'); return; }
     const { lat, lng } = blueDotMarker.getPosition().toJSON();
     let nearest = null, bestDist = Infinity;
@@ -832,13 +687,13 @@ function findNearest() {
 }
 
 // ════════════════════════════════════════
-// FACILITY SHEET
+// NEW GARMIN FACILITY SHEET
 // ════════════════════════════════════════
 function openSheet(loo) {
     currentLoo = loo;
     document.getElementById('loo-name').innerText    = loo.n;
     document.getElementById('loo-address').innerText = loo.a || '';
-    document.getElementById('facility-type').innerText = loo.golden ? '⭐ FEATURED' : '💩 PUBLIC FACILITY';
+    document.getElementById('facility-type').innerText = loo.golden ? '⭐ FEATURED SANCTUARY' : '💩 PUBLIC FACILITY';
     const tags = document.getElementById('loo-tags');
     tags.innerHTML = '';
     if (loo.t?.w) tags.innerHTML += '<span class="tag accessible">♿ Accessible</span>';
@@ -846,9 +701,9 @@ function openSheet(loo) {
     if (loo.t?.o === '24/7') tags.innerHTML += '<span class="tag open-24">🟢 24/7</span>';
     else if (loo.t?.o) tags.innerHTML += `<span class="tag">🕒 ${loo.t.o}</span>`;
     if (loo.t?.f) tags.innerHTML += '<span class="tag">💧 Water</span>';
-    const sheet = document.getElementById('sheet');
-    sheet.classList.add('open');
-    sheet.classList.toggle('golden', !!loo.golden);
+    
+    document.getElementById('sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
 }
 
 function handleMapClick(e) {
@@ -884,7 +739,6 @@ function svRotate(d) {
     const p = panorama.getPov();
     panorama.setPov({ heading: (p.heading + d + 360) % 360, pitch: p.pitch });
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStreetView(); });
 
 // ════════════════════════════════════════
 // ROUTE PLANNER
@@ -909,8 +763,11 @@ function closePlanner() {
     routeMarkers.forEach(m => m.setMap(null)); routeMarkers = [];
     markers.forEach(m => m.setMap(null)); markers = [];
     renderVisibleMarkers();
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-home').classList.add('active');
+    
+    if(!isRunning){
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-home').classList.add('active');
+    }
 }
 
 function resetStep(w) {
@@ -980,9 +837,6 @@ function makePinMarker(pos, color, letter) {
     });
 }
 
-// ════════════════════════════════════════
-// ROUTE COMPUTATION
-// ════════════════════════════════════════
 function computeRoute() {
     closeAll();
     directionsService.route(
@@ -1009,8 +863,7 @@ function filterFacilitiesOnRoute(routePath) {
     const TOLERANCE = 0.0009;
     routeFacilities = allLoos.filter(loo => google.maps.geometry.poly.isLocationOnEdge(new google.maps.LatLng(loo.lat, loo.lon), polyline, TOLERANCE));
     routeFacilities.forEach(loo => {
-        const icon = loo.golden ? buildGoldenIcon(44) : buildPooIcon(40);
-        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, optimized: false, zIndex: 500 });
+        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon: POO_SVG_MARKER, zIndex: 500 });
         marker.addListener('click', () => openSheet(loo));
         routeMarkers.push(marker);
     });
@@ -1037,7 +890,7 @@ function showRouteSummary(distKm, durationText, startLabel, endLabel) {
                 item.className = 'route-facility-item';
                 item.onclick   = () => openSheet(loo);
                 item.innerHTML = `
-                    <div class="rf-icon${isWaterOnly(loo)?' water':''}">${isWaterOnly(loo)?'💧':(loo.golden?'⭐':'💩')}</div>
+                    <div class="rf-icon${isWaterOnly(loo)?' water':''}">${isWaterOnly(loo)?'💧':'💩'}</div>
                     <div class="rf-info">
                         <div class="rf-name">${loo.n}</div>
                         <div class="rf-meta">${[loo.t?.w?'♿':'', loo.t?.f?'💧':'', loo.t?.o==='24/7'?'🟢 24/7':''].filter(Boolean).join('  ')||'Public Facility'}</div>
@@ -1047,6 +900,7 @@ function showRouteSummary(distKm, durationText, startLabel, endLabel) {
             });
     }
     document.getElementById('route-summary').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
 }
 
 function isWaterOnly(loo) { return loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden; }
@@ -1054,9 +908,10 @@ function isWaterOnly(loo) { return loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.go
 function startRunFromPlan() {
     document.getElementById('route-summary').classList.remove('open');
     document.getElementById('planner-bar').classList.remove('active');
+    document.getElementById('overlay').classList.remove('show');
     closePlanner();
     if (planStart) map.panTo({ lat: planStart.lat, lng: planStart.lng });
-    startRun();
+    navTap('run');
 }
 
 // ════════════════════════════════════════
@@ -1087,7 +942,6 @@ function startRun() {
     if (!navigator.geolocation) { alert('Geolocation not available.'); return; }
     isRunning=true; runPath=[]; totalDistKm=0; lastPos=null; runStartTime=Date.now();
     document.getElementById('run-hud').classList.add('active');
-    // Run tab turns green
     const tab = document.getElementById('tab-run');
     tab.classList.add('running');
     tab.querySelector('.nav-icon').innerText = '⏹';
@@ -1121,7 +975,6 @@ function stopRun() {
 }
 </script>
 
-<!-- geometry library for corridor filter -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=geometry&callback=initMap" async defer></script>
 </body>
 </html>
