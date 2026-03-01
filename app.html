@@ -66,7 +66,7 @@
         bottom: 0; left: 0; right: 0;
         height: var(--nav-h);
         z-index: 2500;
-        background: rgba(13, 22, 40, 0.95);
+        background: rgba(26, 39, 64, 0.95); /* Slightly lighter than map so it pops */
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-top: 1px solid var(--navy-line);
@@ -83,7 +83,10 @@
         gap: 4px;
         cursor: pointer;
         padding: 6px 4px 0;
-        border: none; background: none;
+        border: none; 
+        background: transparent;  /* Fix for iOS Safari hiding emojis */
+        -webkit-appearance: none; /* Fix for iOS Safari hiding emojis */
+        appearance: none;         /* Fix for iOS Safari hiding emojis */
         -webkit-tap-highlight-color: transparent;
         position: relative;
     }
@@ -506,7 +509,7 @@ let planStartMarker = null, planEndMarker = null;
 let routePolyline = null, routeFacilities = [], routeMarkers = [];
 let geocoder, directionsService;
 
-// Restored Garmin-style map colors
+// Scorched Earth Garmin Map Style (Hides EVERYTHING except parks, roads, and water)
 const DARK_MAP_STYLES = [
     { elementType: "geometry",            stylers: [{ color: "#0D1628" }] },
     { elementType: "labels.text.stroke",  stylers: [{ color: "#0D1628" }] },
@@ -516,11 +519,18 @@ const DARK_MAP_STYLES = [
     { featureType: "road.highway",        elementType: "geometry",        stylers: [{ color: "#243350" }] },
     { featureType: "road.highway",        elementType: "geometry.stroke", stylers: [{ color: "#FC4C02" }, { weight: 0.4 }] },
     { featureType: "water",               elementType: "geometry",        stylers: [{ color: "#06324F" }] },
-    { featureType: "poi",                 elementType: "geometry",        stylers: [{ color: "#121E35" }] },
-    { featureType: "poi.business",        stylers: [{ visibility: "off" }] },
-    { featureType: "poi.park",            elementType: "geometry",        stylers: [{ color: "#0B2318" }] },
+    
+    /* NUKE ALL POIs (Schools, Churches, Businesses, Hospitals, etc) */
+    { featureType: "poi",                 stylers: [{ visibility: "off" }] },
+    
+    /* BRING BACK PARKS (But no text/icons, just the green land) */
+    { featureType: "poi.park",            stylers: [{ visibility: "on" }] },
+    { featureType: "poi.park",            elementType: "labels", stylers: [{ visibility: "off" }] },
+    { featureType: "poi.park",            elementType: "geometry", stylers: [{ color: "#0B2318" }] },
+    
+    /* HIDE TRANSIT STATIONS */
     { featureType: "transit",             stylers: [{ visibility: "off" }] },
-    { featureType: "administrative",      elementType: "geometry.stroke", stylers: [{ color: "#243350" }] },
+    { featureType: "administrative",      elementType: "geometry.stroke", stylers: [{ color: "#243350" }] }
 ];
 
 // SVG fallback for 💩 marker (Fixes broken emojis)
@@ -569,7 +579,7 @@ async function initMap() {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
         disableDefaultUI: false,
-        styles: DARK_MAP_STYLES, // Restored the dark style here
+        styles: DARK_MAP_STYLES,
         mapTypeControl: true,
         mapTypeControlOptions: {
             style: google.maps.MapTypeControlStyle.DEFAULT,
@@ -618,7 +628,7 @@ function renderVisibleMarkers() {
             const marker = new google.maps.Marker({
                 position: { lat: loo.lat, lng: loo.lon },
                 map,
-                icon: POO_SVG_MARKER, // Using the SVG fallback
+                icon: POO_SVG_MARKER,
                 title: loo.n,
             });
             marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
@@ -687,7 +697,7 @@ function findNearest() {
 }
 
 // ════════════════════════════════════════
-// NEW GARMIN FACILITY SHEET
+// GARMIN FACILITY SHEET
 // ════════════════════════════════════════
 function openSheet(loo) {
     currentLoo = loo;
