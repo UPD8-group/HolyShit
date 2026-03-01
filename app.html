@@ -380,6 +380,101 @@
     .more-arrow { color: #C7C7CC; font-size: 1rem; }
     .soon-badge { background: #F2F2F7; color: #8E8E93; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.5px; }
 
+
+    /* ════════════════════════════════════════
+       REPORT SHEET
+    ════════════════════════════════════════ */
+    #report-sheet {
+        position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+        z-index: 3500;
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 8px 0 calc(env(safe-area-inset-bottom, 16px) + 24px);
+        box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        color: #1C1C1E;
+    }
+    #report-sheet.open { transform: translateY(0); }
+    #report-sheet::before {
+        content: ''; display: block; width: 36px; height: 4px;
+        background: #E5E5EA; border-radius: 2px; margin: 8px auto 0;
+    }
+    .report-title {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.3rem; color: #1C1C1E;
+        padding: 12px 20px 4px;
+    }
+    .report-subtitle {
+        font-size: 0.78rem; color: #8E8E93;
+        padding: 0 20px 16px;
+    }
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        padding: 0 16px 20px;
+    }
+    .report-option {
+        display: flex; flex-direction: column;
+        align-items: center; gap: 6px;
+        padding: 12px 6px;
+        border-radius: 12px;
+        border: 2px solid #F2F2F7;
+        background: #FAFAFA;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s, transform 0.1s;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .report-option:active { transform: scale(0.93); }
+    .report-option.selected {
+        border-color: var(--orange);
+        background: rgba(252,76,2,0.06);
+    }
+    .report-emoji { font-size: 2rem; line-height: 1; }
+    .report-label {
+        font-size: 0.6rem; font-weight: 700;
+        text-align: center; color: #636366;
+        line-height: 1.2;
+    }
+    .report-option.selected .report-label { color: var(--orange); }
+    .report-location {
+        display: flex; align-items: center; gap: 8px;
+        margin: 0 16px 16px;
+        padding: 10px 14px;
+        background: #F2F2F7; border-radius: 10px;
+        font-size: 0.78rem; color: #3C3C43;
+    }
+    .report-location span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #report-submit {
+        margin: 0 16px;
+        width: calc(100% - 32px);
+        padding: 15px;
+        border-radius: 12px; border: none;
+        background: var(--orange); color: white;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.15rem; cursor: pointer;
+        box-shadow: 0 4px 0 var(--orange-dk);
+        transition: transform 0.1s, opacity 0.2s;
+    }
+    #report-submit:disabled { opacity: 0.35; box-shadow: none; }
+    #report-submit:not(:disabled):active { transform: scale(0.98); }
+    #report-thanks {
+        display: none;
+        flex-direction: column; align-items: center;
+        padding: 28px 20px;
+        text-align: center;
+    }
+    #report-thanks .thanks-emoji { font-size: 3rem; margin-bottom: 10px; }
+    #report-thanks .thanks-title {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.5rem; color: #1C1C1E; margin-bottom: 4px;
+    }
+    #report-thanks .thanks-sub { font-size: 0.83rem; color: #8E8E93; }
+
     /* Overlay behind sheets */
     #overlay {
         position: fixed; inset: 0; z-index: 1800;
@@ -489,6 +584,46 @@
     <button class="btn-go" onclick="startRunFromPlan()">▶ START RUN</button>
 </div>
 
+<!-- Report sheet -->
+<div id="report-sheet">
+    <div id="report-form">
+        <div class="report-title">How's the Situation?</div>
+        <div class="report-subtitle">Select a status to report this location</div>
+        <div class="report-grid">
+            <div class="report-option" onclick="selectReport(this,'💩','All Good')">
+                <div class="report-emoji">💩</div>
+                <div class="report-label">All Good</div>
+            </div>
+            <div class="report-option" onclick="selectReport(this,'🚽','Needs Clean')">
+                <div class="report-emoji">🚽</div>
+                <div class="report-label">Needs Clean</div>
+            </div>
+            <div class="report-option" onclick="selectReport(this,'🔒','Locked')">
+                <div class="report-emoji">🔒</div>
+                <div class="report-label">Locked</div>
+            </div>
+            <div class="report-option" onclick="selectReport(this,'⚠️','Out of Order')">
+                <div class="report-emoji">⚠️</div>
+                <div class="report-label">Out of Order</div>
+            </div>
+            <div class="report-option" onclick="selectReport(this,'💀','Avoid!')">
+                <div class="report-emoji">💀</div>
+                <div class="report-label">Avoid!</div>
+            </div>
+        </div>
+        <div class="report-location" id="report-location-row">
+            <span>📍</span>
+            <span id="report-location-name">Your current location</span>
+        </div>
+        <button id="report-submit" disabled onclick="submitReport()">SUBMIT REPORT</button>
+    </div>
+    <div id="report-thanks">
+        <div class="thanks-emoji" id="thanks-emoji">💩</div>
+        <div class="thanks-title">Thanks for the heads up!</div>
+        <div class="thanks-sub">Your report helps everyone nearby.</div>
+    </div>
+</div>
+
 <!-- Dim overlay (behind more sheet / sheets) -->
 <div id="overlay" onclick="closeAll()"></div>
 
@@ -528,9 +663,9 @@
         <div class="nav-icon">💩</div>
         <div class="nav-label">Near Me</div>
     </button>
-    <button class="nav-tab" id="tab-plan" onclick="navTap('plan')">
-        <div class="nav-icon">🗺️</div>
-        <div class="nav-label">Plan</div>
+    <button class="nav-tab" id="tab-report" onclick="navTap('report')">
+        <div class="nav-icon">🚨</div>
+        <div class="nav-label">Report</div>
     </button>
     <button class="nav-tab" id="tab-home" onclick="navTap('home')">
         <div class="nav-icon">🏠</div>
@@ -642,10 +777,12 @@ function navTap(tab) {
     if (tab === 'plan')  { openPlanner(); }
     if (tab === 'run')   { toggleRun(); }
     if (tab === 'more')  { openMore(); }
+    if (tab === 'report') { openReport(); }
 }
 
 function closeAll() {
     closeSheet();
+    closeReport();
     document.getElementById('route-summary').classList.remove('open');
     document.getElementById('more-sheet').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
@@ -1119,6 +1256,49 @@ function startRun() {
         err => console.warn('Run GPS:',err.message),
         {enableHighAccuracy:true, maximumAge:2000, timeout:10000}
     );
+}
+
+
+// ════════════════════════════════════════
+// REPORT
+// ════════════════════════════════════════
+let selectedReportOption = null;
+
+function openReport() {
+    // Reset state
+    selectedReportOption = null;
+    document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('report-submit').disabled = true;
+    document.getElementById('report-form').style.display = '';
+    document.getElementById('report-thanks').style.display = 'none';
+
+    // Show nearest location or current
+    const name = currentLoo ? currentLoo.n : (blueDotMarker ? 'Your current location' : 'Unknown location');
+    document.getElementById('report-location-name').innerText = name;
+
+    document.getElementById('report-sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+}
+
+function closeReport() {
+    document.getElementById('report-sheet').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+}
+
+function selectReport(el, emoji, label) {
+    document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedReportOption = { emoji, label };
+    document.getElementById('report-submit').disabled = false;
+}
+
+function submitReport() {
+    if (!selectedReportOption) return;
+    document.getElementById('report-form').style.display = 'none';
+    document.getElementById('thanks-emoji').innerText = selectedReportOption.emoji;
+    document.getElementById('report-thanks').style.display = 'flex';
+    // Auto close after 2s
+    setTimeout(() => closeReport(), 2000);
 }
 
 function stopRun() {
