@@ -105,13 +105,22 @@
         box-shadow: 0 4px 0 #a32e00;
     }
 
-    /* ══ HERO ══ */
+    /* ══ HERO — full bleed, flush to nav ══ */
     #hero {
-        position: relative; margin-top: 64px;
-        width: 100%; height: calc(100vh - 64px);
+        position: relative;
+        margin-top: 64px;        /* exactly nav height — no gap */
+        width: 100vw;            /* full viewport width */
+        left: 50%; right: 50%;
+        margin-left: -50vw; margin-right: -50vw;
+        height: calc(100vh - 64px);
         min-height: 480px; overflow: hidden;
     }
-    #hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+    #hero-img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        object-position: center top;  /* show top of image — people's faces */
+        display: block;
+    }
     #hero::after {
         content: ''; position: absolute; inset: 0;
         background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.72) 100%);
@@ -291,8 +300,7 @@
 <nav id="nav">
     <!-- Left: Logo -->
     <a href="/" class="nav-logo">
-        <img src="logo.png" alt="HolyShit.app">
-    </a>
+        </a>
 
     <!-- Centre: Links (desktop) -->
     <ul class="nav-links">
@@ -489,13 +497,12 @@
 
 <!-- FOOTER -->
 <footer>
-    <img src="logo.png" alt="HolyShit.app">
     <div class="footer-links">
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Use</a>
         <a href="/cdn-cgi/l/email-protection#c2aaa7aeaead82aaadaebbb1aaabb6eca3b2b2">Contact</a>
     </div>
-    <span class="footer-copy">© 2026 UPD8 GROUP PTY LTD — All rights reserved</span>
+    <span class="footer-copy">© 2026 <a href="https://upd8.group" target="_blank" style="color:#636366; text-decoration:underline;">The UPD8 GROUP Pty Ltd</a> — All rights reserved</span>
 </footer>
 
 <script>
