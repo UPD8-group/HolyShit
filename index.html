@@ -206,22 +206,60 @@
     .feature-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.18rem; color: #1c1c1e; margin-bottom: 5px; }
     .feature-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
 
-    /* ══ AUDIENCE ══ */
-    #audience { background: #1c1c1e; }
+    /* ══ AUDIENCE — photo cards ══ */
+    #audience { background: #111; }
     #audience .section-label { color: rgba(255,255,255,0.35); }
     #audience .section-title { color: #fff; }
     .audience-grid {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 16px; max-width: 900px; margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        max-width: 100%;
+        margin: 0 auto;
     }
     .audience-card {
-        background: #2c2c2e; border-radius: 14px; padding: 28px 18px;
-        border: 1px solid #3a3a3c; transition: border-color 0.2s;
+        position: relative;
+        height: 520px;
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        cursor: pointer;
     }
-    .audience-card:hover { border-color: #FC4C02; }
-    .audience-icon { font-size: 2.2rem; margin-bottom: 10px; }
-    .audience-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.15rem; color: #fff; margin-bottom: 5px; }
-    .audience-desc { font-size: 0.8rem; color: #8e8e93; line-height: 1.5; }
+    .audience-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%);
+        transition: background 0.3s;
+    }
+    .audience-card:hover .audience-overlay {
+        background: linear-gradient(to bottom, transparent 10%, rgba(0,0,0,0.75) 100%);
+    }
+    .audience-content {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        padding: 28px 24px;
+        z-index: 2;
+        transform: translateY(4px);
+        transition: transform 0.3s;
+    }
+    .audience-card:hover .audience-content { transform: translateY(0); }
+    .audience-name {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 1.8rem; color: #fff;
+        margin-bottom: 6px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .audience-desc {
+        font-size: 0.82rem; color: rgba(255,255,255,0.85);
+        line-height: 1.5; max-width: 220px;
+    }
+    /* thin orange line on hover — bottom of card */
+    .audience-card::after {
+        content: '';
+        position: absolute; bottom: 0; left: 0; right: 0;
+        height: 3px; background: #FC4C02;
+        transform: scaleX(0); transition: transform 0.3s;
+    }
+    .audience-card:hover::after { transform: scaleX(1); }
 
     /* ══ HOW IT WORKS ══ */
     #how { background: #fff; }
@@ -285,10 +323,12 @@
         section { padding: 52px 20px; }
         .features-grid { grid-template-columns: 1fr 1fr; }
         .audience-grid { grid-template-columns: 1fr 1fr; }
+        .audience-card { height: 320px; }
         footer { flex-direction: column; align-items: flex-start; padding: 20px; }
     }
     @media (max-width: 480px) {
         .features-grid, .audience-grid { grid-template-columns: 1fr; }
+        .audience-card { height: 280px; }
         .hero-headline { font-size: 2rem; }
     }
     </style>
@@ -417,25 +457,33 @@
     <p class="section-label">Who It's For</p>
     <h2 class="section-title">Built for People<br>Who Keep Moving.</h2>
     <div class="audience-grid">
-        <div class="audience-card">
-            <div class="audience-icon">🏃</div>
-            <div class="audience-name">Runners</div>
-            <div class="audience-desc">Plan your route around facilities. Know every pit stop before your shoes hit the pavement.</div>
+        <div class="audience-card" style="background-image: url('https://holyshit.app/runner.jpg');">
+            <div class="audience-overlay"></div>
+            <div class="audience-content">
+                <div class="audience-name">Runners</div>
+                <div class="audience-desc">Plan your route around facilities. Know every pit stop before your shoes hit the pavement.</div>
+            </div>
         </div>
-        <div class="audience-card">
-            <div class="audience-icon">🚴</div>
-            <div class="audience-name">Cyclists</div>
-            <div class="audience-desc">Long rides need pit stops. Map facilities along your route before you clip in and roll.</div>
+        <div class="audience-card" style="background-image: url('https://holyshit.app/cyclist.jpg');">
+            <div class="audience-overlay"></div>
+            <div class="audience-content">
+                <div class="audience-name">Cyclists</div>
+                <div class="audience-desc">Long rides need pit stops. Map facilities along your route before you clip in and roll.</div>
+            </div>
         </div>
-        <div class="audience-card">
-            <div class="audience-icon">👶</div>
-            <div class="audience-name">Parents</div>
-            <div class="audience-desc">Days out with kids mean constant emergencies. Find the nearest bathroom in seconds.</div>
+        <div class="audience-card" style="background-image: url('https://holyshit.app/parents.jpg');">
+            <div class="audience-overlay"></div>
+            <div class="audience-content">
+                <div class="audience-name">Parents</div>
+                <div class="audience-desc">Days out with kids mean constant emergencies. Find the nearest bathroom in seconds.</div>
+            </div>
         </div>
-        <div class="audience-card">
-            <div class="audience-icon">🥾</div>
-            <div class="audience-name">Hikers</div>
-            <div class="audience-desc">Know where the facilities are on your trail before you're desperate and deep in the bush.</div>
+        <div class="audience-card" style="background-image: url('https://holyshit.app/hiker.jpg');">
+            <div class="audience-overlay"></div>
+            <div class="audience-content">
+                <div class="audience-name">Hikers</div>
+                <div class="audience-desc">Know where the facilities are on your trail before you're desperate and deep in the bush.</div>
+            </div>
         </div>
     </div>
 </section>
