@@ -35,55 +35,7 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--navy); overflow: hidden; color: var(--white); }
 
-    /* ════════════════════════════════════════
-       SPLASH SCREEN
-    ════════════════════════════════════════ */
-    #splash {
-        position: fixed; inset: 0; z-index: 9999;
-        background: var(--navy);
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        gap: 24px;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    .splash-logo img {
-        width: min(80vw, 340px);
-        height: auto;
-        /* screen blend so white bg on the PNG vanishes against navy */
-        mix-blend-mode: screen;
-        filter: drop-shadow(0 4px 20px rgba(252,76,2,0.3));
-    }
-    .splash-tagline {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        color: var(--grey);
-        margin: 0;
-    }
-    #launch-btn {
-        margin-top: 12px;
-        background: var(--orange);
-        color: var(--white);
-        border: none;
-        padding: 18px 64px;
-        border-radius: 14px;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 900;
-        font-style: italic;
-        font-size: 1.4rem;
-        letter-spacing: 2px;
-        cursor: pointer;
-        box-shadow: 0 6px 0 var(--orange-dk), 0 16px 40px rgba(252,76,2,0.4);
-        transition: transform 0.1s, box-shadow 0.1s;
-    }
-    #launch-btn:active {
-        transform: translateY(3px);
-        box-shadow: 0 3px 0 var(--orange-dk), 0 8px 20px rgba(252,76,2,0.3);
-    }
 
     /* ════════════════════════════════════════
        MAP
@@ -464,14 +416,7 @@
 </head>
 <body>
 
-<!-- ════════════ SPLASH ════════════ -->
-<div id="splash">
-    <div class="splash-logo">
-        <img src="logo.png" alt="H💩LYSHIT">
-    </div>
-    <p class="splash-tagline">Relief Radar Active</p>
-    <button id="launch-btn" onclick="launch()">LAUNCH</button>
-</div>
+
 
 <!-- ════════════ MAP ════════════ -->
 <div id="map"></div>
@@ -666,14 +611,7 @@ let routePolyline = null, routeFacilities = [], routeMarkers = [];
 let geocoder, directionsService;
 let pooIcon = null; // canvas-rendered 💩 marker icon
 
-// ════════════════════════════════════════
-// SPLASH → LAUNCH
-// ════════════════════════════════════════
-function launch() {
-    document.getElementById('splash').classList.add('hidden');
-    startBlueDot(); // start tracking user location the moment they launch
-    checkIosInstall();
-}
+
 
 // ════════════════════════════════════════
 // BOTTOM NAV
@@ -740,6 +678,8 @@ async function initMap() {
     map.addListener('click', handleMapClick);
     map.addListener('idle', renderVisibleMarkers);
     loadData();
+    startBlueDot();
+    checkIosInstall();
 }
 
 // ════════════════════════════════════════
