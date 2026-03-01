@@ -6,6 +6,10 @@
     <title>HolyShit.app — Relief Radar for Runners & Cyclists</title>
     <meta name="description" content="Find public toilets along your run or ride. Real-time GPS, route planning, and bathroom locations for runners, cyclists and parents.">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="shortcut icon" href="favicon.png">
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="HolyShit">
@@ -19,41 +23,60 @@
     img { display: block; max-width: 100%; }
     a { text-decoration: none; color: inherit; }
 
-    /* ══ NAV ══ */
+    /* ══ NAV — Garmin-style ══ */
     #nav {
         position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-        background: rgba(255,255,255,0.97);
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid #e5e5e5;
-        height: 64px; display: flex; align-items: center;
-        padding: 0 32px; gap: 32px;
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        height: 64px; display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 0 32px;
     }
-    .nav-logo { display: flex; align-items: center; flex-shrink: 0; }
-    .nav-logo img { height: 34px; width: auto; mix-blend-mode: multiply; }
-    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; list-style: none; }
+    /* Logo — left column */
+    .nav-logo { display: flex; align-items: center; justify-content: flex-start; }
+    .nav-logo img { height: 32px; width: auto; mix-blend-mode: multiply; }
+    /* Links — centre column */
+    .nav-links {
+        display: flex; align-items: center; gap: 0;
+        list-style: none; justify-content: center;
+    }
     .nav-links a {
-        font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2px;
-        color: #3c3c43; padding: 8px 13px; border-radius: 7px;
-        transition: background 0.15s; white-space: nowrap;
+        font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: #1c1c1e; padding: 8px 16px;
+        white-space: nowrap; position: relative;
+        transition: color 0.15s;
     }
-    .nav-links a:hover { background: #f2f2f7; color: #1c1c1e; }
+    .nav-links a::after {
+        content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+        height: 2px; background: #FC4C02;
+        transform: scaleX(0); transition: transform 0.2s;
+    }
+    .nav-links a:hover { color: #FC4C02; }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    /* CTA — right column */
+    .nav-right { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
     .nav-cta {
-        background: #FC4C02 !important; color: #fff !important;
-        padding: 9px 18px !important; border-radius: 7px !important;
-        font-family: 'Barlow Condensed', sans-serif !important;
-        font-weight: 900 !important; font-style: italic !important;
-        font-size: 0.95rem !important; letter-spacing: 0.5px !important;
+        background: #FC4C02; color: #fff;
+        padding: 9px 20px; border-radius: 3px;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900; font-style: italic;
+        font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase;
         box-shadow: 0 2px 0 #a32e00;
-        transition: transform 0.1s !important; display: inline-block;
+        transition: background 0.15s, transform 0.1s; display: inline-block;
+        white-space: nowrap;
     }
-    .nav-cta:hover { transform: translateY(-1px); background: #e04300 !important; }
-    .nav-cta-desktop { flex-shrink: 0; }
+    .nav-cta:hover { background: #e04300; transform: translateY(-1px); }
+    .nav-cta-desktop { }
 
     /* Hamburger */
     #hamburger {
         display: none; flex-direction: column; gap: 5px;
         background: none; border: none; cursor: pointer; padding: 6px; flex-shrink: 0;
     }
+    /* Always hidden on desktop */
+    @media (min-width: 769px) { #hamburger { display: none !important; } }
     #hamburger span { display: block; width: 22px; height: 2px; background: #1c1c1e; border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
     #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     #hamburger.open span:nth-child(2) { opacity: 0; }
@@ -86,9 +109,9 @@
     #hero {
         position: relative; margin-top: 64px;
         width: 100%; height: calc(100vh - 64px);
-        min-height: 480px; max-height: 900px; overflow: hidden;
+        min-height: 480px; overflow: hidden;
     }
-    #hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+    #hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
     #hero::after {
         content: ''; position: absolute; inset: 0;
         background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.72) 100%);
@@ -158,7 +181,19 @@
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.07); }
-    .feature-icon { font-size: 2rem; margin-bottom: 12px; }
+    .feature-icon {
+        width: 52px; height: 52px; margin-bottom: 18px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .feature-icon svg { width: 26px; height: 26px; stroke-width: 1.75; }
+    .feature-icon img { width: 30px; height: 30px; }
+    .feature-icon.orange { background: #fff1ec; }
+    .feature-icon.blue   { background: #eff6ff; }
+    .feature-icon.green  { background: #f0fdf4; }
+    .feature-icon.cyan   { background: #ecfeff; }
+    .feature-icon.grey   { background: #f2f2f7; }
     .feature-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.18rem; color: #1c1c1e; margin-bottom: 5px; }
     .feature-desc { font-size: 0.83rem; color: #636366; line-height: 1.55; }
 
@@ -226,20 +261,21 @@
 
     /* ══ MOBILE ══ */
     @media (max-width: 768px) {
-        #nav { padding: 0 16px; gap: 0; justify-content: space-between; height: 56px; }
-        .nav-links, .nav-cta-desktop { display: none; }
+        #nav {
+            grid-template-columns: auto 1fr auto;
+            height: 56px; padding: 0 16px;
+        }
+        .nav-links { display: none; }
         #hamburger { display: flex; }
-        /* Logo centred on mobile */
-        .nav-logo { position: absolute; left: 50%; transform: translateX(-50%); }
 
         #hero { margin-top: 56px; height: calc(100svh - 56px); }
         .hero-content { padding: 0 20px 44px; }
         #launch-btn { padding: 15px 48px; font-size: 1.2rem; }
+        #mobile-menu { top: 56px; }
 
         section { padding: 52px 20px; }
         .features-grid { grid-template-columns: 1fr 1fr; }
         .audience-grid { grid-template-columns: 1fr 1fr; }
-
         footer { flex-direction: column; align-items: flex-start; padding: 20px; }
     }
     @media (max-width: 480px) {
@@ -247,17 +283,18 @@
         .hero-headline { font-size: 2rem; }
     }
     </style>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
 <!-- NAV -->
 <nav id="nav">
-    <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
+    <!-- Left: Logo -->
     <a href="/" class="nav-logo">
         <img src="logo.png" alt="HolyShit.app">
     </a>
+
+    <!-- Centre: Links (desktop) -->
     <ul class="nav-links">
         <li><a href="#audience">For Runners</a></li>
         <li><a href="#audience">For Cyclists</a></li>
@@ -265,7 +302,13 @@
         <li><a href="#how">How It Works</a></li>
         <li><a href="#about">About</a></li>
     </ul>
-    <a href="app.html" class="nav-cta nav-cta-desktop">LAUNCH APP</a>
+
+    <!-- Right: hamburger only (desktop: white space) -->
+    <div class="nav-right">
+        <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
 </nav>
 
 <!-- Mobile menu -->
@@ -299,34 +342,63 @@
     <h2 class="section-title">Everything You Need.<br>Nothing You Don't.</h2>
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon">📍</div>
+            <div class="feature-icon orange">
+                <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4a9.svg" alt="💩">
+            </div>
             <div class="feature-name">Near Me Now</div>
             <div class="feature-desc">One tap finds the closest public toilet to you right now. No fuss, no delays.</div>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🗺️</div>
+            <div class="feature-icon orange">
+                <i data-lucide="map" style="color:#FC4C02;"></i>
+            </div>
             <div class="feature-name">Route Planner</div>
             <div class="feature-desc">Set start and finish. See every bathroom within 100m of your route before you leave.</div>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">▶️</div>
+            <div class="feature-icon orange">
+                <i data-lucide="activity" style="color:#FC4C02;"></i>
+            </div>
             <div class="feature-name">Live Run Tracker</div>
-            <div class="feature-desc">GPS distance, pace, and a live pit stop count as you move. Like Strava, but with toilets.</div>
+            <div class="feature-desc">Real-time GPS tracking with live distance, pace and a rolling count of nearby pit stops as you move.</div>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">👁️</div>
+            <div class="feature-icon blue">
+                <i data-lucide="eye" style="color:#2563EB;"></i>
+            </div>
             <div class="feature-name">Street View</div>
             <div class="feature-desc">Preview the exact location before you sprint for it. No more arriving at a locked gate.</div>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">♿</div>
+            <div class="feature-icon blue">
+                <i data-lucide="accessibility" style="color:#2563EB;"></i>
+            </div>
             <div class="feature-name">Accessibility Info</div>
             <div class="feature-desc">Accessible toilets, baby change, 24/7 access and drinking water all clearly marked.</div>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">📲</div>
+            <div class="feature-icon green">
+                <i data-lucide="smartphone" style="color:#16A34A;"></i>
+            </div>
             <div class="feature-name">Install as App</div>
             <div class="feature-desc">Add to home screen on iPhone or Android. Full app experience, zero App Store needed.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon cyan">
+                <i data-lucide="droplets" style="color:#0891B2;"></i>
+            </div>
+            <div class="feature-name">Water Finder</div>
+            <div class="feature-desc">Staying hydrated matters as much as finding a loo. See drinking water bubblers and water stations along your route so you never run dry mid-run or ride.</div>
+        </div>
+        <div class="feature-card" style="border: 2px dashed #e0e0e0; background: #fafafa; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="feature-icon grey">
+                <i data-lucide="lightbulb" style="color:#8e8e93;"></i>
+            </div>
+                <div class="feature-name" style="color:#FC4C02;">Coming Soon</div>
+                <div class="feature-desc" style="margin-bottom:16px;">We're always building. Got an idea for something that would make your run, ride or day out easier? We want to hear it.</div>
+            </div>
+            <a href="/cdn-cgi/l/email-protection#3c54595050537c545350454f545548125d4c4c034f495e56595f48017a595d48494e591c7558595d1c5a534e1c745350456f545548125d4c4c" style="display:block; text-align:center; background:#FC4C02; color:#fff; padding:10px 16px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-style:italic; font-size:0.95rem; letter-spacing:0.5px; box-shadow: 0 3px 0 #a32e00;">💡 SUGGEST A FEATURE</a>
         </div>
     </div>
 </section>
@@ -403,7 +475,7 @@
         <p>HolyShit.app started as a conversation at a black tie ball — a friend who runs mentioned she'd never found a good way to plan routes around bathroom access. By the time the band finished their second set, the concept was locked in.</p>
         <p><strong>Free for users. Useful for athletes. Built for real life.</strong> We're Australian, we don't take ourselves too seriously, and we think finding a toilet when you desperately need one should be the easiest thing in the world.</p>
         <p>Hence the name. Hence the 💩.</p>
-        <p style="margin-top:20px; color:#FC4C02; font-weight:600;">Interested in partnering or integrating? <a href="mailto:hello@holyshit.app" style="color:#FC4C02; text-decoration:underline;">hello@holyshit.app</a></p>
+        <p style="margin-top:20px; color:#FC4C02; font-weight:600;">Interested in partnering or integrating? <a href="/cdn-cgi/l/email-protection#94fcf1f8f8fbd4fcfbf8ede7fcfde0baf5e4e4" style="color:#FC4C02; text-decoration:underline;"><span class="__cf_email__" data-cfemail="274f424b4b48674f484b5e544f4e5309465757">[email&#160;protected]</span></a></p>
     </div>
 </section>
 
@@ -421,9 +493,9 @@
     <div class="footer-links">
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms of Use</a>
-        <a href="mailto:hello@holyshit.app">Contact</a>
+        <a href="/cdn-cgi/l/email-protection#c2aaa7aeaead82aaadaebbb1aaabb6eca3b2b2">Contact</a>
     </div>
-    <span class="footer-copy">© 2026 The UPD8 GROUP PTY LTD— All rights reserved</span>
+    <span class="footer-copy">© 2026 HolyShit.app — All rights reserved</span>
 </footer>
 
 <script>
@@ -437,6 +509,7 @@ document.addEventListener('click', e => {
         document.getElementById('mobile-menu').classList.remove('open');
     }
 });
+window.addEventListener('load', () => lucide.createIcons());
 </script>
 </body>
 </html>
