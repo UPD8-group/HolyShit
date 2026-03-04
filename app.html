@@ -1,310 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HolyShit.app — Relief Radar</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-    <link rel="shortcut icon" href="favicon.png">
-    <meta name="theme-color" content="#0D1628">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HolyShit">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HolyShit.app — Relief Radar</title>
+  <meta name="description" content="Find public toilets and drinking water near you or along your route.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <meta name="theme-color" content="#faf8f3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HolyShit">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-        --navy:      #0D1628;
-        --navy-card: #1A2740;
-        --navy-line: #243350;
-        --orange:    #FC4C02;
-        --orange-dk: #D93D00;
-        --white:     #FFFFFF;
-        --grey:      #8A9BB5;
-        --grey-lt:   #C4CFDF;
-        --cyan:      #06B6D4;
-        --green:     #22C55E;
-        --green-dk:  #16A34A;
-        --blue:      #4285F4;
-        --nav-h:     calc(64px + env(safe-area-inset-bottom, 0px));
+      --cream:       #faf8f3;
+      --card:        #eeecea;
+      --card-hi:     #e5e2da;
+      --border:      #dbd8d0;
+      --border-hi:   #c8c4bc;
+      --orange:      #e8601a;
+      --orange-lt:   rgba(232,96,26,0.10);
+      --orange-glow: rgba(232,96,26,0.25);
+      --orange-dk:   #c44e10;
+      --water:       #1a8fd9;
+      --water-lt:    rgba(26,143,217,0.10);
+      --text:        #1a1008;
+      --text-mid:    #6b6258;
+      --text-dim:    #a89e94;
+      --radius:      14px;
+      --radius-sm:   10px;
+      --shadow:      0 4px 20px rgba(100,80,60,0.15);
+      --shadow-sm:   0 2px 10px rgba(100,80,60,0.10);
+      --font-d:      'Anton', sans-serif;
+      --font-b:      'DM Sans', sans-serif;
     }
-    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--navy); overflow: hidden; color: var(--white); }
 
-    #map { position: fixed; inset: 0; height: 100vh; width: 100vw; }
-    .gm-bundled-control { bottom: calc(var(--nav-h) + 12px) !important; }
-    .gmnoprint.gm-bundled-control-on-bottom { bottom: calc(var(--nav-h) + 12px) !important; }
-    .gm-fullscreen-control { bottom: calc(var(--nav-h) + 12px) !important; }
-    .gm-svpc { bottom: calc(var(--nav-h) + 12px) !important; }
+    html, body {
+      height: 100%; width: 100%; overflow: hidden;
+      background: var(--cream); color: var(--text);
+      font-family: var(--font-b);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    /* BOTTOM NAV */
-    #bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); z-index: 2500; background: rgba(26,39,64,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--navy-line); display: flex; align-items: flex-start; padding-top: 8px; padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
-    .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; cursor: pointer; padding: 6px 4px 0; border: none; background: transparent; position: relative; -webkit-appearance: none; appearance: none; }
-    .nav-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border-radius: 8px; transition: background 0.15s, transform 0.15s; }
-    .nav-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3px; color: var(--grey); transition: color 0.15s; white-space: nowrap; }
-    .nav-tab.active .nav-icon { background: rgba(252,76,2,0.15); }
-    .nav-tab.active .nav-label { color: var(--orange); }
-    .nav-tab:active .nav-icon { transform: scale(0.9); }
-    .nav-tab.running .nav-icon { background: rgba(34,197,94,0.15); animation: pulse-green 1.5s ease-in-out infinite; }
-    .nav-tab.running .nav-label { color: var(--green); }
-    @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } }
+    #map { position: fixed; inset: 0; z-index: 0; }
+    
+    /* Push Google Controls */
+    .gm-bundled-control { bottom: 80px !important; }
+    .gmnoprint.gm-bundled-control-on-bottom { bottom: 80px !important; }
+    .gm-style-mtc-bbw, .gm-style .gm-style-mtc, div[style*="position: absolute"][style*="top"] .gmnoprint { top: calc(env(safe-area-inset-top, 0px) + 140px) !important; }
 
-    /* RUN HUD */
-    #run-hud { position: fixed; top: 0; left: 0; right: 0; z-index: 1500; display: flex; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
-    #run-hud.active { transform: translateY(0); pointer-events: auto; }
-    .hud-cell { flex: 1; background: rgba(13,22,40,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 3px solid var(--orange); padding: calc(env(safe-area-inset-top, 0px) + 14px) 0 14px; text-align: center; }
-    .hud-cell + .hud-cell { border-left: 1px solid var(--navy-line); }
-    .hud-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.9rem; line-height: 1; color: var(--white); }
-    .hud-value.hl { color: var(--orange); }
-    .hud-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-top: 4px; }
+    /* ── TOP PANEL ── */
+    .top-panel {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100; padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px 8px; pointer-events: none;
+      transition: transform 0.3s ease;
+    }
+    .top-panel > * { pointer-events: all; }
+    .top-panel.shifted { transform: translateY(38px); } /* Shifts down when route bar is active */
 
-    /* INFOWINDOW POPUP (Garmin Style) */
-    .gm-style .gm-style-iw-c { padding: 0 !important; border-radius: 12px !important; box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important; max-width: 300px !important; background: var(--navy-card) !important; color: white !important;}
-    .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
-    .gm-style .gm-style-iw-t::after { background: var(--navy-card) !important; }
-    .gm-style .gm-ui-hover-effect { display: none !important; }
-    .iw-card { background: var(--navy-card); border-radius: 12px; padding: 14px 16px 12px; width: 260px; font-family: 'Inter', sans-serif; color: white; position: relative; }
-    .iw-close { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; cursor: pointer; font-size: 0.75rem; color: white; display: flex; align-items: center; justify-content: center; }
-    .iw-type { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; }
-    .iw-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.25rem; line-height: 1.15; margin: 0 20px 4px 0; }
-    .iw-address { font-size: 0.75rem; color: var(--grey-lt); margin: 0 0 10px; line-height: 1.4; }
-    .iw-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-    .iw-tag { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.65rem; font-weight: 600; color: var(--grey-lt); border: 1px solid var(--navy-line); }
-    .iw-tag.t-24  { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.1); }
-    .iw-tag.t-acc { border-color: var(--blue); color: var(--blue); background: rgba(66,133,244,0.1); }
-    .iw-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .iw-btn { padding: 10px 6px; border-radius: 8px; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 0.9rem; cursor: pointer; text-align: center; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; color: white;}
-    .iw-btn:active { transform: scale(0.96); }
-    .iw-btn-primary  { background: var(--orange); box-shadow: 0 2px 0 var(--orange-dk); }
-    .iw-btn-secondary { background: var(--navy); border: 1px solid var(--navy-line); }
+    .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 
-    /* ROUTE PLANNER BAR */
-    #planner-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1400; display: flex; flex-direction: column; background: rgba(13,22,40,0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 2px solid var(--navy-line); transform: translateY(-110%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); color: white; }
-    #planner-bar.active { transform: translateY(0); }
-    .planner-steps { display: flex; align-items: stretch; width: 100%; }
-    .planner-step { flex: 1; padding: 14px 12px 12px; display: flex; align-items: center; gap: 10px; border-right: 1px solid var(--navy-line); cursor: pointer; }
-    .planner-step:last-of-type { border-right: none; }
-    .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--navy-line); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--grey); flex-shrink: 0; transition: all 0.2s; }
-    .planner-step.current .step-dot { border-color: var(--orange); color: var(--orange); background: rgba(252,76,2,0.15); }
-    .planner-step.done .step-dot    { border-color: var(--green);  color: var(--green);  background: rgba(34,197,94,0.15); }
-    .step-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-bottom: 2px; }
-    .step-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .planner-step.current .step-value { color: var(--orange); }
-    .planner-step.done    .step-value { color: var(--green); font-size: 0.8rem; }
-    #planner-close { width: 48px; display: flex; align-items: center; justify-content: center; color: var(--grey); font-size: 1.1rem; cursor: pointer; border-left: 1px solid var(--navy-line); }
-    .planner-options { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--navy); border-top: 1px solid var(--navy-line); width: 100%; }
-    .mode-toggles { display: flex; gap: 6px; }
-    .mode-btn { padding: 6px 12px; border-radius: 12px; border: 1px solid var(--navy-line); background: var(--navy-card); font-size: 0.75rem; font-weight: 700; color: var(--grey); cursor: pointer; transition: all 0.15s; }
-    .mode-btn.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 2px 6px rgba(252,76,2,0.2); }
-    .radius-select select { padding: 6px 10px; border-radius: 10px; border: 1px solid var(--navy-line); background: var(--navy-card); font-size: 0.75rem; font-weight: 700; color: white; outline: none; cursor: pointer; }
+    .wordmark {
+      font-family: var(--font-d); font-size: 22px;
+      letter-spacing: 1px; line-height: 1; color: var(--text); white-space: nowrap;
+      text-shadow: 0 1px 8px rgba(250,248,243,1), 0 2px 16px rgba(250,248,243,0.9);
+      cursor: pointer;
+    }
+    .wordmark .shit { color: var(--orange); }
 
-    /* TOASTS */
-    .floating-toast { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 120px); left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 1600; background: rgba(13,22,40,0.95); color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.83rem; font-weight: 600; border: 1px solid var(--orange); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .floating-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-    #map.picking { cursor: crosshair; }
-    #btn-use-current { background: var(--blue); border: none; color: white; font-weight: 700; padding: 6px 12px; border-radius: 12px; margin-left: 6px; cursor: pointer; font-size: 0.75rem; }
-    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .mode-row { display: flex; gap: 6px; flex: 1; }
+    .mode-pill {
+      flex: 1; padding: 7px 10px; border-radius: 30px;
+      border: 1.5px solid var(--border); background: var(--cream); color: var(--text-mid);
+      font-family: var(--font-b); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s; text-align: center; white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .mode-pill.active {
+      background: var(--orange); color: #fff; border-color: var(--orange);
+      box-shadow: 0 2px 14px var(--orange-glow);
+    }
+
+    .search-card {
+      background: var(--cream); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 10px; box-shadow: var(--shadow);
+    }
+    .search-row { display: flex; align-items: center; gap: 8px; }
+
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot-origin { background: var(--orange); box-shadow: 0 0 5px var(--orange-glow); }
+    .dot-dest   { background: var(--text); }
+    .vline { width:1px; height:14px; background:var(--border); margin:3px 0 3px 4px; flex-shrink:0; }
+    .route-spacer { margin-top: 6px; }
+
+    .search-input {
+      flex: 1; background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text);
+      font-family: var(--font-b); font-size: 14px; outline: none;
+      transition: border-color 0.18s; min-width: 0;
+    }
+    .search-input:focus { border-color: var(--orange); background: #fff;}
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .action-btn {
+      padding: 9px 18px; border-radius: var(--radius-sm); border: none;
+      background: var(--orange); color: #fff; font-family: var(--font-d);
+      font-size: 15px; letter-spacing: 1px; cursor: pointer;
+      transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
+    }
+    .action-btn:hover  { background: var(--orange-dk); }
+    .action-btn:active { transform: scale(0.96); }
+    
+    .tm-row { display: flex; gap: 6px; margin-top: 8px; }
+    .action-btn.secondary {
+      background: var(--card); color: var(--text);
+      border: 1.5px solid var(--border); font-size: 12px; flex: 1; text-align: center;
+      padding: 6px 0; font-family: var(--font-b); font-weight: 600; letter-spacing: 0;
+    }
+    .action-btn.secondary:hover { border-color: var(--orange); color: var(--orange); }
+    .action-btn.secondary.sel   { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+
+    .layer-row { display: flex; gap: 6px; margin-top: 7px; }
+    .layer-btn {
+      display: flex; align-items: center; gap: 5px; padding: 5px 11px;
+      border-radius: 20px; border: 1.5px solid var(--border); background: var(--cream);
+      color: var(--text-mid); font-family: var(--font-b); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow-sm);
+    }
+    .layer-btn.on-toilet { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+    .layer-btn.on-water  { background: var(--water-lt);  border-color: var(--water);  color: var(--water); }
+    .layer-btn.on-access { background: rgba(100,60,200,0.08); border-color: #7a63ff; color: #6044cc; }
+
+    /* ── ROUTE BAR ── */
+    .route-bar {
+      position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 99;
+      background: var(--cream); border-bottom: 1.5px solid var(--border);
+      padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+      font-size: 12px; font-weight: 600;
+      transform: translateY(-100%); transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .route-bar.show { transform: translateY(0); }
+    .route-stat { color: var(--text-mid); }
+    .route-stat strong { color: var(--text); }
+    .route-divider { flex: 1; }
+    .clear-route-btn {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--text-mid); font-family: var(--font-b);
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; cursor: pointer; transition: all 0.18s;
+    }
+    .clear-route-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* ── FAB ── */
+    .fab-stack { position: fixed; bottom: 30px; right: 14px; z-index: 100; }
+    .fab {
+      width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--orange); color: #fff; font-size: 18px;
+      box-shadow: 0 4px 18px var(--orange-glow), var(--shadow); transition: all 0.18s;
+    }
+    .fab:hover  { background: var(--orange-dk); }
+    .fab:active { transform: scale(0.92); }
+    .fab.spinning { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ROUTE SUMMARY */
-    #route-summary { position: fixed; bottom: calc(var(--nav-h) - 4px); left: 0; right: 0; z-index: 1900; background: var(--navy-card); color: white; border-top: 3px solid var(--green); border-radius: 20px 20px 0 0; padding: 8px 20px 20px; box-shadow: 0 -8px 40px rgba(0,0,0,0.5); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    #route-summary.open { transform: translateY(0); }
-    #route-summary::before { content: ''; display: block; width: 36px; height: 4px; background: var(--navy-line); border-radius: 2px; margin: 8px auto 14px; }
-    .summary-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-    .summary-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.6rem; line-height: 1; color: white; }
-    .summary-meta { font-size: 0.78rem; color: var(--grey); margin-top: 3px; }
-    #summary-clear { background: none; border: 1px solid var(--navy-line); color: var(--grey); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0; margin-left: 12px; }
-    .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
-    .stat-card { background: var(--navy); border: 1px solid var(--navy-line); border-radius: 10px; padding: 12px 6px; text-align: center; }
-    .stat-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.5rem; line-height: 1; }
-    .stat-value.orange { color: var(--orange); } .stat-value.green { color: var(--green); } .stat-value.cyan { color: var(--cyan); }
-    .stat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--grey); margin-top: 3px; }
-    #route-facilities { max-height: 35vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .route-facility-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--navy-line); cursor: pointer; }
-    .route-facility-item:last-child { border-bottom: none; }
-    .rf-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--navy); border: 1px solid var(--navy-line); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-    .rf-icon.water { background: rgba(6,182,212,0.1); border-color: var(--cyan);}
-    .rf-info { flex: 1; min-width: 0; } .rf-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rf-meta { font-size: 0.73rem; color: var(--grey); } .rf-dist { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.83rem; color: var(--grey-lt); flex-shrink: 0; }
-    .btn-go { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--orange); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 0 var(--orange-dk); margin-top: 14px; }
+    /* ── COUNT PILL ── */
+    .count-pill {
+      position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%);
+      z-index: 100; background: var(--cream); border: 1.5px solid var(--border);
+      border-radius: 30px; padding: 6px 16px; font-size: 12px; font-weight: 600;
+      color: var(--text-mid); white-space: nowrap; box-shadow: var(--shadow);
+      transition: opacity 0.3s; pointer-events: none; opacity: 0;
+    }
+    .count-pill.show { opacity: 1; }
+    .count-pill .hi { color: var(--orange); font-weight: 700; }
+    .count-pill .wi { color: var(--water);  font-weight: 700; }
 
-    /* MORE & REPORT SHEETS */
-    #more-sheet, #report-sheet { position: fixed; bottom: 0; left: 0; right: 0; z-index: 3500; background: var(--navy-card); color: white; border-radius: 20px 20px 0 0; padding: 8px 0 calc(var(--nav-h) + 8px); box-shadow: 0 -8px 40px rgba(0,0,0,0.5); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    #more-sheet.open, #report-sheet.open { transform: translateY(0); }
-    #more-sheet::before, #report-sheet::before { content: ''; display: block; width: 36px; height: 4px; background: var(--navy-line); border-radius: 2px; margin: 8px auto 4px; }
-    .more-title, .report-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1.2rem; padding: 10px 20px 14px; color: white; border-bottom: 1px solid var(--navy-line); }
-    .more-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--navy-line); cursor: pointer; transition: background 0.1s; }
-    .more-item:active { background: var(--navy); }
-    .more-item.disabled { opacity: 0.4; pointer-events: none; }
-    .more-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; background: var(--navy); border: 1px solid var(--navy-line);}
-    .more-text { flex: 1; } .more-name { font-weight: 600; font-size: 0.95rem; } .more-desc { font-size: 0.76rem; color: var(--grey); margin-top: 1px; } .more-arrow { color: var(--grey-lt); font-size: 1rem; } .soon-badge { background: var(--navy); color: var(--grey); border: 1px solid var(--navy-line); font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.5px; }
-    .report-subtitle { font-size: 0.78rem; color: var(--grey); padding: 0 20px 16px; }
-    .report-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 0 16px 20px; }
-    .report-option { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 12px; border: 1px solid var(--navy-line); background: var(--navy); cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s; -webkit-tap-highlight-color: transparent; }
-    .report-option:active { transform: scale(0.93); }
-    .report-option.selected { border-color: var(--orange); background: rgba(252,76,2,0.15); }
-    .report-emoji { font-size: 2rem; line-height: 1; } .report-label { font-size: 0.6rem; font-weight: 700; text-align: center; color: var(--grey-lt); line-height: 1.2; }
-    .report-option.selected .report-label { color: var(--orange); }
-    .report-location { display: flex; align-items: center; gap: 8px; margin: 0 16px 16px; padding: 10px 14px; background: var(--navy); border: 1px solid var(--navy-line); border-radius: 10px; font-size: 0.78rem; color: white; }
-    .report-location span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #report-submit { margin: 0 16px; width: calc(100% - 32px); padding: 15px; border-radius: 12px; border: none; background: var(--orange); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 0 var(--orange-dk); transition: transform 0.1s, opacity 0.2s; }
-    #report-submit:disabled { opacity: 0.35; box-shadow: none; }
-    #report-submit:not(:disabled):active { transform: scale(0.98); }
-    #report-thanks { display: none; flex-direction: column; align-items: center; padding: 28px 20px; text-align: center; }
-    #report-thanks .thanks-emoji { font-size: 3rem; margin-bottom: 10px; }
-    #report-thanks .thanks-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.5rem; color: white; margin-bottom: 4px; }
-    #report-thanks .thanks-sub { font-size: 0.83rem; color: var(--grey); }
+    /* ── BOTTOM SHEET ── */
+    .backdrop {
+      position: fixed; inset: 0; background: rgba(26,16,8,0.40); z-index: 200;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .backdrop.on { opacity: 1; pointer-events: all; }
 
-    /* IN-APP NAVIGATION BAR */
-    #nav-bar { position: fixed; bottom: var(--nav-h); left: 0; right: 0; z-index: 2000; background: var(--navy); border-top: 3px solid var(--orange); padding: 12px 16px; display: flex; align-items: center; gap: 12px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
-    #nav-bar.active { transform: translateY(0); }
-    .nav-bar-icon { font-size: 1.4rem; flex-shrink: 0; }
-    .nav-bar-info { flex: 1; }
-    .nav-bar-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.1rem; color: white; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .nav-bar-dist { font-size: 0.72rem; color: var(--grey); margin-top: 1px; }
-    .nav-bar-dist span { color: var(--orange); font-weight: 700; }
-    #nav-bar-cancel { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
-    #nav-bar-cancel:active { background: rgba(255,255,255,0.2); }
+    .sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+      background: var(--cream); border-top: 1.5px solid var(--border);
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -8px 40px rgba(100,80,60,0.18);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+      max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    .sheet.on { transform: translateY(0); }
+    .sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+    .sheet-body { padding: 16px 20px 8px; }
 
-    #overlay { position: fixed; inset: 0; z-index: 1800; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    #overlay.show { opacity: 1; pointer-events: auto; }
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px;
+      border-radius: 20px; font-family: var(--font-b); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .type-badge.toilet { background: var(--orange-lt); color: var(--orange); border: 1px solid rgba(232,96,26,0.2); }
+    .type-badge.water  { background: var(--water-lt);  color: var(--water);  border: 1px solid rgba(26,143,217,0.2); }
 
-    /* STREET VIEW */
-    #sv-modal { position: fixed; inset: 0; z-index: 9000; background: #000; display: none; flex-direction: column; }
-    #sv-modal.open { display: flex; } #sv-panorama { flex: 1; width: 100%; }
-    #sv-toolbar { position: absolute; top: 0; left: 0; right: 0; padding: calc(env(safe-area-inset-top,0px) + 14px) 16px 32px; display: flex; align-items: center; gap: 12px; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); z-index: 9100; pointer-events: none; }
-    #sv-close { pointer-events: auto; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-    #sv-title { flex: 1; color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1.1rem; }
-    .sv-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 9100; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.8rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    #sv-prev { left: 14px; } #sv-next { right: 14px; }
+    .sheet-name { font-family: var(--font-d); font-size: 28px; line-height: 1.0; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .sheet-meta { color: var(--text-mid); font-size: 13px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .chip { padding: 4px 11px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--text-mid); font-size: 12px; font-weight: 500; }
+    .chip.yes       { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+    .chip.water-yes { border-color: var(--water);  color: var(--water);  background: var(--water-lt); }
 
-    /* INSTALL BANNERS */
-    #install-banner { position: fixed; bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px; z-index: 3000; display: flex; align-items: center; gap: 12px; background: var(--navy-card); border: 1px solid var(--orange); border-radius: 16px; padding: 12px 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; }
-    #install-banner.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .install-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .install-text strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1rem; color: white; }
-    .install-text span { font-size: 0.73rem; color: var(--grey); }
-    #install-btn { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
-    #install-dismiss { background: none; border: none; color: var(--grey); font-size: 1rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
-    #ios-nudge { position: fixed; bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px; z-index: 3000; background: var(--navy-card); border: 1px solid var(--navy-line); border-radius: 16px; padding: 16px 18px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; }
-    #ios-nudge.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    #ios-nudge p { margin: 0 0 6px; font-size: 0.83rem; color: var(--grey-lt); line-height: 1.4; }
-    #ios-nudge strong { color: white; }
-    #ios-nudge-close { background: none; border: 1px solid var(--navy-line); color: var(--grey); padding: 6px 20px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
-    </style>
+    .sheet-notes { color: var(--text-mid); font-size: 13px; line-height: 1.5; padding: 10px 12px; background: var(--card); border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 14px; }
+
+    .dir-btn {
+      width: 100%; padding: 13px; border-radius: var(--radius-sm); border: none;
+      background: var(--orange); color: #fff; font-family: var(--font-d);
+      font-size: 16px; letter-spacing: 1px; cursor: pointer;
+      transition: all 0.18s; margin-bottom: 12px; text-align: center; display: block;
+    }
+    .dir-btn:hover { background: var(--orange-dk); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; top: calc(env(safe-area-inset-top, 0px) + 160px); left: 50%;
+      transform: translateX(-50%) translateY(-8px); z-index: 500;
+      background: var(--text); color: var(--cream);
+      padding: 9px 18px; border-radius: 30px; font-size: 13px; font-weight: 500;
+      pointer-events: none; opacity: 0; transition: all 0.25s;
+      max-width: calc(100vw - 40px); text-align: center;
+      box-shadow: var(--shadow); white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── AUTOCOMPLETE ── */
+    .pac-container { background:var(--cream)!important; border:1.5px solid var(--border)!important; border-radius:var(--radius-sm)!important; box-shadow:var(--shadow)!important; font-family:var(--font-b)!important; }
+    .pac-item { color:var(--text)!important; border-top-color:var(--border)!important; padding:9px 12px!important; font-size:13px!important; cursor:pointer; }
+    .pac-item:hover { background:var(--card)!important; }
+    .pac-item-query { color:var(--text)!important; }
+    .pac-matched { color:var(--orange)!important; font-weight:700; }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
 
 <div id="map"></div>
 
-<div id="run-hud">
-    <div class="hud-cell"><div class="hud-value" id="hud-dist">0.00</div><div class="hud-label" id="hud-dist-lbl">KM</div></div>
-    <div class="hud-cell"><div class="hud-value hl" id="hud-pace">--:--</div><div class="hud-label" id="hud-pace-lbl">MIN/KM</div></div>
-    <div class="hud-cell"><div class="hud-value" id="hud-pits">0</div><div class="hud-label">PIT STOPS</div></div>
+<div class="route-bar" id="routeBar">
+  <span class="route-stat">📍 <strong id="statDist">—</strong></span>
+  <span class="route-stat">⏱ <strong id="statTime">—</strong></span>
+  <span class="route-stat">🚻 <strong id="statToilets">—</strong></span>
+  <span class="route-stat">💧 <strong id="statWater">—</strong></span>
+  <div class="route-divider"></div>
+  <button class="clear-route-btn" onclick="clearRoute()">✕ Clear</button>
 </div>
 
-<div id="planner-bar">
-    <div class="planner-steps">
-        <div class="planner-step" id="step-start" onclick="activateStep('start')">
-            <div class="step-dot">A</div>
-            <div><div class="step-label">Start</div><div class="step-value" id="step-start-val">Tap to set</div></div>
-        </div>
-        <div class="planner-step" id="step-end" onclick="activateStep('end')">
-            <div class="step-dot">B</div>
-            <div><div class="step-label">Finish</div><div class="step-value" id="step-end-val">Tap to set</div></div>
-        </div>
-        <div id="planner-close" onclick="closePlanner()">✕</div>
+<div class="top-panel" id="topPanel">
+  <div class="header-row">
+    <div class="wordmark" onclick="location.reload()">H💩LY<span class="shit">SHIT</span></div>
+    <div class="mode-row">
+      <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">📍 Nearest</button>
+      <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">🏃 Route</button>
     </div>
-    <div class="planner-options">
-        <div class="mode-toggles">
-            <button class="mode-btn active" onclick="setTravelMode('WALKING', this)">🏃‍♂️ Walk/Run</button>
-            <button class="mode-btn" onclick="setTravelMode('BICYCLING', this)">🚴‍♂️ Ride</button>
-        </div>
-        <div class="radius-select">
-            <select id="route-radius" onchange="changeRouteRadius(this.value)">
-                <option value="0.0009">Within 100m</option>
-                <option value="0.0018">Within 200m</option>
-                <option value="0.0045">Within 500m</option>
-            </select>
-        </div>
+  </div>
+
+  <div class="search-card" id="cardNearest">
+    <div class="search-row">
+      <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark…" autocomplete="off">
+      <button class="action-btn" onclick="searchNearest()">FIND</button>
     </div>
+  </div>
+
+  <div class="search-card hidden" id="cardRoute">
+    <div class="search-row">
+      <span class="dot dot-origin"></span>
+      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — tap map or search…" autocomplete="off" onfocus="S.pickingStep='start'; toast('📍 Tap map to set START');">
+    </div>
+    <div class="vline"></div>
+    <div class="search-row route-spacer">
+      <span class="dot dot-dest"></span>
+      <input type="text" id="inputDest" class="search-input" placeholder="Finish — tap map or search…" autocomplete="off" onfocus="S.pickingStep='end'; toast('🏁 Tap map to set FINISH');">
+      <button class="action-btn" onclick="planRoute()">GO</button>
+    </div>
+    <div class="tm-row">
+      <button class="action-btn secondary sel" id="tmWalk"  onclick="setTravelMode('WALKING')">🚶 Walk</button>
+      <button class="action-btn secondary"     id="tmBike"  onclick="setTravelMode('BICYCLING')">🚴 Cycle</button>
+      <button class="action-btn secondary"     id="tmDrive" onclick="setTravelMode('DRIVING')">🚗 Drive</button>
+    </div>
+  </div>
+
+  <div class="layer-row">
+    <button class="layer-btn on-toilet" id="btnToilet" onclick="toggleLayer('toilet')">🚻 Toilets</button>
+    <button class="layer-btn on-water"  id="btnWater"  onclick="toggleLayer('water')">💧 Water</button>
+    <button class="layer-btn"           id="btnAccess" onclick="toggleLayer('accessible')">♿ Accessible</button>
+  </div>
 </div>
 
-<div id="pick-toast" class="floating-toast">📍 Tap map to set location</div>
-<div id="loading-toast" class="floating-toast"><span class="spinner"></span> Mapping route...</div>
-
-<div id="route-summary">
-    <div class="summary-header">
-        <div><div class="summary-title" id="summary-title">ROUTE READY</div><div class="summary-meta" id="summary-meta"></div></div>
-        <button id="summary-clear" onclick="closePlanner()">✕ Clear</button>
-    </div>
-    <div class="stat-row">
-        <div class="stat-card"><div class="stat-value orange" id="stat-dist">—</div><div class="stat-label">Distance</div></div>
-        <div class="stat-card"><div class="stat-value green"  id="stat-toilets">—</div><div class="stat-label">Toilets</div></div>
-        <div class="stat-card"><div class="stat-value cyan"   id="stat-water">—</div><div class="stat-label">Water</div></div>
-    </div>
-    <div id="route-facilities"></div>
-    <button class="btn-go" onclick="startRunFromPlan()">▶ START ROUTE</button>
+<div class="count-pill" id="countPill">
+  <span class="hi" id="countT">0</span> toilets &nbsp;·&nbsp;
+  <span class="wi" id="countW">0</span> water
 </div>
 
-<div id="report-sheet">
-    <div id="report-form">
-        <div class="report-title">How's the Situation?</div>
-        <div class="report-subtitle">Select a status to report this location</div>
-        <div class="report-grid">
-            <div class="report-option" onclick="selectReport(this,'💩','All Good')"><div class="report-emoji">💩</div><div class="report-label">All Good</div></div>
-            <div class="report-option" onclick="selectReport(this,'🚽','Needs Clean')"><div class="report-emoji">🚽</div><div class="report-label">Needs Clean</div></div>
-            <div class="report-option" onclick="selectReport(this,'🔒','Locked')"><div class="report-emoji">🔒</div><div class="report-label">Locked</div></div>
-            <div class="report-option" onclick="selectReport(this,'⚠️','Out of Order')"><div class="report-emoji">⚠️</div><div class="report-label">Out of Order</div></div>
-            <div class="report-option" onclick="selectReport(this,'💀','Avoid!')"><div class="report-emoji">💀</div><div class="report-label">Avoid!</div></div>
-        </div>
-        <div class="report-location" id="report-location-row"><span>📍</span><span id="report-location-name">Your current location</span></div>
-        <button id="report-submit" disabled onclick="submitReport()">SUBMIT REPORT</button>
-    </div>
-    <div id="report-thanks">
-        <div class="thanks-emoji" id="thanks-emoji">💩</div>
-        <div class="thanks-title">Thanks for the heads up!</div>
-        <div class="thanks-sub">Your report helps everyone nearby.</div>
-    </div>
+<div class="fab-stack">
+  <button class="fab" id="fabLocate" onclick="locateMe()" title="Find my location">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" opacity=".4"/>
+      <line x1="12" y1="2"  x2="12" y2="5"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="2"  y1="12" x2="5"  y2="12"/>
+      <line x1="19" y1="12" x2="22" y2="12"/>
+    </svg>
+  </button>
 </div>
 
-<div id="nav-bar">
-    <div class="nav-bar-icon">🧭</div>
-    <div class="nav-bar-info">
-        <div class="nav-bar-name" id="nav-bar-name">—</div>
-        <div class="nav-bar-dist" id="nav-bar-dist">Calculating route…</div>
-    </div>
-    <button id="nav-bar-cancel" onclick="cancelNavigation()">✕ Cancel</button>
+<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-body" id="sheetBody"></div>
 </div>
 
-<div id="overlay" onclick="closeAll()"></div>
-
-<div id="more-sheet">
-    <div class="more-title">More Features</div>
-    <div class="more-item" onclick="closeMore(); openPlanner();"><div class="more-icon orange">🗺️</div><div class="more-text"><div class="more-name">Plan a Route</div><div class="more-desc">Set start &amp; finish, see toilets along the way</div></div><div class="more-arrow">›</div></div>
-    <div class="more-item" onclick="closeMore(); findNearest();"><div class="more-icon green">💩</div><div class="more-text"><div class="more-name">Find Nearest</div><div class="more-desc">Closest bathroom to you right now</div></div><div class="more-arrow">›</div></div>
-    <div class="more-item disabled"><div class="more-icon blue">🏆</div><div class="more-text"><div class="more-name">Leaderboard</div><div class="more-desc">Compare runs with other users</div></div><span class="soon-badge">SOON</span></div>
-</div>
-
-<nav id="bottom-nav">
-    <button class="nav-tab" id="tab-near" onclick="navTap('near')"><div class="nav-icon">💩</div><div class="nav-label">Near Me</div></button>
-    <button class="nav-tab" id="tab-report" onclick="navTap('report')"><div class="nav-icon">🚨</div><div class="nav-label">Report</div></button>
-    <button class="nav-tab active" id="tab-home" onclick="navTap('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
-    <button class="nav-tab" id="tab-run" onclick="navTap('run')"><div class="nav-icon">▶️</div><div class="nav-label">Run</div></button>
-    <button class="nav-tab" id="tab-more" onclick="navTap('more')"><div class="nav-icon">☰</div><div class="nav-label">More</div></button>
-</nav>
-
-<div id="install-banner"><div class="install-icon">💩</div><div class="install-text"><strong>Install HolyShit.app</strong><span>Add to home screen — runs like a native app</span></div><button id="install-btn" onclick="triggerInstall()">INSTALL</button><button id="install-dismiss" onclick="dismissInstall()">✕</button></div>
-<div id="ios-nudge"><p><strong>Install HolyShit.app 💩</strong></p><p>Tap <strong>⬆️</strong> then <strong>"Add to Home Screen"</strong></p><button id="ios-nudge-close" onclick="dismissIosNudge()">Got it</button></div>
-<div id="sv-modal"><div id="sv-panorama"></div><div id="sv-toolbar"><button id="sv-close" onclick="closeStreetView()">✕</button><span id="sv-title">Street View</span></div><button class="sv-nav" id="sv-prev" onclick="svRotate(-35)">‹</button><button class="sv-nav" id="sv-next" onclick="svRotate(35)">›</button></div>
+<div class="toast" id="toast"></div>
 
 <script>
+'use strict';
+
 const UNITS = (function() {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
     const useMiles = tz.startsWith('America/') || tz.startsWith('US/') || ['Europe/London','Europe/Belfast'].includes(tz);
@@ -316,402 +350,332 @@ const UNITS = (function() {
     };
 })();
 
-// PWA
-let deferredInstallPrompt = null;
-const INSTALL_KEY = 'hs_install_dismissed';
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstallPrompt = e; if (!sessionStorage.getItem(INSTALL_KEY)) setTimeout(() => document.getElementById('install-banner').classList.add('show'), 4000); });
-window.addEventListener('appinstalled', () => document.getElementById('install-banner').classList.remove('show'));
-function triggerInstall() { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); deferredInstallPrompt.userChoice.then(() => { document.getElementById('install-banner').classList.remove('show'); deferredInstallPrompt = null; }); }
-function dismissInstall() { document.getElementById('install-banner').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
-function checkIosInstall() { if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !sessionStorage.getItem(INSTALL_KEY)) setTimeout(() => document.getElementById('ios-nudge').classList.add('show'), 5000); }
-function dismissIosNudge() { document.getElementById('ios-nudge').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+const S = {
+  map:null, geocoder:null, dirService:null, dirRenderer:null,
+  userMarker:null, userAccuracy:null, userPos:null, 
+  mode:'nearest', travelMode:'WALKING', pickingStep:null,
+  planStart:null, planEnd:null,
+  layers:{toilet:true, water:true, accessible:false},
+  markers:[], allLoos:[], activeRoutePath:null,
+  ac:{nearest:null, origin:null, dest:null},
+  toastTimer:null,
+};
 
-// STATE
-let map, markers = [], allLoos = [], currentLoo = null;
-let panorama = null, blueDotMarker = null, blueDotAccuracy = null, blueWatchId = null;
-let isRunning = false, runWatchId = null, runPolyline = null, runPath = [], runStartTime = null, totalDistKm = 0, lastPos = null;
-let plannerActive = false, pickingStep = null;
-let planStart = null, planEnd = null, planStartMarker = null, planEndMarker = null;
-let routePolyline = null, routeFacilities = [], routeMarkers = [];
-let geocoder, directionsService;
-let pooIcon = null, goldenIcon = null;
-let currentTravelMode = 'WALKING';
-let currentRouteTolerance = 0.0009;
-let cachedRoutePath = null, cachedRouteSummary = null;
+const el = id => document.getElementById(id);
 
-// NAV
-function navTap(tab) {
-    if (tab !== 'run') { document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-' + tab).classList.add('active'); }
-    if (tab === 'home')   { centreOnUser(); closeAll(); }
-    if (tab === 'near')   { findNearest(); }
-    if (tab === 'plan')   { openPlanner(); }
-    if (tab === 'run')    { toggleRun(); }
-    if (tab === 'more')   { openMore(); }
-    if (tab === 'report') { openReport(); }
+function toast(msg, ms=3200) {
+  const t=el('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(S.toastTimer); S.toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
 }
-function closeAll() { closeSheet(); closeReport(); cancelNavigation(); document.getElementById('route-summary').classList.remove('open'); document.getElementById('more-sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
-function openMore()  { document.getElementById('more-sheet').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
-function closeMore() { document.getElementById('more-sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+function haversine(lat1,lng1,lat2,lng2) {
+  const R=6371000, r=Math.PI/180;
+  const a=Math.sin(((lat2-lat1)*r)/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(((lng2-lng1)*r)/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+const isWaterOnly = (loo) => loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden;
 
 // SVG Markers (Bypasses Windows Emoji Corruption)
-const POO_SVG_MARKER = {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="24">💩</text></svg>'),
-    scaledSize: new google.maps.Size(32, 32),
-    anchor: new google.maps.Point(16, 16)
-};
+const pinToilet = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#e8601a" filter="url(#s)"/><circle cx="17" cy="16" r="10" fill="#3d1600"/><text x="17" y="20.5" font-size="11" text-anchor="middle" font-family="sans-serif">🚻</text></svg>');
+const pinWater = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="0 0 30 36"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter></defs><path d="M15 2C8.4 2 3 7.4 3 14c0 8.4 12 20 12 20S27 22.4 27 14C27 7.4 21.6 2 15 2Z" fill="#1a8fd9" filter="url(#s)"/><circle cx="15" cy="14" r="9" fill="#061830"/><text x="15" y="18.5" font-size="11" text-anchor="middle" font-family="sans-serif">💧</text></svg>');
+const pinStar = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#FFD700" filter="url(#s)"/><circle cx="17" cy="16" r="10" fill="#3d1600"/><text x="17" y="20.5" font-size="11" text-anchor="middle" font-family="sans-serif">⭐</text></svg>');
 
-const GOLDEN_SVG_MARKER = {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="28">⭐</text></svg>'),
-    scaledSize: new google.maps.Size(36, 36),
-    anchor: new google.maps.Point(18, 18)
-};
+function initMap() {
+  S.map = new google.maps.Map(document.getElementById('map'), {
+    center:{lat:-35.28,lng:149.13}, zoom:14, mapTypeId:'roadmap',
+    disableDefaultUI:true, gestureHandling:'greedy', clickableIcons:false,
+    styles: warmStyle(),
+  });
+  
+  S.geocoder    = new google.maps.Geocoder();
+  S.dirService  = new google.maps.DirectionsService();
+  S.dirRenderer = new google.maps.DirectionsRenderer({
+    suppressMarkers:true,
+    polylineOptions:{ strokeColor:'#e8601a', strokeWeight:5, strokeOpacity:0.88 },
+  });
+  S.dirRenderer.setMap(S.map);
 
-// MAP INIT
-async function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -35.2809, lng: 149.1300 }, zoom: 15, mapTypeId: 'roadmap',
-        styles: [ 
-            { elementType: "geometry", stylers: [{ color: "#0D1628" }] },
-            { elementType: "labels.text.stroke", stylers: [{ color: "#0D1628" }] },
-            { elementType: "labels.text.fill", stylers: [{ color: "#8A9BB5" }] },
-            { featureType: "road", elementType: "geometry", stylers: [{ color: "#1A2740" }] },
-            { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#243350" }] },
-            { featureType: "water", elementType: "geometry", stylers: [{ color: "#06324F" }] },
-            { featureType: "poi", stylers: [{ visibility: "off" }] },
-            { featureType: "poi.park", stylers: [{ visibility: "on" }] },
-            { featureType: "poi.park", elementType: "labels", stylers: [{ visibility: "off" }] },
-            { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#0B2318" }] },
-            { featureType: "transit", stylers: [{ visibility: "off" }] }
-        ],
-        gestureHandling: 'greedy', disableDefaultUI: true,
-    });
-    geocoder = new google.maps.Geocoder();
-    directionsService = new google.maps.DirectionsService();
-    document.getElementById('hud-dist-lbl').innerText = UNITS.distLong;
-    document.getElementById('hud-pace-lbl').innerText = UNITS.pace;
-    
-    pooIcon    = POO_SVG_MARKER;
-    goldenIcon = GOLDEN_SVG_MARKER;
-    
-    map.addListener('click', handleMapClick);
-    map.addListener('idle', renderVisibleMarkers);
-    loadData(); startBlueDot(); checkIosInstall();
+  // Setup Autocomplete
+  const acOpts = { fields: ['geometry', 'name'] };
+  S.ac.nearest = new google.maps.places.Autocomplete(el('inputNearest'), acOpts);
+  S.ac.origin  = new google.maps.places.Autocomplete(el('inputOrigin'), acOpts);
+  S.ac.dest    = new google.maps.places.Autocomplete(el('inputDest'), acOpts);
+
+  S.ac.nearest.addListener('place_changed', searchNearest);
+  S.ac.origin.addListener('place_changed', () => { S.planStart = S.ac.origin.getPlace().geometry.location; });
+  S.ac.dest.addListener('place_changed', () => { S.planEnd = S.ac.dest.getPlace().geometry.location; planRoute(); });
+
+  S.map.addListener('click', handleMapClick);
+  S.map.addListener('idle', renderVisibleMarkers);
+
+  loadData();
+  locateMe();
 }
 
 async function loadData() {
-    try { const res = await fetch('toilets-au.json'); allLoos = await res.json(); renderVisibleMarkers(); }
-    catch(e) { allLoos = []; }
+  try {
+      const res = await fetch('toilets-au.json');
+      S.allLoos = await res.json();
+      renderVisibleMarkers();
+  } catch(e) { console.error("Data load error"); }
+}
+
+function setMode(mode) {
+  S.mode = mode; S.pickingStep = null;
+  el('pillNearest').classList.toggle('active', mode==='nearest');
+  el('pillRoute').classList.toggle('active', mode==='route');
+  el('cardNearest').classList.toggle('hidden', mode!=='nearest');
+  el('cardRoute').classList.toggle('hidden', mode!=='route');
+  if (mode==='nearest') clearRoute();
+  else toast('📍 Search or tap the map to set a start point');
+}
+
+function setTravelMode(mode) {
+  S.travelMode = mode;
+  ['tmWalk','tmBike','tmDrive'].forEach(id=>el(id).classList.remove('sel'));
+  ({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode] && el(({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode]).classList.add('sel');
+  if (S.activeRoutePath) planRoute();
+}
+
+function locateMe() {
+  const fab = el('fabLocate'); fab.classList.add('spinning');
+  if (!navigator.geolocation) { toast('Geolocation not supported'); fab.classList.remove('spinning'); return; }
+  
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      fab.classList.remove('spinning');
+      const latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      S.userPos = latLng;
+      
+      if (!S.userMarker) {
+        S.userAccuracy = new google.maps.Circle({ map: S.map, center: latLng, radius: pos.coords.accuracy, fillColor: '#e8601a', fillOpacity: 0.1, strokeColor: '#e8601a', strokeOpacity: 0.3, strokeWeight: 1, clickable: false, zIndex: 1 });
+        S.userMarker = new google.maps.Marker({ position: latLng, map: S.map, icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: '#e8601a', fillOpacity: 1, strokeColor: '#FFFFFF', strokeWeight: 3, scale: 8 }, zIndex: 10, clickable: false });
+      } else {
+        S.userMarker.setPosition(latLng); S.userAccuracy.setCenter(latLng); S.userAccuracy.setRadius(pos.coords.accuracy);
+      }
+      S.map.panTo(latLng); S.map.setZoom(15);
+      renderVisibleMarkers();
+    },
+    () => { fab.classList.remove('spinning'); toast('Could not get GPS location'); },
+    {enableHighAccuracy:true, timeout:10000}
+  );
+}
+
+function searchNearest() {
+  const place = S.ac.nearest.getPlace();
+  if (place?.geometry) {
+      S.map.panTo(place.geometry.location);
+      S.map.setZoom(15);
+      renderVisibleMarkers();
+  }
+}
+
+function handleMapClick(e) {
+    if (S.mode === 'route' && S.pickingStep) {
+        const latLng = e.latLng;
+        S.geocoder.geocode({ location: latLng }, (results, status) => {
+            const label = (status === 'OK' && results[0]) ? results[0].formatted_address.split(',')[0] : 'Map Location';
+            if (S.pickingStep === 'start') {
+                S.planStart = latLng;
+                el('inputOrigin').value = label;
+                S.pickingStep = 'end';
+                toast('🏁 Tap map to set FINISH');
+            } else if (S.pickingStep === 'end') {
+                S.planEnd = latLng;
+                el('inputDest').value = label;
+                S.pickingStep = null;
+                planRoute();
+            }
+        });
+    } else {
+        closeSheet();
+    }
+}
+
+function planRoute() {
+    if (!S.planStart || !S.planEnd) { toast('Please set both start and finish locations'); return; }
+    toast('Calculating route...');
+    closeSheet();
+    
+    S.dirService.route({
+        origin: S.planStart,
+        destination: S.planEnd,
+        travelMode: google.maps.TravelMode[S.travelMode]
+    }, (result, status) => {
+        if (status !== 'OK') { toast('Could not find a route here.'); return; }
+        
+        S.dirRenderer.setDirections(result);
+        const leg = result.routes[0].legs[0];
+        S.activeRoutePath = result.routes[0].overview_path;
+        
+        el('statDist').innerText = leg.distance.text;
+        el('statTime').innerText = leg.duration.text;
+        
+        // Show route bar, shift top panel
+        el('routeBar').classList.add('show');
+        el('topPanel').classList.add('shifted');
+        
+        renderVisibleMarkers();
+    });
+}
+
+function clearRoute() {
+    S.dirRenderer.setDirections({routes:[]});
+    S.activeRoutePath = null;
+    S.planStart = null; S.planEnd = null;
+    el('inputOrigin').value = ''; el('inputDest').value = '';
+    el('routeBar').classList.remove('show');
+    el('topPanel').classList.remove('shifted');
+    renderVisibleMarkers();
+}
+
+function toggleLayer(layer) {
+  S.layers[layer] = !S.layers[layer];
+  el('btnToilet').classList.toggle('on-toilet', S.layers.toilet);
+  el('btnWater').classList.toggle('on-water', S.layers.water);
+  el('btnAccess').classList.toggle('on-access', S.layers.accessible);
+  renderVisibleMarkers();
 }
 
 function renderVisibleMarkers() {
-    if (plannerActive || isRunning) return;
-    const bounds = map.getBounds(); if (!bounds) return;
-    markers.forEach(m => m.setMap(null)); markers = [];
-    allLoos.filter(l => bounds.contains({ lat: l.lat, lng: l.lon })).slice(0, 60).forEach(loo => {
-        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon: loo.golden ? goldenIcon : pooIcon, title: loo.n, optimized: false });
-        marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
-        markers.push(marker);
-    });
-}
+    const bounds = S.map.getBounds();
+    if (!bounds && !S.activeRoutePath) return;
 
-// BLUE DOT
-function startBlueDot() {
-    if (!navigator.geolocation) return;
-    blueWatchId = navigator.geolocation.watchPosition(
-        pos => {
-            const { latitude: lat, longitude: lng, accuracy } = pos.coords;
-            if (!blueDotMarker) {
-                blueDotAccuracy = new google.maps.Circle({ map, center: {lat,lng}, radius: accuracy, fillColor: '#4285F4', fillOpacity: 0.1, strokeColor: '#4285F4', strokeOpacity: 0.3, strokeWeight: 1, clickable: false, zIndex: 1 });
-                blueDotMarker   = new google.maps.Marker({ position: {lat,lng}, map, icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#FFFFFF', strokeWeight: 3, scale: 9 }, zIndex: 10, clickable: false });
-                map.panTo({lat,lng});
-            } else { blueDotMarker.setPosition({lat,lng}); blueDotAccuracy.setCenter({lat,lng}); blueDotAccuracy.setRadius(accuracy); }
-        },
-        err => console.warn('GPS:', err.message),
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
-    );
-}
-function centreOnUser() { if (blueDotMarker) map.panTo(blueDotMarker.getPosition()); }
+    S.markers.forEach(m => m.setMap(null));
+    S.markers = [];
+    
+    let routePolyline = null;
+    if (S.activeRoutePath) routePolyline = new google.maps.Polyline({ path: S.activeRoutePath });
 
-function findNearest() {
-    if (!blueDotMarker) { alert('Waiting for GPS fix...'); return; }
-    const { lat, lng } = blueDotMarker.getPosition().toJSON();
-    let nearest = null, bestDist = Infinity;
-    allLoos.forEach(l => { const d = haversineKm(lat, lng, l.lat, l.lon); if (d < bestDist) { bestDist = d; nearest = l; } });
-    if (nearest) { map.panTo({ lat: nearest.lat, lng: nearest.lon }); map.setZoom(17); openSheet(nearest); }
-}
+    let tCount = 0, wCount = 0;
 
-// INFOWINDOW
-let infoWindow = null;
-function openSheet(loo) {
-    currentLoo = loo; if (infoWindow) infoWindow.close();
-    let tagsHtml = '';
-    if (loo.t?.w) tagsHtml += '<span class="iw-tag t-acc">♿ Accessible</span>';
-    if (loo.t?.b) tagsHtml += '<span class="iw-tag">🍼 Baby Change</span>';
-    if (loo.t?.o === '24/7') tagsHtml += '<span class="iw-tag t-24">🟢 24/7</span>'; else if (loo.t?.o) tagsHtml += `<span class="iw-tag">🕒 ${loo.t.o}</span>`;
-    if (loo.t?.f) tagsHtml += '<span class="iw-tag">💧 Water</span>';
-    const content = `<div class="iw-card"><button class="iw-close" onclick="closeSheet()">✕</button><div class="iw-type">${loo.golden ? '⭐ FEATURED' : '💩 PUBLIC FACILITY'}</div><div class="iw-name">${loo.n}</div><div class="iw-address">${loo.a || ''}</div>${tagsHtml ? `<div class="iw-tags">${tagsHtml}</div>` : ''}<div class="iw-actions"><button class="iw-btn iw-btn-secondary" onclick="openDirections()">▶ NAVIGATE</button><button class="iw-btn iw-btn-primary" onclick="openStreetView()">👁 STREET VIEW</button></div></div>`;
-    infoWindow = new google.maps.InfoWindow({ content, pixelOffset: new google.maps.Size(0, -8), disableAutoPan: false });
-    infoWindow.open(map); infoWindow.setPosition({ lat: loo.lat, lng: loo.lon });
-}
-function closeSheet() { if (infoWindow) { infoWindow.close(); infoWindow = null; } currentLoo = null; }
-function handleMapClick(e) { if (pickingStep) handlePickTap(e.latLng); else { closeSheet(); closeAll(); } }
-let navPolyline = null;
-
-function openDirections() {
-    if (!currentLoo) return;
-    if (!blueDotMarker) { alert('Waiting for GPS fix — try again in a moment.'); return; }
-    closeSheet();
-
-    const origin = blueDotMarker.getPosition();
-    const dest   = { lat: currentLoo.lat, lng: currentLoo.lon };
-    const loo    = currentLoo;
-
-    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
-    document.getElementById('nav-bar-name').innerText = loo.n;
-    document.getElementById('nav-bar-dist').innerHTML = '<span>Calculating…</span>';
-    document.getElementById('nav-bar').classList.add('active');
-
-    directionsService.route(
-        { origin, destination: dest, travelMode: google.maps.TravelMode.WALKING },
-        (result, status) => {
-            if (status !== 'OK') {
-                document.getElementById('nav-bar-dist').innerHTML = 'Could not find route';
-                return;
-            }
-            const leg = result.routes[0].legs[0];
-            const path = result.routes[0].overview_path;
-
-            navPolyline = new google.maps.Polyline({ path, geodesic: true, strokeColor: '#FC4C02', strokeOpacity: 0.95, strokeWeight: 5, map });
-            const dist = leg.distance.text;
-            const time = leg.duration.text;
-            document.getElementById('nav-bar-dist').innerHTML = `<span>${dist}</span> · ${time} walking`;
-
-            const bounds = new google.maps.LatLngBounds();
-            path.forEach(p => bounds.extend(p));
-            map.fitBounds(bounds, { top: 80, right: 40, bottom: 140, left: 40 });
-        }
-    );
-}
-
-function cancelNavigation() {
-    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
-    document.getElementById('nav-bar').classList.remove('active');
-    if (blueDotMarker) map.panTo(blueDotMarker.getPosition());
-}
-
-// STREET VIEW
-function openStreetView() {
-    if (!currentLoo) return;
-    document.getElementById('sv-title').innerText = currentLoo.n;
-    document.getElementById('sv-modal').classList.add('open');
-    if (panorama) { panorama.setVisible(false); panorama = null; }
-    panorama = new google.maps.StreetViewPanorama(document.getElementById('sv-panorama'), { position: { lat: currentLoo.lat, lng: currentLoo.lon }, addressControl: false, motionTracking: false, motionTrackingControl: false, enableCloseButton: false, linksControl: false, panControl: false, zoomControl: false, fullscreenControl: false, showRoadLabels: false });
-}
-function closeStreetView() { document.getElementById('sv-modal').classList.remove('open'); if (panorama) { panorama.setVisible(false); panorama = null; } }
-function svRotate(d) { if (!panorama) return; const p = panorama.getPov(); panorama.setPov({ heading: (p.heading + d + 360) % 360, pitch: p.pitch }); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStreetView(); });
-
-// ROUTE PLANNER
-function openPlanner() { plannerActive = true; document.getElementById('planner-bar').classList.add('active'); closeAll(); activateStep('start'); }
-
-function closePlanner() {
-    plannerActive = false; pickingStep = null; planStart = null; planEnd = null; cachedRoutePath = null; cachedRouteSummary = null;
-    document.getElementById('planner-bar').classList.remove('active');
-    document.getElementById('route-summary').classList.remove('open');
-    document.getElementById('pick-toast').classList.remove('show');
-    document.getElementById('loading-toast').classList.remove('show');
-    document.getElementById('map').classList.remove('picking');
-    resetStep('start'); resetStep('end');
-    if (planStartMarker) { planStartMarker.setMap(null); planStartMarker = null; }
-    if (planEndMarker)   { planEndMarker.setMap(null);   planEndMarker   = null; }
-    if (routePolyline)   { routePolyline.setMap(null);   routePolyline   = null; }
-    routeMarkers.forEach(m => m.setMap(null)); routeMarkers = [];
-    markers.forEach(m => m.setMap(null)); markers = [];
-    renderVisibleMarkers();
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-home').classList.add('active');
-}
-
-function resetStep(w) { document.getElementById('step-' + w).className = 'planner-step'; document.getElementById('step-' + w + '-val').innerText = 'Tap to set'; }
-
-function activateStep(w) {
-    if (!plannerActive) return;
-    pickingStep = w; document.getElementById('map').classList.add('picking');
-    ['start','end'].forEach(s => { const el = document.getElementById('step-' + s); if (s === w && !el.classList.contains('done')) el.className = 'planner-step current'; });
-    const toast = document.getElementById('pick-toast');
-    if (w === 'start') { toast.innerHTML = '📍 Tap map to set START or <button id="btn-use-current" onclick="useCurrentLocation()">Use Current</button>'; } else { toast.innerHTML = '🏁 Tap the map to set your FINISH'; }
-    toast.classList.add('show');
-}
-
-function useCurrentLocation() {
-    if (!blueDotMarker) { alert('Getting GPS fix, please wait...'); return; }
-    const latLng = blueDotMarker.getPosition();
-    const lat = latLng.lat(), lng = latLng.lng();
-    planStart = { lat, lng, label: '📍 Current Location' };
-    setStepDone('start', '📍 Current Location');
-    if (planStartMarker) planStartMarker.setMap(null);
-    planStartMarker = makePinMarker({ lat, lng }, '#FC4C02', 'A');
-    document.getElementById('pick-toast').classList.remove('show');
-    document.getElementById('map').classList.remove('picking');
-    pickingStep = null;
-    if (!planEnd) setTimeout(() => activateStep('end'), 300); else computeRoute();
-}
-
-function handlePickTap(latLng) {
-    const which = pickingStep; pickingStep = null;
-    document.getElementById('map').classList.remove('picking'); document.getElementById('pick-toast').classList.remove('show');
-    const lat = latLng.lat(), lng = latLng.lng();
-    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-        const label = (status === 'OK' && results[0]) ? results[0].formatted_address.split(',')[0] : `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-        if (which === 'start') {
-            planStart = { lat, lng, label }; setStepDone('start', label);
-            if (planStartMarker) planStartMarker.setMap(null); planStartMarker = makePinMarker({ lat, lng }, '#FC4C02', 'A');
-            if (!planEnd) setTimeout(() => activateStep('end'), 300); else computeRoute();
+    S.allLoos.forEach(loo => {
+        // Filter by bounds OR route tolerance
+        const latLng = new google.maps.LatLng(loo.lat, loo.lon);
+        let show = false;
+        
+        if (S.activeRoutePath) {
+            // Only show pins within ~200m of the active route
+            show = google.maps.geometry.poly.isLocationOnEdge(latLng, routePolyline, 0.0018);
         } else {
-            planEnd = { lat, lng, label }; setStepDone('end', label);
-            if (planEndMarker) planEndMarker.setMap(null); planEndMarker = makePinMarker({ lat, lng }, '#22C55E', 'B');
-            if (planStart) computeRoute(); else setTimeout(() => activateStep('start'), 300);
+            show = bounds && bounds.contains(latLng);
         }
-    });
-}
+        
+        if (!show) return;
 
-function setStepDone(w, label) { document.getElementById('step-' + w).className = 'planner-step done'; document.getElementById('step-' + w + '-val').innerText = label; }
+        const isWater = isWaterOnly(loo);
+        const isAccess = loo.t && loo.t.w;
 
-function makePinMarker(pos, color, letter) {
-    return new google.maps.Marker({ position: pos, map, icon: { path: 'M12 0C7.58 0 4 3.58 4 8c0 5.5 8 14 8 14s8-8.5 8-14c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z', fillColor: color, fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, scale: 1.8, anchor: new google.maps.Point(12, 22), labelOrigin: new google.maps.Point(12, 8) }, label: { text: letter, color: '#fff', fontSize: '11px', fontWeight: 'bold' }, zIndex: 1000 });
-}
+        // Apply toggles
+        if (isWater && !S.layers.water) return;
+        if (!isWater && !S.layers.toilet) return;
+        if (S.layers.accessible && !isAccess && !isWater) return;
 
-function setTravelMode(mode, btnEl) {
-    currentTravelMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    btnEl.classList.add('active');
-    if (planStart && planEnd) computeRoute();
-}
+        // Limit to 80 pins to prevent lag
+        if (S.markers.length > 80) return;
 
-function changeRouteRadius(val) {
-    currentRouteTolerance = parseFloat(val);
-    if (cachedRoutePath && cachedRouteSummary) { filterFacilitiesOnRoute(cachedRoutePath); showRouteSummaryUI(); }
-}
+        isWater ? wCount++ : tCount++;
 
-function computeRoute() {
-    closeAll(); document.getElementById('loading-toast').classList.add('show');
-    directionsService.route(
-        { origin: { lat: planStart.lat, lng: planStart.lng }, destination: { lat: planEnd.lat, lng: planEnd.lng }, travelMode: google.maps.TravelMode[currentTravelMode] },
-        (result, status) => {
-            document.getElementById('loading-toast').classList.remove('show');
-            if (status !== 'OK') { alert('Could not calculate route.'); return; }
-            const leg = result.routes[0].legs[0];
-            cachedRoutePath = result.routes[0].overview_path;
-            if (routePolyline) routePolyline.setMap(null);
-            routePolyline = new google.maps.Polyline({ path: cachedRoutePath, geodesic: true, strokeColor: '#FC4C02', strokeOpacity: 0.9, strokeWeight: 5, map });
-            const bounds = new google.maps.LatLngBounds();
-            cachedRoutePath.forEach(p => bounds.extend(p));
-            map.fitBounds(bounds, { top: 120, right: 20, bottom: 300, left: 20 });
-            cachedRouteSummary = { distKm: leg.distance.value / 1000, durationText: leg.duration.text, startLabel: planStart.label, endLabel: planEnd.label };
-            filterFacilitiesOnRoute(cachedRoutePath);
-            showRouteSummaryUI();
-        }
-    );
-}
+        let iconUrl = pinToilet;
+        if (isWater) iconUrl = pinWater;
+        if (loo.golden) iconUrl = pinStar;
 
-function filterFacilitiesOnRoute(routePath) {
-    routeMarkers.forEach(m => m.setMap(null)); routeMarkers = [];
-    markers.forEach(m => m.setMap(null)); markers = [];
-    const polyline = new google.maps.Polyline({ path: routePath });
-    routeFacilities = allLoos.filter(loo => google.maps.geometry.poly.isLocationOnEdge(new google.maps.LatLng(loo.lat, loo.lon), polyline, currentRouteTolerance));
-    routeFacilities.forEach(loo => {
-        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon: loo.golden ? goldenIcon : pooIcon, optimized: false, zIndex: 500 });
+        const marker = new google.maps.Marker({
+            position: latLng,
+            map: S.map,
+            icon: {
+                url: iconUrl,
+                scaledSize: new google.maps.Size(isWater? 30 : 34, isWater? 36 : 42),
+                anchor: new google.maps.Point(isWater? 15 : 17, isWater? 36 : 42)
+            },
+            optimized: false
+        });
+
         marker.addListener('click', () => openSheet(loo));
-        routeMarkers.push(marker);
+        S.markers.push(marker);
     });
-}
 
-function showRouteSummaryUI() {
-    const toilets = routeFacilities.filter(l => !isWaterOnly(l)).length;
-    const water   = routeFacilities.filter(l => l.t?.f).length;
-    document.getElementById('summary-title').innerText = 'ROUTE READY';
-    document.getElementById('summary-meta').innerText  = `${cachedRouteSummary.startLabel} → ${cachedRouteSummary.endLabel}`;
-    document.getElementById('stat-dist').innerText     = UNITS.fmtDist(cachedRouteSummary.distKm);
-    document.getElementById('stat-toilets').innerText  = toilets;
-    document.getElementById('stat-water').innerText    = water;
-    const list = document.getElementById('route-facilities');
-    list.innerHTML = '';
-    if (routeFacilities.length === 0) {
-        list.innerHTML = '<p style="color:#8E8E93;font-size:0.83rem;text-align:center;padding:16px 0;">No facilities found within the selected radius.</p>';
+    // Update Counts
+    if (S.activeRoutePath) {
+        el('statToilets').innerText = tCount;
+        el('statWater').innerText = wCount;
     } else {
-        [...routeFacilities]
-            .sort((a,b) => haversineKm(planStart.lat,planStart.lng,a.lat,a.lon) - haversineKm(planStart.lat,planStart.lng,b.lat,b.lon))
-            .forEach(loo => {
-                const dist = UNITS.fmtShort(haversineKm(planStart.lat, planStart.lng, loo.lat, loo.lon));
-                const item = document.createElement('div');
-                item.className = 'route-facility-item';
-                item.onclick   = () => openSheet(loo);
-                item.innerHTML = `<div class="rf-icon${isWaterOnly(loo)?' water':''}">${isWaterOnly(loo)?'💧':(loo.golden?'⭐':'💩')}</div><div class="rf-info"><div class="rf-name">${loo.n}</div><div class="rf-meta">${[loo.t?.w?'♿':'', loo.t?.f?'💧':'', loo.t?.o==='24/7'?'🟢 24/7':''].filter(Boolean).join('  ')||'Public Facility'}</div></div><div class="rf-dist">${dist}</div>`;
-                list.appendChild(item);
-            });
+        el('countT').innerText = tCount;
+        el('countW').innerText = wCount;
+        if (tCount > 0 || wCount > 0) {
+            el('countPill').classList.add('show');
+            setTimeout(() => el('countPill').classList.remove('show'), 3000);
+        }
     }
-    document.getElementById('route-summary').classList.add('open');
 }
 
-function isWaterOnly(loo) { return loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden; }
+function openSheet(loo) {
+    S.currentLoo = loo;
+    const isW = isWaterOnly(loo);
+    
+    let chipsHtml = '';
+    if (!isW) {
+        if (loo.t?.w) chipsHtml += '<div class="chip y">♿ Accessible</div>';
+        if (loo.t?.b) chipsHtml += '<div class="chip y">🍼 Baby change</div>';
+        if (loo.t?.u) chipsHtml += '<div class="chip">🚻 Unisex</div>';
+        if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">🚺 Female</div>';
+        if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">🚹 Male</div>';
+        if (loo.t?.o === '24/7') chipsHtml += '<div class="chip">🟢 24/7</div>';
+        else if (loo.t?.o) chipsHtml += `<div class="chip">🕐 ${loo.t.o}</div>`;
+    } else {
+        chipsHtml += '<div class="chip water-yes">💧 Drinking water</div>';
+    }
 
-function startRunFromPlan() {
-    document.getElementById('route-summary').classList.remove('open');
-    document.getElementById('planner-bar').classList.remove('active');
-    closePlanner();
-    if (planStart) map.panTo({ lat: planStart.lat, lng: planStart.lng });
-    startRun();
+    const typeBadge = isW ? '<div class="type-badge water">💧 Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">⭐ Featured Sanctuary</div>' : '<div class="type-badge toilet">🚻 Public Toilet</div>');
+
+    let distHtml = '';
+    if (S.userPos) {
+        const dist = haversine(S.userPos.lat, S.userPos.lng, loo.lat, loo.lon);
+        distHtml = `&nbsp;·&nbsp; ${dist < 1000 ? Math.round(dist) + 'm' : (dist/1000).toFixed(1) + 'km'} away`;
+    }
+
+    const gUrl = `https://www.google.com/maps/dir/?api=1&destination=$${loo.lat},${loo.lon}&travelmode=walking`;
+
+    el('sheetBody').innerHTML = `
+      ${typeBadge}
+      <div class="sheet-name">${loo.n}</div>
+      <div class="sheet-meta">${loo.a || 'Location mapped'}${distHtml}</div>
+      <div class="chip-row">${chipsHtml}</div>
+      ${loo.note ? `<div class="sheet-notes">${loo.note}</div>` : ''}
+      <a href="${gUrl}" target="_blank" style="text-decoration:none;"><div class="dir-btn">📍 GET DIRECTIONS</div></a>
+    `;
+    
+    el('backdrop').classList.add('on');
+    el('sheet').classList.add('on');
 }
 
-// TRACKING
-function haversineKm(la1,lo1,la2,lo2) { const R=6371, dLa=(la2-la1)*Math.PI/180, dLo=(lo2-lo1)*Math.PI/180; const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2; return R*2*Math.asin(Math.sqrt(a)); }
-function nearbyPitStops(lat,lon) { return allLoos.filter(l=>haversineKm(lat,lon,l.lat,l.lon)<=0.5).length; }
-function formatPace(m) { if (!isFinite(m)||m<=0||m>99) return '--:--'; const min=Math.floor(m), s=String(Math.round((m-min)*60)).padStart(2,'0'); return `${min}:${s}`; }
-function updateHUD(lat,lon) { document.getElementById('hud-dist').innerText = UNITS.fromKm(totalDistKm).toFixed(2); const elapsed=(Date.now()-runStartTime)/60000; const d=UNITS.fromKm(totalDistKm); document.getElementById('hud-pace').innerText = formatPace(d>0.05 ? elapsed/d : 0); document.getElementById('hud-pits').innerText = nearbyPitStops(lat,lon); }
-
-function toggleRun() { isRunning ? stopRun() : startRun(); }
-function startRun() {
-    if (!navigator.geolocation) { alert('Geolocation not available.'); return; }
-    isRunning=true; runPath=[]; totalDistKm=0; lastPos=null; runStartTime=Date.now();
-    document.getElementById('run-hud').classList.add('active');
-    const tab = document.getElementById('tab-run');
-    tab.classList.add('running'); tab.querySelector('.nav-icon').innerText = '⏹'; tab.querySelector('.nav-label').innerText = 'Stop';
-    if (runPolyline) runPolyline.setMap(null);
-    runPolyline = new google.maps.Polyline({ path: runPath, geodesic:true, strokeColor:'#FC4C02', strokeOpacity:0.9, strokeWeight:5, map });
-    runWatchId = navigator.geolocation.watchPosition(
-        pos => { const {latitude:lat, longitude:lon, accuracy} = pos.coords; if (accuracy>40) return; if (lastPos) { const seg=haversineKm(lastPos.lat,lastPos.lon,lat,lon); if(seg>0.003&&seg<0.3) totalDistKm+=seg; } lastPos={lat,lon}; runPath.push({lat,lng:lon}); runPolyline.setPath(runPath); map.panTo({lat,lng:lon}); updateHUD(lat,lon); },
-        err => console.warn('Run GPS:',err.message), {enableHighAccuracy:true, maximumAge:2000, timeout:10000}
-    );
-}
-function stopRun() {
-    isRunning=false;
-    if (runWatchId!==null) { navigator.geolocation.clearWatch(runWatchId); runWatchId=null; }
-    document.getElementById('run-hud').classList.remove('active');
-    const tab = document.getElementById('tab-run');
-    tab.classList.remove('running'); tab.querySelector('.nav-icon').innerText = '▶️'; tab.querySelector('.nav-label').innerText = 'Run';
+function closeSheet() {
+    el('backdrop').classList.remove('on');
+    el('sheet').classList.remove('on');
+    S.currentLoo = null;
 }
 
-// REPORT
-let selectedReportOption = null;
-function openReport() {
-    selectedReportOption = null;
-    document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById('report-submit').disabled = true;
-    document.getElementById('report-form').style.display = '';
-    document.getElementById('report-thanks').style.display = 'none';
-    const name = currentLoo ? currentLoo.n : 'Your current location';
-    document.getElementById('report-location-name').innerText = name;
-    document.getElementById('report-sheet').classList.add('open');
-    document.getElementById('overlay').classList.add('show');
+function warmStyle() {
+  return [
+    {elementType:'geometry',                  stylers:[{color:'#f5f0e8'}]},
+    {elementType:'labels.text.fill',          stylers:[{color:'#6b6258'}]},
+    {elementType:'labels.text.stroke',        stylers:[{color:'#faf8f3'}]},
+    {featureType:'road',elementType:'geometry',       stylers:[{color:'#ffffff'}]},
+    {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#e0dbd2'}]},
+    {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#8a8070'}]},
+    {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#ffe0b0'}]},
+    {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#e8c880'}]},
+    {featureType:'water',elementType:'geometry',      stylers:[{color:'#c5dff0'}]},
+    {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#5a8aaa'}]},
+    {featureType:'poi',elementType:'geometry',        stylers:[{color:'#ede8e0'}]},
+    {featureType:'poi.park',elementType:'geometry',   stylers:[{color:'#d4e8c8'}]},
+    {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#6a9058'}]},
+    {featureType:'transit',elementType:'geometry',    stylers:[{visibility:'off'}]},
+    {featureType:'administrative.land_parcel',elementType:'labels',stylers:[{visibility:'off'}]},
+  ];
 }
-function closeReport() { document.getElementById('report-sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
-function selectReport(el, emoji, label) { document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); selectedReportOption = { emoji, label }; document.getElementById('report-submit').disabled = false; }
-function submitReport() { if (!selectedReportOption) return; document.getElementById('report-form').style.display = 'none'; document.getElementById('thanks-emoji').innerText = selectedReportOption.emoji; document.getElementById('report-thanks').style.display = 'flex'; setTimeout(() => closeReport(), 2000); }
 </script>
 
 <script data-cfasync="false" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=places,geometry&callback=initMap" async defer></script>
 </body>
 </html>
-
-
