@@ -53,6 +53,7 @@
       --header-base:  60px;
       --header-total: calc(var(--header-base) + var(--notch-h));
       --route-bar-h:  40px; 
+      --nav-h:        calc(64px + env(safe-area-inset-bottom, 0px));
     }
 
     html, body {
@@ -63,12 +64,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    #map { position: fixed; inset: 0; z-index: 0; }
+    #map { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; background: #e5e2da; }
     
     /* Push Google Controls */
     .gm-bundled-control { bottom: 80px !important; }
     .gmnoprint.gm-bundled-control-on-bottom { bottom: 80px !important; }
-    .gm-style-mtc-bbw, .gm-style .gm-style-mtc, div[style*="position: absolute"][style*="top"] .gmnoprint { top: calc(env(safe-area-inset-top, 0px) + 140px) !important; }
+    .gm-style-mtc-bbw, .gm-style .gm-style-mtc, div[style*="position: absolute"][style*="top"] .gmnoprint { top: calc(var(--header-total) + 12px) !important; }
 
     /* ── SOLID WHITE TOP BANNER ── */
     header {
@@ -114,7 +115,7 @@
     }
     .rs-clear:hover { border-color: var(--orange); color: var(--orange); }
 
-    /* ── FLOATING UI ELEMENTS (Search Bars) ── */
+    /* ── FLOATING UI ELEMENTS (Search Bars Only) ── */
     .floating-ui {
       position: fixed; z-index: 110;
       top: calc(var(--header-total) + 12px); 
@@ -161,7 +162,7 @@
 
     /* ── NEW FILTER BOTTOM NAV ── */
     #bottom-nav { 
-      position: fixed; bottom: 0; left: 0; right: 0; height: 64px; z-index: 2500; 
+      position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); z-index: 2500; 
       background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
       border-top: 1px solid var(--border); display: flex; align-items: flex-start; 
       padding-top: 8px; padding-bottom: env(safe-area-inset-bottom, 0px); 
@@ -198,7 +199,7 @@
     
     /* Run Tracker State */
     .nav-tab.running .nav-icon { background: rgba(34,197,94,0.15); animation: pulse-green 1.5s ease-in-out infinite; opacity: 1;}
-    .nav-tab.running .nav-label { color: var(--green); }
+    .nav-tab.running .nav-label { color: #16A34A; }
     @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } }
 
     /* ── FAB ── */
@@ -247,13 +248,13 @@
     .dir-btn:hover { background: var(--orange-dk); }
 
     /* ── RUN HUD ── */
-    #run-hud { position: fixed; top: 0; left: 0; right: 0; z-index: 1500; display: flex; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+    #run-hud { position: fixed; top: var(--header-total); left: 0; right: 0; z-index: 1500; display: flex; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
     #run-hud.active { transform: translateY(0); pointer-events: auto; }
-    .hud-cell { flex: 1; background: rgba(13,22,40,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 3px solid var(--orange); padding: calc(env(safe-area-inset-top, 0px) + 14px) 0 14px; text-align: center; }
-    .hud-cell + .hud-cell { border-left: 1px solid var(--navy-line); }
-    .hud-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-style: italic; font-size: 1.9rem; line-height: 1; color: var(--white); }
+    .hud-cell { flex: 1; background: rgba(26,39,64,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 3px solid var(--orange); padding: calc(env(safe-area-inset-top, 0px) + 14px) 0 14px; text-align: center; }
+    .hud-cell + .hud-cell { border-left: 1px solid #243350; }
+    .hud-value { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 1.9rem; line-height: 1; color: #fff; }
     .hud-value.hl { color: var(--orange); }
-    .hud-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-top: 4px; }
+    .hud-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8A9BB5; margin-top: 4px; }
 
     /* ── TOAST ── */
     .toast { position: fixed; top: calc(var(--header-total) + 160px); left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 500; background: var(--text); color: var(--cream); padding: 9px 18px; border-radius: 30px; font-size: 13px; font-weight: 500; pointer-events: none; opacity: 0; transition: all 0.25s; max-width: calc(100vw - 40px); text-align: center; box-shadow: var(--shadow); white-space: nowrap; }
@@ -281,18 +282,18 @@
 </header>
 
 <div class="route-bar" id="routeBar">
-  <span class="rs-stat">&#128205; <strong id="statDist">—</strong></span>
-  <span class="rs-stat">&#9201;&#65039; <strong id="statTime">—</strong></span>
-  <span class="rs-stat">&#128699; <strong id="statToilets">—</strong></span>
-  <span class="rs-stat">&#128167; <strong id="statWater">—</strong></span>
+  <span class="rs-stat">&#128205; <strong id="statDist">&mdash;</strong></span>
+  <span class="rs-stat">&#9201;&#65039; <strong id="statTime">&mdash;</strong></span>
+  <span class="rs-stat">&#128699; <strong id="statToilets">&mdash;</strong></span>
+  <span class="rs-stat">&#128167; <strong id="statWater">&mdash;</strong></span>
   <div class="rs-div"></div>
-  <button class="rs-clear" onclick="clearRoute()">✕ Clear</button>
+  <button class="rs-clear" onclick="clearRoute()">&#10005; Clear</button>
 </div>
 
 <div id="floatingUi" class="floating-ui">
   <div class="search-card" id="cardNearest">
     <div class="search-row">
-      <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark…" autocomplete="off">
+      <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark&hellip;" autocomplete="off">
       <button class="find-btn" onclick="searchNearest()">FIND</button>
     </div>
   </div>
@@ -300,12 +301,12 @@
   <div class="search-card hidden" id="cardRoute">
     <div class="search-row">
       <span class="dot dot-o"></span>
-      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — tap map or search…" autocomplete="off" onfocus="startPicking('start')">
+      <input type="text" id="inputOrigin" class="search-input" placeholder="Start &mdash; tap map or search&hellip;" autocomplete="off" onfocus="startPicking('start')">
     </div>
     <div class="vline"></div>
     <div class="search-row rs">
       <span class="dot dot-d"></span>
-      <input type="text" id="inputDest" class="search-input" placeholder="Finish — tap map or search…" autocomplete="off" onfocus="startPicking('end')">
+      <input type="text" id="inputDest" class="search-input" placeholder="Finish &mdash; tap map or search&hellip;" autocomplete="off" onfocus="startPicking('end')">
       <button class="find-btn" onclick="planRoute()">GO</button>
     </div>
     <div class="tm-row">
@@ -317,7 +318,7 @@
 </div>
 
 <div class="count-pill" id="countPill">
-  <span class="hi" id="countT">0</span> toilets  · 
+  <span class="hi" id="countT">0</span> toilets &nbsp;&middot;&nbsp;
   <span class="wi" id="countW">0</span> water
 </div>
 
@@ -399,7 +400,7 @@ const S = {
 const el = id => document.getElementById(id);
 
 function toast(msg, ms=3200) {
-  const t=el('toast'); t.textContent=msg; t.classList.add('show');
+  const t=el('toast'); t.innerHTML=msg; t.classList.add('show');
   clearTimeout(S.toastTimer); S.toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
 }
 
@@ -410,6 +411,7 @@ function haversine(lat1,lng1,lat2,lng2) {
 }
 const isWaterOnly = (loo) => loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden;
 
+// SVG Markers (Completely immune to Windows ANSI encoding bugs via Unicode escapes)
 const pinPoo = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#e8601a" filter="url(#s)"/><circle cx="17" cy="16" r="11" fill="#3d1600"/><text x="17" y="21" font-size="14" text-anchor="middle" font-family="sans-serif">\uD83D\uDCA9</text></svg>');
 const pinWater = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="0 0 30 36"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter></defs><path d="M15 2C8.4 2 3 7.4 3 14c0 8.4 12 20 12 20S27 22.4 27 14C27 7.4 21.6 2 15 2Z" fill="#1a8fd9" filter="url(#s)"/><circle cx="15" cy="14" r="9" fill="#061830"/><text x="15" y="18.5" font-size="11" text-anchor="middle" font-family="sans-serif">\uD83D\uDCA7</text></svg>');
 const pinStar = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#FFD700" filter="url(#s)"/><circle cx="17" cy="16" r="11" fill="#3d1600"/><text x="17" y="21" font-size="14" text-anchor="middle" font-family="sans-serif">\u2B50</text></svg>');
@@ -454,7 +456,7 @@ function initMap() {
     loadData();
     locateMe();
   } catch (error) {
-    alert("Map failed to load. Check API key and Places library.");
+    alert("Map failed to load. Please check your internet connection.");
   }
 }
 
@@ -521,6 +523,10 @@ function locateMe() {
   );
 }
 
+function searchNearest() {
+    // Triggers automatically via Autocomplete listener
+}
+
 function handleMapClick(e) {
     if (S.mode === 'route' && S.pickingStep) {
         const latLng = e.latLng;
@@ -559,8 +565,8 @@ function planRoute() {
         const leg = result.routes[0].legs[0];
         S.activeRoutePath = result.routes[0].overview_path;
         
-        el('statDist').innerText = leg.distance.text;
-        el('statTime').innerText = leg.duration.text;
+        el('statDist').innerHTML = leg.distance.text;
+        el('statTime').innerHTML = leg.duration.text;
         
         el('routeBar').classList.add('show');
         el('floatingUi').classList.add('shifted');
@@ -661,7 +667,6 @@ function findNearest() {
     const { lat, lng } = S.userPos;
     let nearest = null, bestDist = Infinity;
     S.allLoos.forEach(l => {
-        // Obey filters during "find nearest" calculation
         const isWater = isWaterOnly(l);
         if (isWater && !S.layers.water) return;
         if (!isWater && !S.layers.toilet) return;
@@ -686,22 +691,22 @@ function openSheet(loo) {
     let chipsHtml = '';
     if (!isW) {
         if (loo.t?.w) chipsHtml += '<div class="chip yes">&#9855; Accessible</div>';
-        if (loo.t?.b) chipsHtml += '<div class="chip yes">&#127836; Baby change</div>';
+        if (loo.t?.b) chipsHtml += '<div class="chip yes">&#127868; Baby change</div>';
         if (loo.t?.u) chipsHtml += '<div class="chip">&#128699; Unisex</div>';
-        if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">&#128698; Female</div>';
-        if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">&#128697; Male</div>';
+        if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">&#128618; Female</div>';
+        if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">&#128617; Male</div>';
         if (loo.t?.o === '24/7') chipsHtml += '<div class="chip yes">&#128994; 24/7</div>';
         else if (loo.t?.o) chipsHtml += `<div class="chip">&#128344; ${loo.t.o}</div>`;
     } else {
         chipsHtml += '<div class="chip water-yes">&#128167; Drinking water</div>';
     }
 
-    const typeBadge = isW ? '<div class="type-badge water">&#128167; Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">&#11088; Featured Sanctuary</div>' : '<div class="type-badge toilet">&#128699; Public Toilet</div>');
+    const typeBadge = isW ? '<div class="type-badge water">&#128167; Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">&#11088; Featured Sanctuary</div>' : '<div class="type-badge toilet">&#128169; Public Toilet</div>');
 
     let distHtml = '';
     if (S.userPos) {
         const dist = haversine(S.userPos.lat, S.userPos.lng, loo.lat, loo.lon);
-        distHtml = ` ·  ${dist < 1000 ? Math.round(dist) + 'm' : (dist/1000).toFixed(1) + 'km'} away`;
+        distHtml = `&nbsp;&middot;&nbsp; ${dist < 1000 ? Math.round(dist) + 'm' : (dist/1000).toFixed(1) + 'km'} away`;
     }
 
     const gUrl = `https://www.google.com/maps/dir/?api=1&destination=${loo.lat},${loo.lon}&travelmode=walking`;
