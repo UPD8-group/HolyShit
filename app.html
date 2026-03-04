@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,7 +176,7 @@
     .nav-icon { 
       width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; 
       font-size: 1.3rem; border-radius: 8px; transition: background 0.15s, transform 0.15s; 
-      opacity: 0.45; /* Greyed out when inactive */
+      opacity: 0.45; 
     }
     .nav-label { 
       font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3px; color: var(--text-dim); 
@@ -185,13 +184,13 @@
     }
     
     /* Toggle Active States */
-    .filter-tab.on-t.active .nav-icon { background: var(--orange-lt); opacity: 1; color: var(--orange);}
+    .filter-tab.on-t.active .nav-icon { background: var(--orange-lt); opacity: 1; }
     .filter-tab.on-t.active .nav-label { color: var(--orange); }
     
-    .filter-tab.on-w.active .nav-icon { background: var(--water-lt); opacity: 1; color: var(--water);}
+    .filter-tab.on-w.active .nav-icon { background: var(--water-lt); opacity: 1; }
     .filter-tab.on-w.active .nav-label { color: var(--water); }
     
-    .filter-tab.on-a.active .nav-icon { background: rgba(100,60,200,0.1); opacity: 1; color: #6044cc;}
+    .filter-tab.on-a.active .nav-icon { background: rgba(100,60,200,0.1); opacity: 1; }
     .filter-tab.on-a.active .nav-label { color: #6044cc; }
 
     /* Action Tab States */
@@ -280,24 +279,24 @@
   <img src="https://holyshit.app/logo.png" id="mainLogo" alt="HolyShit" onclick="location.reload()">
   
   <div class="mode-row">
-    <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">&#128205; Nearest</button>
-    <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">&#127939; Route</button>
+    <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">&#x1F4CD; Nearest</button>
+    <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">&#x1F3C3; Route</button>
   </div>
 </header>
 
 <div class="route-bar" id="routeBar">
-  <span class="rs-stat">&#128205; <strong id="statDist">—</strong></span>
-  <span class="rs-stat">&#9202;&#65039; <strong id="statTime">—</strong></span>
-  <span class="rs-stat">&#128699; <strong id="statToilets">—</strong></span>
-  <span class="rs-stat">&#128167; <strong id="statWater">—</strong></span>
+  <span class="rs-stat">&#x1F4CD; <strong id="statDist">—</strong></span>
+  <span class="rs-stat">&#x23F1;&#xFE0F; <strong id="statTime">—</strong></span>
+  <span class="rs-stat">&#x1F4A9; <strong id="statToilets">—</strong></span>
+  <span class="rs-stat">&#x1F4A7; <strong id="statWater">—</strong></span>
   <div class="rs-div"></div>
-  <button class="rs-clear" onclick="clearRoute()">&#10005; Clear</button>
+  <button class="rs-clear" onclick="clearRoute()">&#x2715; Clear</button>
 </div>
 
 <div id="floatingUi" class="floating-ui">
   <div class="search-card" id="cardNearest">
     <div class="search-row">
-      <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark…" autocomplete="off">
+      <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark&hellip;" autocomplete="off">
       <button class="find-btn" onclick="searchNearest()">FIND</button>
     </div>
   </div>
@@ -305,18 +304,18 @@
   <div class="search-card hidden" id="cardRoute">
     <div class="search-row">
       <span class="dot dot-o"></span>
-      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — tap map or search…" autocomplete="off" onfocus="startPicking('start')">
+      <input type="text" id="inputOrigin" class="search-input" placeholder="Start &mdash; tap map or search&hellip;" autocomplete="off" onfocus="startPicking('start')">
     </div>
     <div class="vline"></div>
     <div class="search-row rs">
       <span class="dot dot-d"></span>
-      <input type="text" id="inputDest" class="search-input" placeholder="Finish — tap map or search…" autocomplete="off" onfocus="startPicking('end')">
+      <input type="text" id="inputDest" class="search-input" placeholder="Finish &mdash; tap map or search&hellip;" autocomplete="off" onfocus="startPicking('end')">
       <button class="find-btn" onclick="planRoute()">GO</button>
     </div>
     <div class="tm-row">
-      <button class="action-btn secondary sel" id="tmWalk"  onclick="setTravelMode('WALKING')">&#128694; Walk</button>
-      <button class="action-btn secondary"     id="tmBike"  onclick="setTravelMode('BICYCLING')">&#128692; Cycle</button>
-      <button class="action-btn secondary"     id="tmDrive" onclick="setTravelMode('DRIVING')">&#128663; Drive</button>
+      <button class="action-btn secondary sel" id="tmWalk"  onclick="setTravelMode('WALKING')">&#x1F6B6; Walk</button>
+      <button class="action-btn secondary"     id="tmBike"  onclick="setTravelMode('BICYCLING')">&#x1F6B4; Cycle</button>
+      <button class="action-btn secondary"     id="tmDrive" onclick="setTravelMode('DRIVING')">&#x1F697; Drive</button>
     </div>
   </div>
 </div>
@@ -354,24 +353,24 @@
 
 <nav id="bottom-nav">
   <button class="nav-tab filter-tab on-t active" id="navToilet" onclick="toggleLayer('toilet')">
-      <div class="nav-icon">&#128699;</div>
+      <div class="nav-icon">&#x1F4A9;</div>
       <div class="nav-label">Toilets</div>
   </button>
   <button class="nav-tab filter-tab on-w active" id="navWater" onclick="toggleLayer('water')">
-      <div class="nav-icon">&#128167;</div>
+      <div class="nav-icon">&#x1F4A7;</div>
       <div class="nav-label">Water</div>
   </button>
   <button class="nav-tab filter-tab on-a" id="navAccess" onclick="toggleLayer('accessible')">
-      <div class="nav-icon">&#9855;</div>
+      <div class="nav-icon">&#x267F;</div>
       <div class="nav-label">Access</div>
   </button>
   
   <button class="nav-tab action-tab" id="tab-near" onclick="navTap('near')">
-      <div class="nav-icon">&#128205;</div>
+      <div class="nav-icon">&#x1F4CD;</div>
       <div class="nav-label">Near Me</div>
   </button>
   <button class="nav-tab action-tab" id="tab-run" onclick="navTap('run')">
-      <div class="nav-icon" id="run-icon">&#9654;&#65039;</div>
+      <div class="nav-icon" id="run-icon">&#x25B6;&#xFE0F;</div>
       <div class="nav-label" id="run-label">Run</div>
   </button>
 </nav>
@@ -415,9 +414,33 @@ function haversine(lat1,lng1,lat2,lng2) {
 }
 const isWaterOnly = (loo) => loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden;
 
-const pinPoo = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#e8601a" filter="url(#s)"/><circle cx="17" cy="16" r="11" fill="#3d1600"/><text x="17" y="21" font-size="14" text-anchor="middle" font-family="sans-serif">\uD83D\uDCA9</text></svg>');
-const pinWater = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="0 0 30 36"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter></defs><path d="M15 2C8.4 2 3 7.4 3 14c0 8.4 12 20 12 20S27 22.4 27 14C27 7.4 21.6 2 15 2Z" fill="#1a8fd9" filter="url(#s)"/><circle cx="15" cy="14" r="9" fill="#061830"/><text x="15" y="18.5" font-size="11" text-anchor="middle" font-family="sans-serif">\uD83D\uDCA7</text></svg>');
-const pinStar = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#FFD700" filter="url(#s)"/><circle cx="17" cy="16" r="11" fill="#3d1600"/><text x="17" y="21" font-size="14" text-anchor="middle" font-family="sans-serif">\u2B50</text></svg>');
+// Emoji Canvas Generator (100% immune to Windows ANSI bugs)
+function buildEmojiIcon(hexCode, size) {
+    const char = String.fromCodePoint(hexCode);
+    const dpr = window.devicePixelRatio || 1;
+    const canvas = document.createElement('canvas');
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr); 
+    ctx.font = `${size * 0.85}px sans-serif`;
+    ctx.textAlign = 'center'; 
+    ctx.textBaseline = 'middle';
+    
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 2;
+    
+    ctx.fillText(char, size / 2, size / 2 + 2);
+    
+    return { 
+        url: canvas.toDataURL(), 
+        scaledSize: new google.maps.Size(size, size), 
+        anchor: new google.maps.Point(size / 2, size / 2) 
+    };
+}
+
+let pinPoo, pinWater, pinStar;
 
 function initMap() {
   try {
@@ -435,6 +458,11 @@ function initMap() {
     });
     S.dirRenderer.setMap(S.map);
 
+    // Initialize Map Pins
+    pinPoo   = buildEmojiIcon(0x1F4A9, 36); // Poo emoji
+    pinWater = buildEmojiIcon(0x1F4A7, 32); // Water drop
+    pinStar  = buildEmojiIcon(0x2B50, 42);  // Star
+
     const acOpts = { fields: ['geometry', 'name'] };
     S.ac.nearest = new google.maps.places.Autocomplete(el('inputNearest'), acOpts);
     S.ac.origin  = new google.maps.places.Autocomplete(el('inputOrigin'), acOpts);
@@ -446,7 +474,7 @@ function initMap() {
     });
     S.ac.origin.addListener('place_changed', () => { 
         const place = S.ac.origin.getPlace();
-        if (place?.geometry) { S.planStart = place.geometry.location; toast('&#127937; Now search or tap map for FINISH'); }
+        if (place?.geometry) { S.planStart = place.geometry.location; toast('&#x1F3C1; Now search or tap map for FINISH'); }
     });
     S.ac.dest.addListener('place_changed', () => { 
         const place = S.ac.dest.getPlace();
@@ -480,13 +508,13 @@ function setMode(mode) {
   el('floatingUi').classList.remove('shifted'); 
   
   if (mode==='nearest') clearRoute();
-  else toast('&#128205; Search or tap map to set START');
+  else toast('&#x1F4CD; Search or tap map to set START');
 }
 
 function startPicking(step) {
     if (S.mode !== 'route') return;
     S.pickingStep = step;
-    toast(step === 'start' ? '&#128205; Tap map to set START' : '&#127937; Tap map to set FINISH');
+    toast(step === 'start' ? '&#x1F4CD; Tap map to set START' : '&#x1F3C1; Tap map to set FINISH');
 }
 
 function setTravelMode(mode) {
@@ -526,7 +554,9 @@ function locateMe() {
   );
 }
 
-function searchNearest() {}
+function searchNearest() {
+    // Triggers automatically via Autocomplete listener
+}
 
 function handleMapClick(e) {
     if (S.mode === 'route' && S.pickingStep) {
@@ -537,7 +567,7 @@ function handleMapClick(e) {
                 S.planStart = latLng;
                 el('inputOrigin').value = label;
                 S.pickingStep = 'end';
-                toast('&#127937; Tap map to set FINISH');
+                toast('&#x1F3C1; Tap map to set FINISH');
             } else if (S.pickingStep === 'end') {
                 S.planEnd = latLng;
                 el('inputDest').value = label;
@@ -630,18 +660,14 @@ function renderVisibleMarkers() {
 
         isWater ? wCount++ : tCount++;
 
-        let iconUrl = pinPoo;
-        if (isWater) iconUrl = pinWater;
-        if (loo.golden) iconUrl = pinStar;
+        let markerIcon = pinPoo;
+        if (isWater) markerIcon = pinWater;
+        if (loo.golden) markerIcon = pinStar;
 
         const marker = new google.maps.Marker({
             position: latLng,
             map: S.map,
-            icon: {
-                url: iconUrl,
-                scaledSize: new google.maps.Size(isWater? 30 : 34, isWater? 36 : 42),
-                anchor: new google.maps.Point(isWater? 15 : 17, isWater? 36 : 42)
-            },
+            icon: markerIcon,
             optimized: false
         });
 
@@ -691,18 +717,18 @@ function openSheet(loo) {
     
     let chipsHtml = '';
     if (!isW) {
-        if (loo.t?.w) chipsHtml += '<div class="chip yes">&#9855; Accessible</div>';
-        if (loo.t?.b) chipsHtml += '<div class="chip yes">&#127868; Baby change</div>';
-        if (loo.t?.u) chipsHtml += '<div class="chip">&#128699; Unisex</div>';
-        if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">&#128698; Female</div>';
-        if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">&#128697; Male</div>';
-        if (loo.t?.o === '24/7') chipsHtml += '<div class="chip yes">&#128994; 24/7</div>';
-        else if (loo.t?.o) chipsHtml += `<div class="chip">&#128336; ${loo.t.o}</div>`;
+        if (loo.t?.w) chipsHtml += '<div class="chip yes">&#x267F; Accessible</div>';
+        if (loo.t?.b) chipsHtml += '<div class="chip yes">&#x1F37C; Baby change</div>';
+        if (loo.t?.u) chipsHtml += '<div class="chip">&#x1F6BD; Unisex</div>';
+        if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">&#x1F6BA; Female</div>';
+        if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">&#x1F6B9; Male</div>';
+        if (loo.t?.o === '24/7') chipsHtml += '<div class="chip yes">&#x1F7E2; 24/7</div>';
+        else if (loo.t?.o) chipsHtml += `<div class="chip">&#x1F558; ${loo.t.o}</div>`;
     } else {
-        chipsHtml += '<div class="chip water-yes">&#128167; Drinking water</div>';
+        chipsHtml += '<div class="chip water-yes">&#x1F4A7; Drinking water</div>';
     }
 
-    const typeBadge = isW ? '<div class="type-badge water">&#128167; Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">&#11088; Featured Sanctuary</div>' : '<div class="type-badge toilet">&#128699; Public Toilet</div>');
+    const typeBadge = isW ? '<div class="type-badge water">&#x1F4A7; Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">&#x2B50; Featured Sanctuary</div>' : '<div class="type-badge toilet">&#x1F4A9; Public Toilet</div>');
 
     let distHtml = '';
     if (S.userPos) {
@@ -718,7 +744,7 @@ function openSheet(loo) {
       <div class="sheet-meta">${loo.a || 'Mapped Location'}${distHtml}</div>
       <div class="chip-row">${chipsHtml}</div>
       ${loo.note ? `<div class="sheet-notes">${loo.note}</div>` : ''}
-      <a href="${gUrl}" target="_blank" style="text-decoration:none;"><div class="dir-btn">&#128205; GET DIRECTIONS</div></a>
+      <a href="${gUrl}" target="_blank" style="text-decoration:none;"><div class="dir-btn">&#x1F4CD; GET DIRECTIONS</div></a>
     `;
     
     el('backdrop').classList.add('on');
@@ -743,7 +769,7 @@ function startRun() {
     el('run-hud').classList.add('active');
     const tab = el('tab-run');
     tab.classList.add('running'); 
-    el('run-icon').innerHTML = '&#9209;&#65039;'; 
+    el('run-icon').innerHTML = '&#x23F9;&#xFE0F;'; // Stop Icon
     el('run-label').innerText = 'Stop';
     
     if (runPolyline) runPolyline.setMap(null);
@@ -766,7 +792,7 @@ function stopRun() {
     el('run-hud').classList.remove('active');
     const tab = el('tab-run');
     tab.classList.remove('running'); 
-    el('run-icon').innerHTML = '&#9654;&#65039;'; 
+    el('run-icon').innerHTML = '&#x25B6;&#xFE0F;'; // Play Icon
     el('run-label').innerText = 'Run';
 }
 
