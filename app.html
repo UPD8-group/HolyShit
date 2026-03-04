@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HolyShit — Relief for the Long Run</title>
+  <meta name="description" content="Find public toilets and drinking water on your route. Built for runners, cyclists, and everyone else.">
+  <meta name="theme-color" content="#faf8f3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HolyShit">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Anton (matches landing page heavy condensed) + DM Sans (clean body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #faf8f3;
+      --cream-dark:   #f0ede6;
+      --card:         #eeecea;
+      --card-hi:      #e5e2da;
+      --border:       #dbd8d0;
+      --border-hi:    #c8c4bc;
+
+      --orange:       #e8601a;
+      --orange-lt:    rgba(232,96,26,0.10);
+      --orange-glow:  rgba(232,96,26,0.25);
+      --orange-dk:    #c44e10;
+
+      --water:        #1a8fd9;
+      --water-lt:     rgba(26,143,217,0.10);
+
+      --text:         #1a1008;
+      --text-mid:     #6b6258;
+      --text-dim:     #a89e94;
+
+      --radius:       14px;
+      --radius-sm:    10px;
+      --shadow:       0 4px 20px rgba(100,80,60,0.15);
+      --shadow-sm:    0 2px 10px rgba(100,80,60,0.10);
+
+      --font-d: 'Anton', sans-serif;
+      --font-b: 'DM Sans', sans-serif;
+    }
+
+    html, body {
+      height: 100%; width: 100%;
+      overflow: hidden;
+      background: var(--cream);
+      color: var(--text);
+      font-family: var(--font-b);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #map { position: fixed; inset: 0; z-index: 0; }
+
+    /* ── TOP PANEL ── */
+    .top-panel {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100; padding: 12px 12px 8px;
+      pointer-events: none;
+    }
+    .top-panel > * { pointer-events: all; }
+
+    .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+    .wordmark {
+      font-family: var(--font-d);
+      font-size: 22px; letter-spacing: 1px;
+      color: var(--text); white-space: nowrap;
+      text-shadow: 0 1px 8px rgba(250,248,243,0.9), 0 1px 3px rgba(250,248,243,1);
+      line-height: 1;
+    }
+    .wordmark .shit { color: var(--orange); }
+
+    .mode-row { display: flex; gap: 6px; flex: 1; }
+
+    .mode-pill {
+      flex: 1; padding: 7px 10px;
+      border-radius: 30px; border: 1.5px solid var(--border);
+      background: var(--cream); color: var(--text-mid);
+      font-family: var(--font-b); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+      text-align: center; white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .mode-pill.active {
+      background: var(--orange); color: #fff;
+      border-color: var(--orange);
+      box-shadow: 0 2px 14px var(--orange-glow);
+    }
+    .mode-pill:not(.active):hover { border-color: var(--border-hi); color: var(--text); }
+
+    .search-card {
+      background: var(--cream); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-row { display: flex; align-items: center; gap: 8px; }
+
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot-origin { background: var(--orange); box-shadow: 0 0 5px var(--orange-glow); }
+    .dot-dest   { background: var(--text); }
+
+    .vline { width:1px; height:14px; background:var(--border); margin:3px 0 3px 4px; flex-shrink:0; }
+    .route-spacer { margin-top: 6px; }
+
+    .search-input {
+      flex: 1; background: var(--card);
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 12px; color: var(--text);
+      font-family: var(--font-b); font-size: 14px;
+      outline: none; transition: border-color 0.18s; min-width: 0;
+    }
+    .search-input:focus { border-color: var(--orange); }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .action-btn {
+      padding: 9px 18px; border-radius: var(--radius-sm); border: none;
+      background: var(--orange); color: #fff;
+      font-family: var(--font-d); font-size: 15px; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
+    }
+    .action-btn:hover  { background: var(--orange-dk); }
+    .action-btn:active { transform: scale(0.96); }
+    .action-btn.secondary {
+      background: var(--card); color: var(--text);
+      border: 1.5px solid var(--border); font-size: 12px; flex: 1; text-align: center;
+    }
+    .action-btn.secondary:hover { border-color: var(--orange); color: var(--orange); }
+    .action-btn.secondary.sel   { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+
+    .layer-row { display: flex; gap: 6px; margin-top: 7px; }
+    .layer-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--cream);
+      color: var(--text-mid); font-family: var(--font-b);
+      font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow-sm);
+    }
+    .layer-btn.on-toilet { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+    .layer-btn.on-water  { background: var(--water-lt);  border-color: var(--water);  color: var(--water); }
+    .layer-btn.on-access { background: rgba(100,60,200,0.08); border-color: #7a63ff; color: #6044cc; }
+
+    /* ── ROUTE BAR ── */
+    .route-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+      background: var(--cream); border-bottom: 1.5px solid var(--border);
+      padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+      font-size: 12px; font-weight: 600;
+      transform: translateY(-100%); transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .route-bar.show { transform: translateY(0); }
+    .route-stat { color: var(--text-mid); }
+    .route-stat strong { color: var(--text); }
+    .route-divider { flex: 1; }
+    .clear-route-btn {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--text-mid); font-family: var(--font-b);
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px; cursor: pointer; transition: all 0.18s;
+    }
+    .clear-route-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* ── FAB ── */
+    .fab-stack { position: fixed; bottom: 110px; right: 14px; z-index: 100; }
+    .fab {
+      width: 52px; height: 52px; border-radius: 50%; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      background: var(--orange); color: #fff; font-size: 18px;
+      box-shadow: 0 4px 18px var(--orange-glow), var(--shadow);
+      transition: all 0.18s;
+    }
+    .fab:hover   { background: var(--orange-dk); }
+    .fab:active  { transform: scale(0.92); }
+    .fab.spinning { animation: rotate 1s linear infinite; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    /* ── COUNT PILL ── */
+    .count-pill {
+      position: fixed; bottom: 174px; left: 50%; transform: translateX(-50%);
+      z-index: 100; background: var(--cream); border: 1.5px solid var(--border);
+      border-radius: 30px; padding: 6px 16px;
+      font-size: 12px; font-weight: 600; color: var(--text-mid);
+      white-space: nowrap; box-shadow: var(--shadow);
+      transition: opacity 0.3s; pointer-events: none; opacity: 0;
+    }
+    .count-pill.show { opacity: 1; }
+    .count-pill .hi  { color: var(--orange); font-weight: 700; }
+    .count-pill .wi  { color: var(--water);  font-weight: 700; }
+
+    /* ── SHEET ── */
+    .backdrop {
+      position: fixed; inset: 0;
+      background: rgba(26,16,8,0.40); z-index: 200;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .backdrop.on { opacity: 1; pointer-events: all; }
+
+    .sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
+      background: var(--cream); border-top: 1.5px solid var(--border);
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -8px 40px rgba(100,80,60,0.18);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+      max-height: 82vh; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    .sheet.on { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 38px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 12px auto 0;
+    }
+    .sheet-body { padding: 16px 20px 8px; }
+
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 11px; border-radius: 20px;
+      font-family: var(--font-b); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .type-badge.toilet { background: var(--orange-lt); color: var(--orange); border: 1px solid rgba(232,96,26,0.2); }
+    .type-badge.water  { background: var(--water-lt);  color: var(--water);  border: 1px solid rgba(26,143,217,0.2); }
+
+    .sheet-name {
+      font-family: var(--font-d); font-size: 28px; line-height: 1.0;
+      margin-bottom: 4px; color: var(--text); letter-spacing: 0.5px;
+    }
+    .sheet-meta { color: var(--text-mid); font-size: 13px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .chip {
+      padding: 4px 11px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--text-mid); font-size: 12px; font-weight: 500;
+    }
+    .chip.yes       { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+    .chip.water-yes { border-color: var(--water);  color: var(--water);  background: var(--water-lt); }
+
+    .sheet-notes {
+      color: var(--text-mid); font-size: 13px; line-height: 1.5;
+      padding: 10px 12px; background: var(--card);
+      border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 14px;
+    }
+
+    .dir-btn {
+      width: 100%; padding: 13px; border-radius: var(--radius-sm); border: none;
+      background: var(--orange); color: #fff;
+      font-family: var(--font-d); font-size: 16px; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.18s; margin-bottom: 12px;
+    }
+    .dir-btn:hover  { background: var(--orange-dk); }
+    .dir-btn:active { transform: scale(0.98); }
+
+    .rating-section { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px; }
+    .rating-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 8px; }
+    .stars { display: flex; gap: 4px; margin-bottom: 10px; }
+    .star { font-size: 26px; cursor: pointer; filter: grayscale(1) opacity(0.25); transition: filter 0.12s, transform 0.12s; }
+    .star.lit   { filter: none; }
+    .star:hover { transform: scale(1.2); filter: none; }
+
+    .report-btn {
+      width: 100%; padding: 10px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: transparent;
+      color: var(--text-mid); font-family: var(--font-b); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .report-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+
+    .data-source { text-align: center; color: var(--text-dim); font-size: 11px; margin-top: 12px; }
+
+    /* ── SPLASH ── */
+    .splash {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--cream);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      transition: opacity 0.4s, visibility 0.4s;
+    }
+    .splash.gone { opacity: 0; visibility: hidden; }
+    .splash-logo { font-family: var(--font-d); font-size: 54px; line-height: 1; letter-spacing: 2px; }
+    .splash-logo .shit { color: var(--orange); }
+    .splash-tag { font-size: 13px; color: var(--text-mid); letter-spacing: 2.5px; text-transform: uppercase; }
+    .splash-bar { width: 48px; height: 4px; background: var(--card-hi); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+    .splash-bar::after {
+      content: ''; display: block; width: 40%; height: 100%;
+      background: var(--orange); border-radius: 2px;
+      animation: load-bar 1.2s ease infinite;
+    }
+    @keyframes load-bar { 0% { transform:translateX(-100%); } 100% { transform:translateX(350%); } }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 106px; left: 50%;
+      transform: translateX(-50%) translateY(8px); z-index: 500;
+      background: var(--text); color: var(--cream);
+      padding: 9px 18px; border-radius: 30px;
+      font-size: 13px; font-weight: 500; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: all 0.25s;
+      max-width: calc(100vw - 40px); text-align: center; box-shadow: var(--shadow);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── AUTOCOMPLETE ── */
+    .pac-container { background: var(--cream) !important; border: 1.5px solid var(--border) !important; border-radius: var(--radius-sm) !important; box-shadow: var(--shadow) !important; font-family: var(--font-b) !important; margin-top: 4px; }
+    .pac-item { color: var(--text) !important; border-top-color: var(--border) !important; padding: 9px 12px !important; font-family: var(--font-b) !important; font-size: 13px !important; cursor: pointer; }
+    .pac-item:hover { background: var(--card) !important; }
+    .pac-item-query { color: var(--text) !important; }
+    .pac-matched { color: var(--orange) !important; font-weight: 700; }
+
+    /* ── RESPONSIVE ── */
+    @media (min-width: 600px) {
+      .top-panel { max-width: 520px; left: 50%; transform: translateX(-50%); right: auto; }
+      .sheet { max-width: 520px; left: 50%; transform: translateX(-50%) translateY(100%); right: auto; border-radius: 22px; bottom: 24px; }
+      .sheet.on { transform: translateX(-50%) translateY(0); }
+      .fab-stack { right: calc(50% - 274px); }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="splash-logo">H💩LY<span class="shit">SHIT</span></div>
+  <div class="splash-tag">Relief for the long run</div>
+  <div class="splash-bar"></div>
+</div>
+
+<div id="map"></div>
+
+<div class="route-bar" id="routeBar">
+  <span class="route-stat">📍 <strong id="statDist">—</strong></span>
+  <span class="route-stat">⏱ <strong id="statTime">—</strong></span>
+  <span class="route-stat">🚻 <strong id="statToilets">—</strong></span>
+  <span class="route-stat">💧 <strong id="statWater">—</strong></span>
+  <div class="route-divider"></div>
+  <button class="clear-route-btn" onclick="clearRoute()">✕ Clear</button>
+</div>
+
+<div class="top-panel" id="topPanel">
+  <div class="header-row">
+    <div class="wordmark">H💩LY<span class="shit">SHIT</span></div>
+    <div class="mode-row">
+      <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">📍 Nearest</button>
+      <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">🏃 Route</button>
+    </div>
+  </div>
+
+  <div class="search-card" id="cardNearest">
+    <div class="search-row">
+      <input type="text" id="inputNearest" class="search-input" placeholder="Search a place or tap GPS…" autocomplete="off">
+      <button class="action-btn" onclick="doSearch()">FIND</button>
+    </div>
+  </div>
+
+  <div class="search-card hidden" id="cardRoute">
+    <div class="search-row">
+      <span class="dot dot-origin"></span>
+      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — suburb or landmark…" autocomplete="off">
+    </div>
+    <div class="vline"></div>
+    <div class="search-row route-spacer">
+      <span class="dot dot-dest"></span>
+      <input type="text" id="inputDest" class="search-input" placeholder="Finish — suburb or landmark…" autocomplete="off">
+      <button class="action-btn" onclick="planRoute()">GO</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button class="action-btn secondary sel" id="tmWalk"  onclick="setTravelMode('WALKING')">🚶 Walk</button>
+      <button class="action-btn secondary"     id="tmBike"  onclick="setTravelMode('BICYCLING')">🚴 Cycle</button>
+      <button class="action-btn secondary"     id="tmDrive" onclick="setTravelMode('DRIVING')">🚗 Drive</button>
+    </div>
+  </div>
+
+  <div class="layer-row">
+    <button class="layer-btn on-toilet" id="btnToilet" onclick="toggleLayer('toilet')">🚻 Toilets</button>
+    <button class="layer-btn on-water"  id="btnWater"  onclick="toggleLayer('water')">💧 Water</button>
+    <button class="layer-btn"           id="btnAccess" onclick="toggleLayer('accessible')">♿ Accessible</button>
+  </div>
+</div>
+
+<div class="count-pill" id="countPill">
+  <span class="hi" id="countT">0</span> toilets &nbsp;·&nbsp;
+  <span class="wi" id="countW">0</span> water
+</div>
+
+<div class="fab-stack">
+  <button class="fab" id="fabLocate" onclick="locateMe()" title="My location">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" opacity=".4"/>
+      <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+    </svg>
+  </button>
+</div>
+
+<div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const S = {
+  map:null, geocoder:null, dirService:null, dirRenderer:null,
+  userMarker:null, userPos:null,
+  mode:'nearest', travelMode:'WALKING',
+  layers:{toilet:true, water:true, accessible:false},
+  markers:{toilet:[], water:[]},
+  auData:null,
+  ratings: JSON.parse(localStorage.getItem('hs_ratings')||'{}'),
+  ac:{nearest:null, origin:null, dest:null},
+  activeRoute:null, toastTimer:null,
+};
+
+function initMap() {
+  S.map = new google.maps.Map(document.getElementById('map'), {
+    center:{lat:-25,lng:134}, zoom:4,
+    mapTypeId:'roadmap', disableDefaultUI:true,
+    gestureHandling:'greedy', clickableIcons:false,
+    styles: mapStyle(),
+  });
+  S.geocoder    = new google.maps.Geocoder();
+  S.dirService  = new google.maps.DirectionsService();
+  S.dirRenderer = new google.maps.DirectionsRenderer({
+    suppressMarkers: true,
+    polylineOptions: { strokeColor:'#e8601a', strokeWeight:5, strokeOpacity:0.88 },
+  });
+  S.dirRenderer.setMap(S.map);
+  S.ac.nearest = new google.maps.places.Autocomplete(el('inputNearest'));
+  S.ac.origin  = new google.maps.places.Autocomplete(el('inputOrigin'));
+  S.ac.dest    = new google.maps.places.Autocomplete(el('inputDest'));
+  setTimeout(()=>el('splash').classList.add('gone'), 900);
+  setTimeout(()=>locateMe(), 1000);
+}
+
+const el = id => document.getElementById(id);
+
+function toast(msg, ms=3200) {
+  const t=el('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(S.toastTimer); S.toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
+}
+
+function haversine(lat1,lng1,lat2,lng2) {
+  const R=6371000,r=Math.PI/180;
+  const a=Math.sin(((lat2-lat1)*r)/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(((lng2-lng1)*r)/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function fmtDist(m){ return m<1000?`${Math.round(m)}m`:`${(m/1000).toFixed(1)}km`; }
+function isAU(lat,lng){ return lat>-44&&lat<-10&&lng>113&&lng<154; }
+
+function setMode(mode) {
+  S.mode=mode;
+  el('pillNearest').classList.toggle('active',mode==='nearest');
+  el('pillRoute').classList.toggle('active',mode==='route');
+  el('cardNearest').classList.toggle('hidden',mode!=='nearest');
+  el('cardRoute').classList.toggle('hidden',mode!=='route');
+  if(mode==='nearest') clearRoute();
+}
+
+function setTravelMode(mode) {
+  S.travelMode=mode;
+  ['tmWalk','tmBike','tmDrive'].forEach(id=>el(id)?.classList.remove('sel'));
+  ({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode] && el(({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode])?.classList.add('sel');
+}
+
+function locateMe() {
+  const fab=el('fabLocate'); fab.classList.add('spinning');
+  if(!navigator.geolocation){toast('Geolocation not supported');fab.classList.remove('spinning');return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      fab.classList.remove('spinning');
+      S.userPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      S.map.setCenter(S.userPos); S.map.setZoom(15);
+      placeUserMarker(S.userPos.lat,S.userPos.lng);
+      loadNearby(S.userPos.lat,S.userPos.lng);
+    },
+    ()=>{ fab.classList.remove('spinning'); toast('Could not get location — search a place instead'); },
+    {enableHighAccuracy:true,timeout:12000}
+  );
+}
+
+function placeUserMarker(lat,lng) {
+  if(S.userMarker) S.userMarker.setMap(null);
+  S.userMarker=new google.maps.Marker({
+    position:{lat,lng}, map:S.map,
+    icon:{
+      url:svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="rgba(232,96,26,0.18)"/><circle cx="11" cy="11" r="6" fill="#e8601a"/><circle cx="11" cy="11" r="3" fill="white"/></svg>`),
+      scaledSize:new google.maps.Size(22,22), anchor:new google.maps.Point(11,11),
+    },
+    zIndex:999, title:'Your location',
+  });
+}
+
+function doSearch() {
+  const place=S.ac.nearest.getPlace();
+  if(place?.geometry){
+    const lat=place.geometry.location.lat(), lng=place.geometry.location.lng();
+    S.map.setCenter({lat,lng}); S.map.setZoom(15); loadNearby(lat,lng); return;
+  }
+  const q=el('inputNearest').value.trim();
+  if(!q){toast('Enter a place to search');return;}
+  S.geocoder.geocode({address:q},(res,status)=>{
+    if(status==='OK'&&res[0]){
+      const loc=res[0].geometry.location;
+      S.map.setCenter(loc); S.map.setZoom(15); loadNearby(loc.lat(),loc.lng());
+    } else toast('Place not found — try a different search');
+  });
+}
+
+async function loadNearby(lat,lng,radius=1000) {
+  clearMarkers(); toast('Finding nearby facilities…');
+  await Promise.all([loadOSM(lat,lng,null,radius), isAU(lat,lng)?loadAU(lat,lng,radius):Promise.resolve()]);
+  updateCount();
+}
+
+async function loadOSM(lat,lng,bounds,radius=1000) {
+  let geo=bounds
+    ? `(${bounds.getSouthWest().lat()},${bounds.getSouthWest().lng()},${bounds.getNorthEast().lat()},${bounds.getNorthEast().lng()})`
+    : `(around:${radius},${lat},${lng})`;
+  const q=`[out:json][timeout:20];(node["amenity"="toilets"]${geo};way["amenity"="toilets"]${geo};node["amenity"="drinking_water"]${geo};node["amenity"="water_point"]${geo};node["amenity"="fountain"]["drinking_water"="yes"]${geo};);out center;`;
+  try {
+    const data=await (await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(q)}`)).json();
+    data.elements.forEach(e=>{
+      const elat=e.lat??e.center?.lat, elng=e.lon??e.center?.lon;
+      if(!elat||!elng) return;
+      const t=e.tags||{};
+      if(t.amenity==='toilets') placeToiletMarker(elat,elng,{id:`osm_${e.id}`,name:t.name||'Public Toilet',source:'osm',accessible:t.wheelchair==='yes',baby:t.changing_table==='yes',fee:t.fee==='yes',hours:t.opening_hours||null});
+      else placeWaterMarker(elat,elng,{id:`osm_${e.id}`,name:t.name||'Drinking Water',source:'osm'});
+    });
+  } catch(e){ console.warn('OSM error:',e); toast('Could not reach global data — check connection'); }
+}
+
+async function loadAU(lat,lng,radius,sampled=null) {
+  if(!S.auData){
+    try{ toast('Loading Australian toilet database…'); S.auData=await (await fetch('/toilets-au.json')).json(); }
+    catch(e){ console.warn('AU error:',e); return; }
+  }
+  S.auData.filter(t=>{
+    if(!t.Latitude||!t.Longitude) return false;
+    if(sampled) return sampled.some(p=>haversine(p.lat(),p.lng(),t.Latitude,t.Longitude)<350);
+    return haversine(lat,lng,t.Latitude,t.Longitude)<=radius;
+  }).forEach(t=>placeToiletMarker(t.Latitude,t.Longitude,{
+    id:`au_${t.ToiletID}`, name:t.Name||t.Town||'Public Toilet',
+    address:[t.AddressLine1,t.Town,t.State].filter(Boolean).join(', '),
+    source:'au-gov', accessible:t.IsWheelchairAccessible==='True',
+    baby:t.BabyChange==='True', fee:t.IsFree==='False',
+    male:t.Male==='True', female:t.Female==='True', unisex:t.Unisex==='True',
+    hours:t.OpeningHours||null, notes:t.Notes||null,
+  }));
+}
+
+async function planRoute() {
+  const oStr=el('inputOrigin').value.trim(), dStr=el('inputDest').value.trim();
+  if(!oStr||!dStr){toast('Enter a start and finish');return;}
+  toast('Calculating route…');
+  const oPlace=S.ac.origin.getPlace(), dPlace=S.ac.dest.getPlace();
+  S.dirService.route({
+    origin: oPlace?.geometry?oPlace.geometry.location:oStr,
+    destination: dPlace?.geometry?dPlace.geometry.location:dStr,
+    travelMode: google.maps.TravelMode[S.travelMode],
+  }, async(result,status)=>{
+    if(status!=='OK'){toast('Route not found — check the locations');return;}
+    S.dirRenderer.setDirections(result); S.activeRoute=result;
+    const leg=result.routes[0].legs[0], path=result.routes[0].overview_path;
+    el('statDist').textContent=leg.distance.text; el('statTime').textContent=leg.duration.text;
+    el('statToilets').textContent='…'; el('statWater').textContent='…';
+    el('routeBar').classList.add('show');
+    clearMarkers(); toast(`${leg.distance.text} · ${leg.duration.text} — finding facilities…`);
+    const sampled=samplePath(path,450), bounds=getPathBounds(path), center=bounds.getCenter();
+    await Promise.all([loadOSM(center.lat(),center.lng(),bounds), isAU(center.lat(),center.lng())?loadAU(null,null,null,sampled):Promise.resolve()]);
+    filterToRoute(sampled,350); updateCount();
+    el('statToilets').textContent=S.markers.toilet.length; el('statWater').textContent=S.markers.water.length;
+  });
+}
+
+function filterToRoute(sampled,buffer){
+  ['toilet','water'].forEach(type=>{
+    S.markers[type]=S.markers[type].filter(m=>{
+      const pos=m.getPosition();
+      const near=sampled.some(p=>haversine(p.lat(),p.lng(),pos.lat(),pos.lng())<buffer);
+      if(!near) m.setMap(null); return near;
+    });
+  });
+}
+
+function clearRoute(){
+  if(S.dirRenderer) S.dirRenderer.setDirections({routes:[]});
+  el('routeBar').classList.remove('show'); S.activeRoute=null; clearMarkers(); updateCount();
+}
+
+function samplePath(path,interval){
+  const pts=[path[0]]; let acc=0;
+  for(let i=1;i<path.length;i++){
+    acc+=haversine(path[i-1].lat(),path[i-1].lng(),path[i].lat(),path[i].lng());
+    if(acc>=interval){pts.push(path[i]);acc=0;}
+  }
+  pts.push(path[path.length-1]); return pts;
+}
+
+function getPathBounds(path){
+  const b=new google.maps.LatLngBounds(); path.forEach(p=>b.extend(p)); return b;
+}
+
+function placeToiletMarker(lat,lng,data){
+  if(!S.layers.toilet) return;
+  if(S.layers.accessible&&!data.accessible) return;
+  const m=new google.maps.Marker({position:{lat,lng},map:S.map,title:data.name,icon:{
+    url:svgToUrl(toiletPin(data.accessible)),
+    scaledSize:new google.maps.Size(34,42), anchor:new google.maps.Point(17,42),
+  }});
+  m._data=data; m.addListener('click',()=>openSheet('toilet',data,lat,lng));
+  S.markers.toilet.push(m);
+}
+
+function placeWaterMarker(lat,lng,data){
+  if(!S.layers.water) return;
+  const m=new google.maps.Marker({position:{lat,lng},map:S.map,title:data.name,icon:{
+    url:svgToUrl(waterPin()),
+    scaledSize:new google.maps.Size(30,36), anchor:new google.maps.Point(15,36),
+  }});
+  m._data=data; m.addListener('click',()=>openSheet('water',data,lat,lng));
+  S.markers.water.push(m);
+}
+
+function clearMarkers(){
+  S.markers.toilet.forEach(m=>m.setMap(null)); S.markers.water.forEach(m=>m.setMap(null));
+  S.markers={toilet:[],water:[]};
+}
+
+function updateCount(){
+  const t=S.markers.toilet.length, w=S.markers.water.length;
+  el('countT').textContent=t; el('countW').textContent=w;
+  const pill=el('countPill');
+  if(t>0||w>0){pill.classList.add('show'); setTimeout(()=>pill.classList.remove('show'),4000);}
+}
+
+function toggleLayer(layer){
+  S.layers[layer]=!S.layers[layer];
+  if(layer==='toilet'){el('btnToilet').classList.toggle('on-toilet',S.layers.toilet); S.markers.toilet.forEach(m=>m.setVisible(S.layers.toilet));}
+  if(layer==='water') {el('btnWater').classList.toggle('on-water',S.layers.water);   S.markers.water.forEach(m=>m.setVisible(S.layers.water));}
+  if(layer==='accessible'){
+    el('btnAccess').classList.toggle('on-access',S.layers.accessible);
+    S.markers.toilet.forEach(m=>m.setVisible(S.layers.accessible?!!m._data?.accessible:S.layers.toilet));
+  }
+}
+
+function openSheet(type,data,lat,lng){
+  const isT=type==='toilet', rating=S.ratings[data.id]||0;
+  const dist=S.userPos?`${fmtDist(haversine(S.userPos.lat,S.userPos.lng,lat,lng))} away`:'';
+  const gUrl=`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=${S.travelMode.toLowerCase()}`;
+  let chips='';
+  if(isT){
+    if(data.accessible) chips+=chip('♿ Accessible','yes');
+    if(data.baby)       chips+=chip('🍼 Baby change','yes');
+    if(!data.fee)       chips+=chip('✓ Free','yes');
+    if(data.fee)        chips+=chip('$ Paid entry','');
+    if(data.male)       chips+=chip('🚹 Male','yes');
+    if(data.female)     chips+=chip('🚺 Female','yes');
+    if(data.unisex)     chips+=chip('🚻 Unisex','yes');
+    if(data.hours)      chips+=chip(`🕐 ${data.hours}`,'');
+  } else {
+    chips+=chip('💧 Drinking water','water-yes'); chips+=chip('🚰 Bottle refill','water-yes');
+  }
+  const stars=[1,2,3,4,5].map(i=>`<span class="star ${i<=rating?'lit':''}" onclick="doRate('${data.id}',${i})" onmouseover="hoverStars(${i})" onmouseout="restoreStars('${data.id}')">⭐</span>`).join('');
+  const src=data.source==='au-gov'?'🇦🇺 Australian Government open data':'🌍 OpenStreetMap contributors';
+  el('sheetBody').innerHTML=`
+    <div class="type-badge ${isT?'toilet':'water'}">${isT?'🚻 Public Toilet':'💧 Drinking Water'}</div>
+    <div class="sheet-name">${data.name}</div>
+    <div class="sheet-meta">${data.address?`<span>${data.address}</span>`:''}${dist?`<span style="color:var(--text-dim)">·</span><span>${dist}</span>`:''}</div>
+    <div class="chip-row">${chips}</div>
+    ${data.notes?`<div class="sheet-notes">${data.notes}</div>`:''}
+    <a href="${gUrl}" target="_blank" rel="noopener"><button class="dir-btn">📍 GET DIRECTIONS</button></a>
+    <div class="rating-section">
+      <div class="rating-label">Community Condition Rating</div>
+      <div class="stars" id="starsEl">${stars}</div>
+      <button class="report-btn" onclick="reportIssue('${data.id}')">⚠️ Report a problem</button>
+    </div>
+    <div class="data-source">${src}</div>`;
+  el('backdrop').classList.add('on'); el('sheet').classList.add('on');
+}
+
+function chip(label,cls){ return `<div class="chip ${cls}">${label}</div>`; }
+function closeSheet(){ el('backdrop').classList.remove('on'); el('sheet').classList.remove('on'); }
+function doRate(id,val){
+  S.ratings[id]=val; localStorage.setItem('hs_ratings',JSON.stringify(S.ratings));
+  document.querySelectorAll('#starsEl .star').forEach((s,i)=>s.classList.toggle('lit',i<val));
+  toast('Rating saved — thanks! 🙌');
+}
+function hoverStars(val){ document.querySelectorAll('#starsEl .star').forEach((s,i)=>s.classList.toggle('lit',i<val)); }
+function restoreStars(id){ const r=S.ratings[id]||0; document.querySelectorAll('#starsEl .star').forEach((s,i)=>s.classList.toggle('lit',i<r)); }
+function reportIssue(id){ toast('Problem reported — thank you!'); closeSheet(); }
+
+function toiletPin(accessible=false){
+  const fill=accessible?'#1a8fd9':'#e8601a', inner=accessible?'#0a2a40':'#3d1600', icon=accessible?'♿':'🚻';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="${fill}" filter="url(#s)"/><circle cx="17" cy="16" r="10" fill="${inner}"/><text x="17" y="20.5" font-size="11" text-anchor="middle" font-family="sans-serif">${icon}</text></svg>`;
+}
+function waterPin(){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="0 0 30 36"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter></defs><path d="M15 2C8.4 2 3 7.4 3 14c0 8.4 12 20 12 20S27 22.4 27 14C27 7.4 21.6 2 15 2Z" fill="#1a8fd9" filter="url(#s)"/><circle cx="15" cy="14" r="9" fill="#061830"/><text x="15" y="18.5" font-size="11" text-anchor="middle" font-family="sans-serif">💧</text></svg>`;
+}
+function svgToUrl(svg){ return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`; }
+
+function mapStyle(){
+  return [
+    {elementType:'geometry',                 stylers:[{color:'#f5f0e8'}]},
+    {elementType:'labels.text.fill',         stylers:[{color:'#6b6258'}]},
+    {elementType:'labels.text.stroke',       stylers:[{color:'#faf8f3'}]},
+    {featureType:'road',elementType:'geometry',            stylers:[{color:'#ffffff'}]},
+    {featureType:'road',elementType:'geometry.stroke',     stylers:[{color:'#e0dbd2'}]},
+    {featureType:'road',elementType:'labels.text.fill',    stylers:[{color:'#8a8070'}]},
+    {featureType:'road.highway',elementType:'geometry',    stylers:[{color:'#ffe0b0'}]},
+    {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#e8c880'}]},
+    {featureType:'road.highway',elementType:'labels.text.fill',stylers:[{color:'#5a5048'}]},
+    {featureType:'water',elementType:'geometry',           stylers:[{color:'#c5dff0'}]},
+    {featureType:'water',elementType:'labels.text.fill',   stylers:[{color:'#5a8aaa'}]},
+    {featureType:'poi',elementType:'geometry',             stylers:[{color:'#ede8e0'}]},
+    {featureType:'poi.park',elementType:'geometry',        stylers:[{color:'#d4e8c8'}]},
+    {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#6a9058'}]},
+    {featureType:'transit',elementType:'geometry',         stylers:[{color:'#e8e4dc'}]},
+    {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#d0c8bc'}]},
+    {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#5a5048'}]},
+    {featureType:'administrative.land_parcel',elementType:'labels',stylers:[{visibility:'off'}]},
+  ];
+}
+</script>
+
+<!-- Replace YOUR_API_KEY before deploying -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=geometry&callback=initMap" async defer></script>
+</body>
+</html>
