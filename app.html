@@ -24,6 +24,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      /* Palette */
       --cream:       #faf8f3;
       --card:        #eeecea;
       --card-hi:     #e5e2da;
@@ -38,12 +39,20 @@
       --text:        #1a1008;
       --text-mid:    #6b6258;
       --text-dim:    #a89e94;
+      
+      /* Specs */
       --radius:      14px;
       --radius-sm:   10px;
       --shadow:      0 4px 20px rgba(100,80,60,0.15);
       --shadow-sm:   0 2px 10px rgba(100,80,60,0.10);
       --font-d:      'Anton', sans-serif;
       --font-b:      'DM Sans', sans-serif;
+
+      /* Header Specs */
+      --notch-h:      env(safe-area-inset-top, 0px);
+      --header-base:  60px;
+      --header-total: calc(var(--header-base) + var(--notch-h));
+      --route-bar-h: 40px; /* Fixed height for stats bar */
     }
 
     html, body {
@@ -56,113 +65,121 @@
 
     #map { position: fixed; inset: 0; z-index: 0; }
     
-    /* Push Google Controls */
+    /* Push Google Controls so they aren't hidden */
     .gm-bundled-control { bottom: 80px !important; }
     .gmnoprint.gm-bundled-control-on-bottom { bottom: 80px !important; }
-    .gm-style-mtc-bbw, .gm-style .gm-style-mtc, div[style*="position: absolute"][style*="top"] .gmnoprint { top: calc(env(safe-area-inset-top, 0px) + 140px) !important; }
 
-    /* ── TOP PANEL ── */
-    .top-panel {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100; padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px 8px; pointer-events: none;
-      transition: transform 0.3s ease;
+    /* ════════════════════════════════════════
+       ════ NEW SOLID WHITE TOP BANNER ═════════
+       ════════════════════════════════════════ */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 120;
+      height: var(--header-total); background: #FFFFFF;
+      border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--notch-h) 16px 0; /* Notch handling inside the bar */
     }
-    .top-panel > * { pointer-events: all; }
-    .top-panel.shifted { transform: translateY(38px); } /* Shifts down when route bar is active */
+    #mainLogo { height: 34px; width: auto; cursor: pointer; }
 
-    .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-
-    .wordmark {
-      font-family: var(--font-d); font-size: 22px;
-      letter-spacing: 1px; line-height: 1; color: var(--text); white-space: nowrap;
-      text-shadow: 0 1px 8px rgba(250,248,243,1), 0 2px 16px rgba(250,248,243,0.9);
-      cursor: pointer;
-    }
-    .wordmark .shit { color: var(--orange); }
-
-    .mode-row { display: flex; gap: 6px; flex: 1; }
-    .mode-pill {
-      flex: 1; padding: 7px 10px; border-radius: 30px;
-      border: 1.5px solid var(--border); background: var(--cream); color: var(--text-mid);
-      font-family: var(--font-b); font-size: 12px; font-weight: 600;
-      cursor: pointer; transition: all 0.18s; text-align: center; white-space: nowrap;
-      box-shadow: var(--shadow-sm);
-    }
-    .mode-pill.active {
-      background: var(--orange); color: #fff; border-color: var(--orange);
-      box-shadow: 0 2px 14px var(--orange-glow);
-    }
-
-    .search-card {
-      background: var(--cream); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 10px; box-shadow: var(--shadow);
-    }
-    .search-row { display: flex; align-items: center; gap: 8px; }
-
-    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .dot-origin { background: var(--orange); box-shadow: 0 0 5px var(--orange-glow); }
-    .dot-dest   { background: var(--text); }
-    .vline { width:1px; height:14px; background:var(--border); margin:3px 0 3px 4px; flex-shrink:0; }
-    .route-spacer { margin-top: 6px; }
-
-    .search-input {
-      flex: 1; background: var(--card); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text);
-      font-family: var(--font-b); font-size: 14px; outline: none;
-      transition: border-color 0.18s; min-width: 0;
-    }
-    .search-input:focus { border-color: var(--orange); background: #fff;}
-    .search-input::placeholder { color: var(--text-dim); }
-
-    .action-btn {
-      padding: 9px 18px; border-radius: var(--radius-sm); border: none;
-      background: var(--orange); color: #fff; font-family: var(--font-d);
-      font-size: 15px; letter-spacing: 1px; cursor: pointer;
-      transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
-    }
-    .action-btn:hover  { background: var(--orange-dk); }
-    .action-btn:active { transform: scale(0.96); }
-    
-    .tm-row { display: flex; gap: 6px; margin-top: 8px; }
-    .action-btn.secondary {
-      background: var(--card); color: var(--text);
-      border: 1.5px solid var(--border); font-size: 12px; flex: 1; text-align: center;
-      padding: 6px 0; font-family: var(--font-b); font-weight: 600; letter-spacing: 0;
-    }
-    .action-btn.secondary:hover { border-color: var(--orange); color: var(--orange); }
-    .action-btn.secondary.sel   { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
-
-    .layer-row { display: flex; gap: 6px; margin-top: 7px; }
-    .layer-btn {
-      display: flex; align-items: center; gap: 5px; padding: 5px 11px;
-      border-radius: 20px; border: 1.5px solid var(--border); background: var(--cream);
+    /* Header mode navigation constrained to top right */
+    header .mode-row { flex: none; width: 160px; display: flex; gap: 5px; }
+    header .mode-pill {
+      flex: 1; padding: 6px 8px; border-radius: 30px;
+      border: 1.5px solid var(--border); background: var(--cream);
       color: var(--text-mid); font-family: var(--font-b); font-size: 11px; font-weight: 600;
-      cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow-sm);
+      cursor: pointer; transition: all 0.15s; text-align: center; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(100,80,60,0.12);
     }
-    .layer-btn.on-toilet { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
-    .layer-btn.on-water  { background: var(--water-lt);  border-color: var(--water);  color: var(--water); }
-    .layer-btn.on-access { background: rgba(100,60,200,0.08); border-color: #7a63ff; color: #6044cc; }
+    header .mode-pill.active {
+      background: var(--orange); color: #fff; border-color: var(--orange);
+      box-shadow: 0 2px 10px var(--orange-glow);
+    }
 
-    /* ── ROUTE BAR ── */
+    /* ── ROUTE STATS BAR (Drops below notch/header) ── */
     .route-bar {
-      position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 99;
-      background: var(--cream); border-bottom: 1.5px solid var(--border);
-      padding: 10px 16px; display: flex; align-items: center; gap: 12px;
-      font-size: 12px; font-weight: 600;
-      transform: translateY(-100%); transition: transform 0.3s ease;
-      box-shadow: var(--shadow-sm);
+      position: fixed; z-index: 115; /* Sits below main brand header */
+      top: var(--header-total); left: 0; right: 0;
+      height: var(--route-bar-h); background: var(--cream);
+      border-bottom: 1.5px solid var(--border);
+      padding: 0 16px; display: flex; align-items: center; gap: 12px;
+      font-size: 11px; font-weight: 600; box-shadow: var(--shadow-sm);
+      transform: translateY(-100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .route-bar.show { transform: translateY(0); }
-    .route-stat { color: var(--text-mid); }
-    .route-stat strong { color: var(--text); }
-    .route-divider { flex: 1; }
-    .clear-route-btn {
-      background: none; border: 1.5px solid var(--border);
-      color: var(--text-mid); font-family: var(--font-b);
-      font-size: 11px; font-weight: 600; padding: 3px 10px;
-      border-radius: 20px; cursor: pointer; transition: all 0.18s;
+    .rs-stat { color: var(--text-mid); }
+    .rs-stat strong { color: var(--text); }
+    .rs-div { flex: 1; }
+    .rs-clear {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-mid); font-size: 9px; padding: 2px 8px; border-radius: 20px;
+      cursor: pointer; font-family: var(--font-b);
     }
-    .clear-route-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .rs-clear:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* ── FLOATING UI ELEMENTS (Over map, below white banner) ── */
+    .floating-ui {
+      position: fixed; z-index: 110;
+      /* Starts below the solid white header */
+      top: calc(var(--header-total) + 12px); 
+      left: 0; right: 0; padding: 0 12px; pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .floating-ui > * { pointer-events: all; } /* Cards still float and are interactable */
+    
+    /* When routing is active, shift floating elements further down to accommodate stats bar */
+    .floating-ui.shifted { transform: translateY(var(--route-bar-h)); }
+
+    /* Search/Planner Card */
+    .search-card {
+      background: var(--cream); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 9px; box-shadow: 0 4px 16px rgba(100,80,60,0.14);
+    }
+    .search-row { display: flex; align-items: center; gap: 8px; }
+    .vline { width: 1px; height: 12px; background: var(--border); margin: 2px 0 2px 3px; flex-shrink: 0; }
+    .rs { margin-top: 5px; } /* Routing spacer */
+
+    /* Inputs styled to match cream theme */
+    .search-input {
+      flex: 1; background: var(--card); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 8px 10px; color: var(--text);
+      font-family: var(--font-b); font-size: 13px; outline: none;
+      transition: border-color 0.18s; min-width: 0;
+    }
+    .search-input:focus { border-color: var(--orange); background: #fff; }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .find-btn {
+      padding: 8px 14px; border-radius: 8px; border: none;
+      background: var(--orange); color: #fff; font-family: var(--font-d);
+      font-size: 14px; letter-spacing: 0.5px; cursor: pointer; white-space: nowrap;
+    }
+
+    /* Travel Mode Buttons in Planner */
+    .tm-row { display: flex; gap: 5px; margin-top: 8px; }
+    .tm-btn {
+      flex: 1; padding: 5px 6px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--card);
+      color: var(--text-mid); font-family: var(--font-b); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .tm-btn.sel { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+
+    /* Routing Dots */
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-o { background: var(--orange); box-shadow: 0 0 4px var(--orange-glow); }
+    .dot-d { background: var(--text); }
+
+    /* Filter Layers */
+    .layer-row { display: flex; gap: 5px; margin-top: 7px; }
+    .lbtn {
+      display: flex; align-items: center; gap: 4px; padding: 4px 9px;
+      border-radius: 20px; border: 1.5px solid var(--border); background: var(--cream);
+      color: var(--text-mid); font-family: var(--font-b); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 6px rgba(100,80,60,0.10);
+    }
+    .lbtn.on-t { background: var(--orange-lt); border-color: var(--orange); color: var(--orange); }
+    .lbtn.on-w { background: var(--water-lt);  border-color: var(--water);  color: var(--water); }
+    .lbtn.on-a { background: rgba(100,60,200,0.08); border-color: #7a63ff; color: #6044cc; }
 
     /* ── FAB ── */
     .fab-stack { position: fixed; bottom: 30px; right: 14px; z-index: 100; }
@@ -199,45 +216,47 @@
     .sheet {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 201;
       background: var(--cream); border-top: 1.5px solid var(--border);
-      border-radius: 22px 22px 0 0;
-      box-shadow: 0 -8px 40px rgba(100,80,60,0.18);
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -6px 30px rgba(100,80,60,0.16);
       transform: translateY(100%);
       transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
       max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
-      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      padding-bottom: max(28px, env(safe-area-inset-bottom));
     }
     .sheet.on { transform: translateY(0); }
-    .sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+    .sheet-handle { width: 34px; height: 4px; background: var(--border); border-radius: 2px; margin: 10px auto 0; }
     .sheet-body { padding: 16px 20px 8px; }
 
     .type-badge {
-      display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px;
-      border-radius: 20px; font-family: var(--font-b); font-size: 11px; font-weight: 700;
-      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px;
+      border-radius: 20px; font-family: var(--font-b); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 7px;
     }
     .type-badge.toilet { background: var(--orange-lt); color: var(--orange); border: 1px solid rgba(232,96,26,0.2); }
     .type-badge.water  { background: var(--water-lt);  color: var(--water);  border: 1px solid rgba(26,143,217,0.2); }
 
-    .sheet-name { font-family: var(--font-d); font-size: 28px; line-height: 1.0; margin-bottom: 4px; letter-spacing: 0.5px; }
-    .sheet-meta { color: var(--text-mid); font-size: 13px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-    .chip { padding: 4px 11px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--text-mid); font-size: 12px; font-weight: 500; }
-    .chip.yes       { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+    .sheet-name { font-family: var(--font-d); font-size: 24px; line-height: 1.0; margin-bottom: 3px; }
+    .sheet-meta { color: var(--text-mid); font-size: 12px; margin-bottom: 12px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .chip {
+      padding: 3px 9px; border-radius: 20px; font-family: var(--font-b); font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); background: var(--card); color: var(--text-mid);
+    }
+    .chip.yes { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
     .chip.water-yes { border-color: var(--water);  color: var(--water);  background: var(--water-lt); }
 
     .sheet-notes { color: var(--text-mid); font-size: 13px; line-height: 1.5; padding: 10px 12px; background: var(--card); border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 14px; }
 
     .dir-btn {
-      width: 100%; padding: 13px; border-radius: var(--radius-sm); border: none;
+      width: 100%; padding: 12px; border-radius: 8px; border: none;
       background: var(--orange); color: #fff; font-family: var(--font-d);
-      font-size: 16px; letter-spacing: 1px; cursor: pointer;
-      transition: all 0.18s; margin-bottom: 12px; text-align: center; display: block;
+      font-size: 15px; letter-spacing: 0.5px; text-align: center; cursor: pointer; display: block;
     }
     .dir-btn:hover { background: var(--orange-dk); }
 
     /* ── TOAST ── */
     .toast {
-      position: fixed; top: calc(env(safe-area-inset-top, 0px) + 160px); left: 50%;
+      position: fixed; top: calc(var(--header-total) + 160px); left: 50%;
       transform: translateX(-50%) translateY(-8px); z-index: 500;
       background: var(--text); color: var(--cream);
       padding: 9px 18px; border-radius: 30px; font-size: 13px; font-weight: 500;
@@ -248,7 +267,7 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── AUTOCOMPLETE ── */
-    .pac-container { background:var(--cream)!important; border:1.5px solid var(--border)!important; border-radius:var(--radius-sm)!important; box-shadow:var(--shadow)!important; font-family:var(--font-b)!important; }
+    .pac-container { background:var(--cream)!important; border:1.5px solid var(--border)!important; border-radius:var(--radius-sm)!important; box-shadow:var(--shadow)!important; font-family:var(--font-b)!important; z-index:1000!important;}
     .pac-item { color:var(--text)!important; border-top-color:var(--border)!important; padding:9px 12px!important; font-size:13px!important; cursor:pointer; }
     .pac-item:hover { background:var(--card)!important; }
     .pac-item-query { color:var(--text)!important; }
@@ -261,41 +280,42 @@
 
 <div id="map"></div>
 
+<header id="mainHeader">
+  <img src="https://holyshit.app/logo.png" id="mainLogo" alt="HolyShit" onclick="location.reload()">
+  
+  <div class="mode-row">
+    <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">📍 Nearest</button>
+    <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">🏃 Route</button>
+  </div>
+</header>
+
 <div class="route-bar" id="routeBar">
-  <span class="route-stat">📍 <strong id="statDist">—</strong></span>
-  <span class="route-stat">⏱ <strong id="statTime">—</strong></span>
-  <span class="route-stat">🚻 <strong id="statToilets">—</strong></span>
-  <span class="route-stat">💧 <strong id="statWater">—</strong></span>
-  <div class="route-divider"></div>
-  <button class="clear-route-btn" onclick="clearRoute()">✕ Clear</button>
+  <span class="rs-stat">📍 <strong id="statDist">—</strong></span>
+  <span class="rs-stat">⏱ <strong id="statTime">—</strong></span>
+  <span class="rs-stat">🚻 <strong id="statToilets">—</strong></span>
+  <span class="rs-stat">💧 <strong id="statWater">—</strong></span>
+  <div class="rs-div"></div>
+  <button class="rs-clear" onclick="clearRoute()">✕ Clear</button>
 </div>
 
-<div class="top-panel" id="topPanel">
-  <div class="header-row">
-    <div class="wordmark" onclick="location.reload()">H💩LY<span class="shit">SHIT</span></div>
-    <div class="mode-row">
-      <button class="mode-pill active" id="pillNearest" onclick="setMode('nearest')">📍 Nearest</button>
-      <button class="mode-pill"        id="pillRoute"   onclick="setMode('route')">🏃 Route</button>
-    </div>
-  </div>
-
+<div id="floatingUi" class="floating-ui">
   <div class="search-card" id="cardNearest">
     <div class="search-row">
       <input type="text" id="inputNearest" class="search-input" placeholder="Search a suburb or landmark…" autocomplete="off">
-      <button class="action-btn" onclick="searchNearest()">FIND</button>
+      <button class="find-btn" onclick="searchNearest()">FIND</button>
     </div>
   </div>
 
   <div class="search-card hidden" id="cardRoute">
     <div class="search-row">
-      <span class="dot dot-origin"></span>
-      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — tap map or search…" autocomplete="off" onfocus="S.pickingStep='start'; toast('📍 Tap map to set START');">
+      <span class="dot dot-o"></span>
+      <input type="text" id="inputOrigin" class="search-input" placeholder="Start — tap map or search…" autocomplete="off" onfocus="startPicking('start')">
     </div>
     <div class="vline"></div>
-    <div class="search-row route-spacer">
-      <span class="dot dot-dest"></span>
-      <input type="text" id="inputDest" class="search-input" placeholder="Finish — tap map or search…" autocomplete="off" onfocus="S.pickingStep='end'; toast('🏁 Tap map to set FINISH');">
-      <button class="action-btn" onclick="planRoute()">GO</button>
+    <div class="search-row rs">
+      <span class="dot dot-d"></span>
+      <input type="text" id="inputDest" class="search-input" placeholder="Finish — tap map or search…" autocomplete="off" onfocus="startPicking('end')">
+      <button class="find-btn" onclick="planRoute()">GO</button>
     </div>
     <div class="tm-row">
       <button class="action-btn secondary sel" id="tmWalk"  onclick="setTravelMode('WALKING')">🚶 Walk</button>
@@ -305,14 +325,14 @@
   </div>
 
   <div class="layer-row">
-    <button class="layer-btn on-toilet" id="btnToilet" onclick="toggleLayer('toilet')">🚻 Toilets</button>
-    <button class="layer-btn on-water"  id="btnWater"  onclick="toggleLayer('water')">💧 Water</button>
-    <button class="layer-btn"           id="btnAccess" onclick="toggleLayer('accessible')">♿ Accessible</button>
+    <button class="lbtn on-t" id="btnToilet" onclick="toggleLayer('toilet')">🚻 Toilets</button>
+    <button class="lbtn on-w" id="btnWater"  onclick="toggleLayer('water')">💧 Water</button>
+    <button class="lbtn"      id="btnAccess" onclick="toggleLayer('accessible')">♿ Accessible</button>
   </div>
 </div>
 
 <div class="count-pill" id="countPill">
-  <span class="hi" id="countT">0</span> toilets &nbsp;·&nbsp;
+  <span class="hi" id="countT">0</span> toilets  · 
   <span class="wi" id="countW">0</span> water
 </div>
 
@@ -375,14 +395,14 @@ function haversine(lat1,lng1,lat2,lng2) {
 }
 const isWaterOnly = (loo) => loo.t?.f && !loo.t?.w && !loo.t?.b && !loo.golden;
 
-// SVG Markers (Bypasses Windows Emoji Corruption)
+// SVG Markers (Bypasses Windows Emoji Corruption Glitch)
 const pinToilet = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#e8601a" filter="url(#s)"/><circle cx="17" cy="16" r="10" fill="#3d1600"/><text x="17" y="20.5" font-size="11" text-anchor="middle" font-family="sans-serif">🚻</text></svg>');
 const pinWater = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="30" height="36" viewBox="0 0 30 36"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/></filter></defs><path d="M15 2C8.4 2 3 7.4 3 14c0 8.4 12 20 12 20S27 22.4 27 14C27 7.4 21.6 2 15 2Z" fill="#1a8fd9" filter="url(#s)"/><circle cx="15" cy="14" r="9" fill="#061830"/><text x="15" y="18.5" font-size="11" text-anchor="middle" font-family="sans-serif">💧</text></svg>');
 const pinStar = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="34" height="42" viewBox="0 0 34 42"><defs><filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.30"/></filter></defs><path d="M17 2C9.3 2 3 8.3 3 16c0 9.8 14 24 14 24S31 25.8 31 16C31 8.3 24.7 2 17 2Z" fill="#FFD700" filter="url(#s)"/><circle cx="17" cy="16" r="10" fill="#3d1600"/><text x="17" y="20.5" font-size="11" text-anchor="middle" font-family="sans-serif">⭐</text></svg>');
 
 function initMap() {
   S.map = new google.maps.Map(document.getElementById('map'), {
-    center:{lat:-35.28,lng:149.13}, zoom:14, mapTypeId:'roadmap',
+    center:{lat:-33.87,lng:151.21}, zoom:14, mapTypeId:'roadmap',
     disableDefaultUI:true, gestureHandling:'greedy', clickableIcons:false,
     styles: warmStyle(),
   });
@@ -395,15 +415,25 @@ function initMap() {
   });
   S.dirRenderer.setMap(S.map);
 
-  // Setup Autocomplete
+  // Setup Autocomplete (Fields set to geometry for coords, name for input display)
   const acOpts = { fields: ['geometry', 'name'] };
   S.ac.nearest = new google.maps.places.Autocomplete(el('inputNearest'), acOpts);
   S.ac.origin  = new google.maps.places.Autocomplete(el('inputOrigin'), acOpts);
   S.ac.dest    = new google.maps.places.Autocomplete(el('inputDest'), acOpts);
 
-  S.ac.nearest.addListener('place_changed', searchNearest);
-  S.ac.origin.addListener('place_changed', () => { S.planStart = S.ac.origin.getPlace().geometry.location; });
-  S.ac.dest.addListener('place_changed', () => { S.planEnd = S.ac.dest.getPlace().geometry.location; planRoute(); });
+  // Autocomplete bindings to active logic
+  S.ac.nearest.addListener('place_changed', () => {
+      const place = S.ac.nearest.getPlace();
+      if (place?.geometry) { S.map.panTo(place.geometry.location); S.map.setZoom(15); renderVisibleMarkers(); }
+  });
+  S.ac.origin.addListener('place_changed', () => { 
+      const place = S.ac.origin.getPlace();
+      if (place?.geometry) { S.planStart = place.geometry.location; toast('🏁 Now search or tap map for FINISH'); }
+  });
+  S.ac.dest.addListener('place_changed', () => { 
+      const place = S.ac.dest.getPlace();
+      if (place?.geometry) { S.planEnd = place.geometry.location; planRoute(); }
+  });
 
   S.map.addListener('click', handleMapClick);
   S.map.addListener('idle', renderVisibleMarkers);
@@ -417,7 +447,7 @@ async function loadData() {
       const res = await fetch('toilets-au.json');
       S.allLoos = await res.json();
       renderVisibleMarkers();
-  } catch(e) { console.error("Data load error"); }
+  } catch(e) { console.error("Data load error — check toilets-au.json exists"); }
 }
 
 function setMode(mode) {
@@ -426,15 +456,25 @@ function setMode(mode) {
   el('pillRoute').classList.toggle('active', mode==='route');
   el('cardNearest').classList.toggle('hidden', mode!=='nearest');
   el('cardRoute').classList.toggle('hidden', mode!=='route');
+  
+  // Update floating UI positioning class if needed immediately
+  el('floatingUi').classList.remove('shifted'); // Always reset on mode change
+  
   if (mode==='nearest') clearRoute();
-  else toast('📍 Search or tap the map to set a start point');
+  else toast('📍 Search or tap map to set START');
+}
+
+function startPicking(step) {
+    if (S.mode !== 'route') return;
+    S.pickingStep = step;
+    toast(step === 'start' ? '📍 Tap map to set START' : '🏁 Tap map to set FINISH');
 }
 
 function setTravelMode(mode) {
   S.travelMode = mode;
   ['tmWalk','tmBike','tmDrive'].forEach(id=>el(id).classList.remove('sel'));
-  ({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode] && el(({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'})[mode]).classList.add('sel');
-  if (S.activeRoutePath) planRoute();
+  el({WALKING:'tmWalk',BICYCLING:'tmBike',DRIVING:'tmDrive'}[mode]).classList.add('sel');
+  if (S.activeRoutePath) planRoute(); // Recalculate if route is active
 }
 
 function locateMe() {
@@ -447,6 +487,7 @@ function locateMe() {
       const latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       S.userPos = latLng;
       
+      // Draw standard GPS blue dot with accuracy ring
       if (!S.userMarker) {
         S.userAccuracy = new google.maps.Circle({ map: S.map, center: latLng, radius: pos.coords.accuracy, fillColor: '#e8601a', fillOpacity: 0.1, strokeColor: '#e8601a', strokeOpacity: 0.3, strokeWeight: 1, clickable: false, zIndex: 1 });
         S.userMarker = new google.maps.Marker({ position: latLng, map: S.map, icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: '#e8601a', fillOpacity: 1, strokeColor: '#FFFFFF', strokeWeight: 3, scale: 8 }, zIndex: 10, clickable: false });
@@ -462,15 +503,11 @@ function locateMe() {
 }
 
 function searchNearest() {
-  const place = S.ac.nearest.getPlace();
-  if (place?.geometry) {
-      S.map.panTo(place.geometry.location);
-      S.map.setZoom(15);
-      renderVisibleMarkers();
-  }
+  // FIND button triggers autocomplete's binding, handled above in place_changed
 }
 
 function handleMapClick(e) {
+    // Handling map taps for routing mode
     if (S.mode === 'route' && S.pickingStep) {
         const latLng = e.latLng;
         S.geocoder.geocode({ location: latLng }, (results, status) => {
@@ -488,13 +525,13 @@ function handleMapClick(e) {
             }
         });
     } else {
-        closeSheet();
+        closeSheet(); // Standard behavior: close info sheet
     }
 }
 
 function planRoute() {
-    if (!S.planStart || !S.planEnd) { toast('Please set both start and finish locations'); return; }
-    toast('Calculating route...');
+    if (!S.planStart || !S.planEnd) { toast('Set both locations first'); return; }
+    toast('Mapping route...');
     closeSheet();
     
     S.dirService.route({
@@ -502,7 +539,7 @@ function planRoute() {
         destination: S.planEnd,
         travelMode: google.maps.TravelMode[S.travelMode]
     }, (result, status) => {
-        if (status !== 'OK') { toast('Could not find a route here.'); return; }
+        if (status !== 'OK') { toast('Could not connect these locations.'); return; }
         
         S.dirRenderer.setDirections(result);
         const leg = result.routes[0].legs[0];
@@ -511,10 +548,13 @@ function planRoute() {
         el('statDist').innerText = leg.distance.text;
         el('statTime').innerText = leg.duration.text;
         
-        // Show route bar, shift top panel
+        // UI MANIPULATION:
+        // 1. Drop down the orange stats bar below white banner
         el('routeBar').classList.add('show');
-        el('topPanel').classList.add('shifted');
+        // 2. Shift the floating Search/Filters down below stats bar
+        el('floatingUi').classList.add('shifted');
         
+        // Refilter markers along the new route
         renderVisibleMarkers();
     });
 }
@@ -524,8 +564,11 @@ function clearRoute() {
     S.activeRoutePath = null;
     S.planStart = null; S.planEnd = null;
     el('inputOrigin').value = ''; el('inputDest').value = '';
+    
+    // Reset UI: hide stats bar, shift floating elements back up
     el('routeBar').classList.remove('show');
-    el('topPanel').classList.remove('shifted');
+    el('floatingUi').classList.remove('shifted');
+    
     renderVisibleMarkers();
 }
 
@@ -539,7 +582,7 @@ function toggleLayer(layer) {
 
 function renderVisibleMarkers() {
     const bounds = S.map.getBounds();
-    if (!bounds && !S.activeRoutePath) return;
+    if (!bounds && !S.activeRoutePath) return; // Map isn't ready or loaded
 
     S.markers.forEach(m => m.setMap(null));
     S.markers = [];
@@ -550,14 +593,15 @@ function renderVisibleMarkers() {
     let tCount = 0, wCount = 0;
 
     S.allLoos.forEach(loo => {
-        // Filter by bounds OR route tolerance
         const latLng = new google.maps.LatLng(loo.lat, loo.lon);
         let show = false;
         
+        // CORE LOGIC: Are we in Route mode or standard Viewport mode?
         if (S.activeRoutePath) {
-            // Only show pins within ~200m of the active route
+            // ROUTE BUFFER: Only show pins within ~200m (0.0018 LatLng tolerance) of the route
             show = google.maps.geometry.poly.isLocationOnEdge(latLng, routePolyline, 0.0018);
         } else {
+            // VIEWPORT: Standard bounds filtering
             show = bounds && bounds.contains(latLng);
         }
         
@@ -566,13 +610,13 @@ function renderVisibleMarkers() {
         const isWater = isWaterOnly(loo);
         const isAccess = loo.t && loo.t.w;
 
-        // Apply toggles
+        // Apply Toggles/Filters
         if (isWater && !S.layers.water) return;
         if (!isWater && !S.layers.toilet) return;
         if (S.layers.accessible && !isAccess && !isWater) return;
 
-        // Limit to 80 pins to prevent lag
-        if (S.markers.length > 80) return;
+        // Performance Guard: Limit total pins drawn
+        if (S.markers.length > 90) return;
 
         isWater ? wCount++ : tCount++;
 
@@ -588,14 +632,14 @@ function renderVisibleMarkers() {
                 scaledSize: new google.maps.Size(isWater? 30 : 34, isWater? 36 : 42),
                 anchor: new google.maps.Point(isWater? 15 : 17, isWater? 36 : 42)
             },
-            optimized: false
+            optimized: false // Required for custom SVGs with filtering applied
         });
 
         marker.addListener('click', () => openSheet(loo));
         S.markers.push(marker);
     });
 
-    // Update Counts
+    // Update Counts (In Stats bar if routing, or floating pill if standard)
     if (S.activeRoutePath) {
         el('statToilets').innerText = tCount;
         el('statWater').innerText = wCount;
@@ -613,14 +657,15 @@ function openSheet(loo) {
     S.currentLoo = loo;
     const isW = isWaterOnly(loo);
     
+    // Build Feature Chips dynamically based on data
     let chipsHtml = '';
     if (!isW) {
-        if (loo.t?.w) chipsHtml += '<div class="chip y">♿ Accessible</div>';
-        if (loo.t?.b) chipsHtml += '<div class="chip y">🍼 Baby change</div>';
+        if (loo.t?.w) chipsHtml += '<div class="chip yes">♿ Accessible</div>';
+        if (loo.t?.b) chipsHtml += '<div class="chip yes">🍼 Baby change</div>';
         if (loo.t?.u) chipsHtml += '<div class="chip">🚻 Unisex</div>';
         if (loo.t?.f && !loo.t?.u) chipsHtml += '<div class="chip">🚺 Female</div>';
         if (loo.t?.m && !loo.t?.u) chipsHtml += '<div class="chip">🚹 Male</div>';
-        if (loo.t?.o === '24/7') chipsHtml += '<div class="chip">🟢 24/7</div>';
+        if (loo.t?.o === '24/7') chipsHtml += '<div class="chip yes">🟢 24/7</div>';
         else if (loo.t?.o) chipsHtml += `<div class="chip">🕐 ${loo.t.o}</div>`;
     } else {
         chipsHtml += '<div class="chip water-yes">💧 Drinking water</div>';
@@ -628,18 +673,19 @@ function openSheet(loo) {
 
     const typeBadge = isW ? '<div class="type-badge water">💧 Drinking Water</div>' : (loo.golden ? '<div class="type-badge toilet">⭐ Featured Sanctuary</div>' : '<div class="type-badge toilet">🚻 Public Toilet</div>');
 
+    // Calculate dynamic distance to user
     let distHtml = '';
     if (S.userPos) {
         const dist = haversine(S.userPos.lat, S.userPos.lng, loo.lat, loo.lon);
-        distHtml = `&nbsp;·&nbsp; ${dist < 1000 ? Math.round(dist) + 'm' : (dist/1000).toFixed(1) + 'km'} away`;
+        distHtml = ` ·  ${dist < 1000 ? Math.round(dist) + 'm' : (dist/1000).toFixed(1) + 'km'} away`;
     }
 
-    const gUrl = `https://www.google.com/maps/dir/?api=1&destination=$${loo.lat},${loo.lon}&travelmode=walking`;
+    const gUrl = `https://www.google.com/maps/dir/?api=1&destination=${loo.lat},${loo.lon}&travelmode=walking`;
 
     el('sheetBody').innerHTML = `
       ${typeBadge}
       <div class="sheet-name">${loo.n}</div>
-      <div class="sheet-meta">${loo.a || 'Location mapped'}${distHtml}</div>
+      <div class="sheet-meta">${loo.a || 'Mapped Location'}${distHtml}</div>
       <div class="chip-row">${chipsHtml}</div>
       ${loo.note ? `<div class="sheet-notes">${loo.note}</div>` : ''}
       <a href="${gUrl}" target="_blank" style="text-decoration:none;"><div class="dir-btn">📍 GET DIRECTIONS</div></a>
@@ -655,6 +701,7 @@ function closeSheet() {
     S.currentLoo = null;
 }
 
+// Mapbox-style 'Warm' minimal aesthetic (color match for #faf8f3)
 function warmStyle() {
   return [
     {elementType:'geometry',                  stylers:[{color:'#f5f0e8'}]},
