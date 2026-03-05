@@ -393,6 +393,7 @@ const pinStar  = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg 
 
 /* ── MAP INIT ── */
 function initMap() {
+  console.log('[HolyShit] initMap fired ✓');
   try {
     S.map = new google.maps.Map(el('map'), {
       center: { lat: -33.87, lng: 151.21 }, zoom: 14, mapTypeId: 'roadmap',
@@ -438,6 +439,7 @@ function initMap() {
 
 /* ── DATA ── */
 async function loadData() {
+  console.log('[HolyShit] loadData firing — fetching toilets-au.json');
   try {
     const res = await fetch('toilets-au.json');
     S.allLoos = await res.json();
@@ -823,8 +825,31 @@ function warmStyle() {
     { featureType: 'administrative.neighborhood', elementType: 'labels', stylers: [{ visibility: 'off' }] },
   ];
 }
+
+/* ── DIAGNOSTICS ── */
+// Fires if the API key is invalid, over quota, or billing is off
+window.gm_authFailure = function() {
+  showMapError('API KEY ERROR — Check Google Cloud Console: billing enabled? Key restrictions include this domain?');
+};
+
+// Fires if the script itself fails to load (network, wrong URL, etc.)
+window.gmLoadError = function() {
+  showMapError('SCRIPT LOAD FAILED — Check internet connection or ad blocker.');
+};
+
+function showMapError(msg) {
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#fff;border:2px solid #e8601a;border-radius:14px;padding:24px 20px;max-width:320px;font-family:sans-serif;font-size:14px;line-height:1.5;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.2)';
+  div.innerHTML = '<strong style="color:#e8601a;font-size:16px">&#9888; Map Failed</strong><br><br>' + msg + '<br><br><small style="color:#888">Open browser console (F12) for details</small>';
+  document.body.appendChild(div);
+}
 </script>
 
-<script data-cfasync="false" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=places,geometry&callback=initMap" async defer></script>
+<script
+  data-cfasync="false"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=places,geometry&callback=initMap&loading=async"
+  onerror="window.gmLoadError()"
+  async defer>
+</script>
 </body>
 </html>
