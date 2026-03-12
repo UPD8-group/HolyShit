@@ -118,24 +118,22 @@
     .hud-label { font-family: var(--font-b); font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-top: 4px; }
 
     /* INFOWINDOW */
-    .gm-style .gm-style-iw-c { padding: 0 !important; border-radius: 14px !important; box-shadow: var(--shadow) !important; max-width: 300px !important; }
+    .gm-style .gm-style-iw-c { padding: 0 !important; border-radius: 20px !important; box-shadow: var(--shadow) !important; max-width: 92vw !important; width: 300px !important; }
     .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
     .gm-style .gm-style-iw-t::after { background: var(--cream) !important; }
     .gm-style .gm-ui-hover-effect { display: none !important; }
-    .iw-card { background: var(--cream); border-radius: 14px; padding: 14px 16px 12px; width: 260px; font-family: var(--font-b); color: var(--text); position: relative; border: 1.5px solid var(--border); }
-    .iw-close { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); cursor: pointer; font-size: 0.75rem; color: var(--text-mid); display: flex; align-items: center; justify-content: center; }
-    .iw-type { font-family: var(--font-b); font-weight: 700; font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 2px; }
-    .iw-name { font-family: var(--font-d); font-size: 1.25rem; line-height: 1.1; color: var(--text); margin: 0 20px 2px 0; letter-spacing: 0.3px; }
-    .iw-address { font-size: 0.72rem; color: var(--text-mid); margin: 0 0 8px; line-height: 1.4; }
-    .iw-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
-    .iw-tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; background: var(--card); border-radius: 20px; font-size: 0.62rem; font-weight: 600; color: var(--text-mid); border: 1px solid var(--border); }
-    .iw-tag.t-24  { border-color: var(--green); color: var(--green); background: var(--green-lt); }
-    .iw-tag.t-acc { border-color: var(--water); color: var(--water); background: var(--water-lt); }
-    .iw-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
-    .iw-btn { padding: 9px 4px; border-radius: 8px; border: none; font-family: var(--font-d); font-size: 0.8rem; letter-spacing: 0.3px; cursor: pointer; text-align: center; transition: transform 0.1s; }
-    .iw-btn:active { transform: scale(0.96); }
-    .iw-btn-primary  { background: var(--orange); color: #fff; box-shadow: 0 2px 0 var(--orange-dk); }
-    .iw-btn-secondary { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
+    .iw-card { background: var(--cream); border-radius: 20px; padding: 16px 16px 14px; width: 300px; font-family: var(--font-b); color: var(--text); position: relative; }
+    .iw-close { position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); cursor: pointer; font-size: 0.75rem; color: var(--text-mid); display: flex; align-items: center; justify-content: center; }
+    .iw-emoji { font-size: 2.4rem; line-height: 1; margin-bottom: 8px; display: block; }
+    .iw-name { font-family: var(--font-d); font-size: 1.35rem; line-height: 1.1; color: var(--text); margin: 0 28px 4px 0; letter-spacing: 0.3px; }
+    .iw-address { font-size: 0.72rem; color: var(--text-mid); margin: 0 0 14px; line-height: 1.4; }
+    .iw-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .iw-btn { padding: 11px 4px 9px; border-radius: 10px; border: none; cursor: pointer; text-align: center; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .iw-btn:active { transform: scale(0.94); }
+    .iw-btn-icon { font-size: 1.3rem; line-height: 1; }
+    .iw-btn-label { font-family: var(--font-d); font-size: 0.7rem; letter-spacing: 0.5px; }
+    .iw-btn-primary  { background: var(--orange); color: #fff; box-shadow: 0 3px 0 var(--orange-dk); }
+    .iw-btn-secondary { background: var(--card); color: var(--text-mid); border: 1.5px solid var(--border); }
 
     /* PLANNER BAR */
     #planner-bar {
@@ -637,22 +635,23 @@ function findNearest() {
 let infoWindow = null;
 function openSheet(loo) {
     currentLoo = loo; if (infoWindow) infoWindow.close();
-    let tagsHtml = '';
-    if (loo.t?.w) tagsHtml += '<span class="iw-tag t-acc">♿ Accessible</span>';
-    if (loo.t?.b) tagsHtml += '<span class="iw-tag">🍼 Baby Change</span>';
-    if (loo.t?.o === '24/7') tagsHtml += '<span class="iw-tag t-24">🟢 24/7</span>'; else if (loo.t?.o) tagsHtml += `<span class="iw-tag">🕒 ${loo.t.o}</span>`;
-    if (loo.t?.f) tagsHtml += '<span class="iw-tag">💧 Water</span>';
-    const type = loo.ff ? '🍔 FAST FOOD / FUEL' : (loo.golden ? '⭐ FEATURED' : '💩 PUBLIC FACILITY');
+    const emoji = loo.golden ? '⭐' : (loo.ff ? '🍔' : '💩');
+    const addr  = loo.a || '';
     const content = `<div class="iw-card">
         <button class="iw-close" onclick="closeSheet()">✕</button>
-        <div class="iw-type">${type}</div>
+        <span class="iw-emoji">${emoji}</span>
         <div class="iw-name">${loo.n}</div>
-        <div class="iw-address">${loo.a || ''}</div>
-        ${tagsHtml ? `<div class="iw-tags">${tagsHtml}</div>` : ''}
+        ${addr ? `<div class="iw-address">${addr}</div>` : ''}
         <div class="iw-actions">
-            <button class="iw-btn iw-btn-primary" onclick="openDirections()">🧭 NAV</button>
-            <button class="iw-btn iw-btn-secondary" onclick="closeSheet(); openReport()">🚨 REPORT</button>
-            <button class="iw-btn iw-btn-secondary" onclick="openStreetView()">👁 STREET</button>
+            <button class="iw-btn iw-btn-primary" onclick="openDirections()">
+                <span class="iw-btn-icon">🧭</span><span class="iw-btn-label">NAVIGATE</span>
+            </button>
+            <button class="iw-btn iw-btn-secondary" onclick="closeSheet(); openReport()">
+                <span class="iw-btn-icon">🚨</span><span class="iw-btn-label">REPORT</span>
+            </button>
+            <button class="iw-btn iw-btn-secondary" onclick="openStreetView()">
+                <span class="iw-btn-icon">👁</span><span class="iw-btn-label">STREET</span>
+            </button>
         </div>
     </div>`;
     infoWindow = new google.maps.InfoWindow({ content, pixelOffset: new google.maps.Size(0, -8), disableAutoPan: false });
