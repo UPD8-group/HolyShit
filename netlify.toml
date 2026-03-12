@@ -1,0 +1,65 @@
+# ── HolyShit.app — Netlify Config ──────────────────────────────
+
+[build]
+  publish = "."
+
+# Brotli + Gzip compression on all assets
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+# Cache headers — static assets cached hard, HTML always fresh
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+    # 1 day cache, serve stale for up to 7 days while revalidating
+    # Netlify auto-compresses JSON with Brotli/Gzip — no extra config needed
+
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"
+    # Icons never change — cache for 30 days
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+    # Images — 7 days
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+    # Service worker must always be fresh
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    # HTML always fresh — Netlify CDN will still serve from edge
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Redirect bare domain to www (optional — remove if you prefer bare)
+# [[redirects]]
+#   from = "https://www.holyshit.app/*"
+#   to = "https://holyshit.app/:splat"
+#   status = 301
+#   force = true
