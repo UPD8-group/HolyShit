@@ -97,6 +97,13 @@
     .nav-tab.running .nav-icon { background: var(--green-lt); opacity: 1; animation: pulse-green 1.5s ease-in-out infinite; }
     .nav-tab.running .nav-label { color: var(--green); }
     @keyframes pulse-green { 0%,100% { box-shadow: 0 0 0 0 rgba(42,157,78,0.4); } 50% { box-shadow: 0 0 0 8px rgba(42,157,78,0); } }
+    .nav-tab.active .nav-icon-nav { background: var(--water-lt) !important; }
+    .nav-tab.active .nav-label:has(~ .nav-icon-nav) { color: var(--water) !important; }
+    #tab-nav.active .nav-label { color: var(--water); }
+    #tab-nav.active .nav-icon { background: var(--water-lt); }
+    .nav-tab-poo { flex: 1.2; }
+    .nav-icon-poo { font-size: 1.7rem !important; width: 38px !important; height: 38px !important; margin-top: -6px; }
+    #tab-near .nav-label { font-size: 0.62rem; }
 
     /* RUN HUD */
     #run-hud {
@@ -469,11 +476,9 @@
 </div>
 
 <nav id="bottom-nav">
-    <button class="nav-tab" id="tab-near"   onclick="navTap('near')"><div class="nav-icon">💩</div><div class="nav-label">Near Me</div></button>
-    <button class="nav-tab" id="tab-plan"   onclick="navTap('plan')"><div class="nav-icon">🗺️</div><div class="nav-label">Plan Route</div></button>
-    <button class="nav-tab" id="tab-report" onclick="navTap('report')"><div class="nav-icon">🚨</div><div class="nav-label">Report</div></button>
-    <button class="nav-tab" id="tab-run"    onclick="navTap('run')"><div class="nav-icon">▶️</div><div class="nav-label">Run</div></button>
-    <button class="nav-tab" id="tab-more"   onclick="navTap('more')"><div class="nav-icon">☰</div><div class="nav-label">More</div></button>
+    <button class="nav-tab" id="tab-nav"  onclick="navTap('nav')"><div class="nav-icon nav-icon-nav">🧭</div><div class="nav-label">Navigate</div></button>
+    <button class="nav-tab nav-tab-poo" id="tab-near" onclick="navTap('near')"><div class="nav-icon nav-icon-poo">💩</div><div class="nav-label">Near Me</div></button>
+    <button class="nav-tab" id="tab-more" onclick="navTap('more')"><div class="nav-icon">☰</div><div class="nav-label">More</div></button>
 </nav>
 
 <div id="install-banner"><div class="install-icon">💩</div><div class="install-text"><strong>Install HolyShit.app</strong><span>Add to home screen — runs like a native app</span></div><button id="install-btn" onclick="triggerInstall()">INSTALL</button><button id="install-dismiss" onclick="dismissInstall()">✕</button></div>
@@ -531,12 +536,15 @@ const pinGold = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg x
 function makePinIcon(url, w, h) { return { url, scaledSize: new google.maps.Size(w, h), anchor: new google.maps.Point(w/2, h) }; }
 
 function navTap(tab) {
-    if (tab !== 'run') { document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); document.getElementById('tab-' + tab).classList.add('active'); }
-    if (tab === 'report') { openReport(); }
-    if (tab === 'near')   { findNearest(); }
-    if (tab === 'run')    { toggleRun(); }
-    if (tab === 'more')   { openMore(); }
-    if (tab === 'plan')   { openPlanner(); }
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'near') { findNearest(); }
+    if (tab === 'nav')  { openNavMode(); }
+    if (tab === 'more') { openMore(); }
+}
+function openNavMode() {
+    if (!currentLoo) { showToast('💩 Tap a toilet first, then navigate!'); return; }
+    openDirections();
 }
 function closeAll() { closeSheet(); closeReport(); cancelNavigation(); document.getElementById('route-summary').classList.remove('open'); document.getElementById('more-sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
 function openMore()  { document.getElementById('more-sheet').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
@@ -723,7 +731,7 @@ function closePlanner() {
     markers.forEach(m => m.setMap(null)); markers = [];
     renderVisibleMarkers();
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-near').classList.add('active');
+    document.getElementById('tab-near').classList.add('active'); // reset to Near Me
 }
 
 function resetStep(w) { document.getElementById('step-' + w).className = 'planner-step'; document.getElementById('step-' + w + '-val').innerText = 'Tap to set'; }
@@ -881,8 +889,6 @@ function startRun() {
     if (!navigator.geolocation) { showToast('⚠️ Geolocation not available on this device.'); return; }
     isRunning=true; runPath=[]; totalDistKm=0; lastPos=null; runStartTime=Date.now();
     document.getElementById('run-hud').classList.add('active');
-    const tab = document.getElementById('tab-run');
-    tab.classList.add('running'); tab.querySelector('.nav-icon').innerText = '⏹'; tab.querySelector('.nav-label').innerText = 'Stop';
     if (runPolyline) runPolyline.setMap(null);
     runPolyline = new google.maps.Polyline({ path: runPath, geodesic:true, strokeColor:'#e8601a', strokeOpacity:0.9, strokeWeight:5, map });
     runWatchId = navigator.geolocation.watchPosition(
@@ -894,8 +900,6 @@ function stopRun() {
     isRunning=false;
     if (runWatchId!==null) { navigator.geolocation.clearWatch(runWatchId); runWatchId=null; }
     document.getElementById('run-hud').classList.remove('active');
-    const tab = document.getElementById('tab-run');
-    tab.classList.remove('running'); tab.querySelector('.nav-icon').innerText = '▶️'; tab.querySelector('.nav-label').innerText = 'Run';
     document.getElementById('tab-near').classList.add('active');
     if (routePolyline) { routePolyline.setMap(null); routePolyline = null; }
     routeMarkers.forEach(m => m.setMap(null)); routeMarkers = [];
