@@ -84,14 +84,14 @@
     .nav-icon {
         width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
         font-size: 1.3rem; border-radius: 8px;
-        transition: background 0.15s, transform 0.15s; opacity: 0.5;
+        transition: background 0.15s, transform 0.15s;
     }
     .nav-label {
-        font-family: var(--font-b); font-size: 0.6rem; font-weight: 600;
-        letter-spacing: 0.3px; color: var(--text-dim);
+        font-family: var(--font-b); font-size: 0.6rem; font-weight: 700;
+        letter-spacing: 0.3px; color: var(--text-mid);
         transition: color 0.15s; white-space: nowrap;
     }
-    .nav-tab.active .nav-icon { background: var(--orange-lt); opacity: 1; }
+    .nav-tab.active .nav-icon { background: var(--orange-lt); }
     .nav-tab.active .nav-label { color: var(--orange); }
     .nav-tab:active .nav-icon { transform: scale(0.9); }
     .nav-tab.running .nav-icon { background: var(--green-lt); opacity: 1; animation: pulse-green 1.5s ease-in-out infinite; }
@@ -517,7 +517,7 @@
 <nav id="bottom-nav">
     <button class="nav-tab" id="tab-map"  onclick="navTap('map')"><div class="nav-icon" id="map-mode-icon">🗺️</div><div class="nav-label" id="map-mode-label">Map</div></button>
     <button class="nav-tab nav-tab-poo" id="tab-near" onclick="navTap('near')"><div class="nav-icon nav-icon-poo">💩</div><div class="nav-label">Near Me</div></button>
-    <button class="nav-tab" id="tab-more" onclick="navTap('more')"><div class="nav-icon">☰</div><div class="nav-label">More</div></button>
+    <button class="nav-tab" id="tab-travel" onclick="navTap('travel')"><div class="nav-icon" id="travel-mode-icon">🏃</div><div class="nav-label" id="travel-mode-nav-label">Mode</div></button>
 </nav>
 
 <div id="install-banner"><div class="install-icon">💩</div><div class="install-text"><strong>Install HolyShit.app</strong><span>Add to home screen — runs like a native app</span></div><button id="install-btn" onclick="triggerInstall()">INSTALL</button><button id="install-dismiss" onclick="dismissInstall()">✕</button></div>
@@ -586,13 +586,13 @@ const MAP_MODES = [
 let mapModeIdx = 0;
 
 function navTap(tab) {
-    if (tab !== 'map') {
+    if (tab !== 'map' && tab !== 'travel') {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('tab-' + tab).classList.add('active');
     }
-    if (tab === 'near') { findNearest(); }
-    if (tab === 'more') { openMore(); }
-    if (tab === 'map')  { cycleMapMode(); }
+    if (tab === 'near')   { findNearest(); }
+    if (tab === 'travel') { openTravelModal(); }
+    if (tab === 'map')    { cycleMapMode(); }
 }
 function cycleMapMode() {
     mapModeIdx = (mapModeIdx + 1) % MAP_MODES.length;
@@ -730,6 +730,8 @@ function handleMapClick(e) { if (pickingStep) handlePickTap(e.latLng); else { cl
 function openDirections() {
     if (!currentLoo) return;
     if (!blueDotMarker) { showToast('📍 Waiting for GPS fix — try again shortly.'); return; }
+    // Always read freshest travel mode from localStorage
+    window._travelMode = localStorage.getItem('hs_travel_mode') || 'WALKING';
     // Capture everything BEFORE closeSheet() nulls currentLoo
     const loo    = currentLoo;
     const origin = blueDotMarker.getPosition();
@@ -746,7 +748,9 @@ function openDirections() {
             const leg = result.routes[0].legs[0];
             const path = result.routes[0].overview_path;
             navPolyline = new google.maps.Polyline({ path, geodesic: true, strokeColor: '#e8601a', strokeOpacity: 0.9, strokeWeight: 5, map });
-            document.getElementById('nav-bar-dist').innerHTML = `<span>${leg.distance.text}</span> · ${leg.duration.text} walking`;
+            const modeLabel = { DRIVING: 'driving', WALKING: 'walking', BICYCLING: 'cycling' };
+            const activeMode = window._travelMode || TRAVEL_MODE;
+            document.getElementById('nav-bar-dist').innerHTML = `<span>${leg.distance.text}</span> · ${leg.duration.text} ${modeLabel[activeMode] || 'walking'}`;
             const bounds = new google.maps.LatLngBounds();
             path.forEach(p => bounds.extend(p));
             map.fitBounds(bounds, { top: 80, right: 40, bottom: 140, left: 40 });
@@ -1045,12 +1049,12 @@ function appTravelOverlayTap(e) {
 
 function updateTravelModeLabel() {
     const mode = localStorage.getItem('hs_travel_mode') || 'WALKING';
-    const el = document.getElementById('more-travel-desc');
-    const icon = document.querySelector('#more-travel-item .more-icon');
-    const labels = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
-    const names  = { DRIVING: 'Currently set to Drive', WALKING: 'Currently set to Walk / Run', BICYCLING: 'Currently set to Cycle' };
-    if (el) el.innerText = names[mode] || names.WALKING;
-    if (icon) icon.innerText = labels[mode] || '🏃';
+    const icons  = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
+    // Update nav button — icon shows current mode, label always says "Mode"
+    const navIcon  = document.getElementById('travel-mode-icon');
+    const navLabel = document.getElementById('travel-mode-nav-label');
+    if (navIcon)  navIcon.innerText  = icons[mode] || '🏃';
+    if (navLabel) navLabel.innerText = 'Mode';
 }
 
 window.gm_authFailure = function() {
