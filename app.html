@@ -614,9 +614,9 @@ function makeEmojiMarkerIcon(emoji, pinColor) {
 }
 
 const MAP_MODES = [
+    { type: 'hybrid',   styles: false, icon: '🌏',  label: 'Hybrid',    toast: '🌏 Hybrid view' },
     { type: 'roadmap',  styles: true,  icon: '🗺️',  label: 'Map',       toast: '🗺️ Standard map' },
     { type: 'satellite',styles: false, icon: '🛰️',  label: 'Satellite', toast: '🛰️ Satellite view' },
-    { type: 'hybrid',   styles: false, icon: '🌏',  label: 'Hybrid',    toast: '🌏 Hybrid view' },
 ];
 let mapModeIdx = 0;
 
@@ -646,7 +646,7 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
-        mapTypeId: 'roadmap',
+        mapTypeId: 'hybrid',
         styles: warmStyle(),
         gestureHandling: 'greedy',
         disableDefaultUI: true,
@@ -751,7 +751,7 @@ function openSheet(loo) {
         ${addr ? `<div class="iw-address">${addr}</div>` : ''}
         <div class="iw-actions">
             <button class="iw-btn iw-btn-primary" onclick="openDirections()">
-                <span class="iw-btn-icon">🧭</span><span class="iw-btn-label">NAVIGATE</span>
+                <span class="iw-btn-icon">🧭</span><span class="iw-btn-label">NAVIGATE <span id="nav-mode-indicator"></span></span>
             </button>
             <button class="iw-btn iw-btn-secondary" onclick="closeSheet(); openReport()">
                 <span class="iw-btn-icon">🚨</span><span class="iw-btn-label">REPORT</span>
@@ -1089,6 +1089,9 @@ function appTravelOverlayTap(e) {
 }
 
 function updateTravelModeLabel() {
+    const modeEmojis = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
+    const el = document.getElementById('nav-mode-indicator');
+    if (el) { const m = localStorage.getItem('hs_travel_mode') || 'DRIVING'; el.textContent = modeEmojis[m] || '🚗'; }
     const mode = localStorage.getItem('hs_travel_mode') || 'WALKING';
     const icons  = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
     // Update nav button — icon shows current mode, label always says "Mode"
