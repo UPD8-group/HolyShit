@@ -568,7 +568,7 @@ let plannerActive = false, pickingStep = null;
 let planStart = null, planEnd = null, planStartMarker = null, planEndMarker = null;
 let routePolyline = null, routeFacilities = [], routeMarkers = [];
 let geocoder, directionsService;
-let pooIcon = null, goldenIcon = null;
+let pooIcon = null, goldenIcon = null, burgerIcon = null;
 let currentTravelMode = 'WALKING';
 let currentRouteTolerance = 0.0009;
 let cachedRoutePath = null, cachedRouteSummary = null;
@@ -659,6 +659,7 @@ async function initMap() {
     document.getElementById('hud-pace-lbl').innerText = UNITS.pace;
     pooIcon    = makeEmojiMarkerIcon('💩', '#e8601a');
     goldenIcon = makeEmojiMarkerIcon('⭐', '#FFD700');
+    burgerIcon = makeEmojiMarkerIcon('🍔', '#2d7a3a');
     map.addListener('click', handleMapClick);
     map.addListener('idle', renderVisibleMarkers);
     map.addListener('dragstart', () => { userHasPanned = true; });
@@ -697,8 +698,13 @@ function renderVisibleMarkers() {
     if (plannerActive || isRunning) return;
     const bounds = map.getBounds(); if (!bounds) return;
     markers.forEach(m => m.setMap(null)); markers = [];
-    allLoos.filter(l => bounds.contains({ lat: l.lat, lng: l.lon })).slice(0, 80).forEach(loo => {
-        const icon = loo.golden ? goldenIcon : pooIcon;
+    const centre = map.getCenter();
+    const clat = centre.lat(), clng = centre.lng();
+    allLoos
+        .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
+        .sort((a,b) => haversineKm(clat,clng,a.lat,a.lon) - haversineKm(clat,clng,b.lat,b.lon))
+        .slice(0, 200).forEach(loo => {
+        const icon = pooIcon;
         const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, title: loo.n, optimized: false });
         marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
         markers.push(marker);
@@ -927,7 +933,7 @@ function filterFacilitiesOnRoute(routePath) {
     const polyline = new google.maps.Polyline({ path: routePath });
     routeFacilities = allLoos.filter(loo => google.maps.geometry.poly.isLocationOnEdge(new google.maps.LatLng(loo.lat, loo.lon), polyline, currentRouteTolerance));
     routeFacilities.forEach(loo => {
-        const icon = loo.golden ? goldenIcon : pooIcon;
+        const icon = pooIcon;
         const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, optimized: false, zIndex: 500 });
         marker.addListener('click', () => openSheet(loo));
         routeMarkers.push(marker);
