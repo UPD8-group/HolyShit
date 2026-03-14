@@ -393,9 +393,21 @@
     #atravel-save { display: block; margin: 0 16px 4px; width: calc(100% - 32px); background: var(--orange); color: #fff; border: none; padding: 14px; border-radius: 10px; font-family: var(--font-d); font-size: 1.1rem; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 0 var(--orange-dk); transition: transform 0.1s, opacity 0.2s; opacity: 0.35; pointer-events: none; }
     #atravel-save.ready { opacity: 1; pointer-events: auto; }
     #atravel-save.ready:active { transform: scale(0.98); }
-    </style>
+    
+    #splash { position: fixed; inset: 0; background: #1a0a00; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: opacity 0.4s; }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    #splash .splash-emoji { font-size: 4rem; margin-bottom: 12px; animation: splashbounce 0.8s ease-in-out infinite alternate; }
+    #splash .splash-title { font-family: var(--font-b); font-size: 1.4rem; font-weight: 800; color: #faf8f3; letter-spacing: -0.02em; }
+    #splash .splash-sub { font-family: var(--font-b); font-size: 0.75rem; color: #e8601a; margin-top: 6px; }
+    @keyframes splashbounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+</style>
 </head>
 <body>
+<div id="splash">
+    <div class="splash-emoji">💩</div>
+    <div class="splash-title">HolyShit.app</div>
+    <div class="splash-sub">Finding your location…</div>
+</div>
 
 <!-- Netlify form detection (hidden) -->
 <form name="holyshit-report" netlify netlify-honeypot="bot-field" hidden>
@@ -576,40 +588,14 @@ let navPolyline = null;
 
 // Canvas-based emoji markers — reliable across all browsers
 function makeEmojiMarkerIcon(emoji, pinColor) {
-    const dpr = window.devicePixelRatio || 1;
-    const W = 34, H = 42;
-    const c = document.createElement('canvas');
-    c.width = W * dpr; c.height = H * dpr;
-    const ctx = c.getContext('2d');
-    ctx.scale(dpr, dpr);
-    // Drop shadow
-    ctx.shadowColor = 'rgba(0,0,0,0.3)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetY = 2;
-    // Pin shape
-    ctx.beginPath();
-    ctx.moveTo(17, 2);
-    ctx.bezierCurveTo(10, 2, 3, 8, 3, 16);
-    ctx.bezierCurveTo(3, 25, 17, 40, 17, 40);
-    ctx.bezierCurveTo(17, 40, 31, 25, 31, 16);
-    ctx.bezierCurveTo(31, 8, 24, 2, 17, 2);
-    ctx.fillStyle = pinColor;
-    ctx.fill();
-    ctx.shadowColor = 'transparent';
-    // Inner circle
-    ctx.beginPath();
-    ctx.arc(17, 16, 11, 0, Math.PI * 2);
-    ctx.fillStyle = '#3d1600';
-    ctx.fill();
-    // Emoji
-    ctx.font = '14px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(emoji, 17, 17);
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">'
+        + '<path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 22 12 22S26 21.5 26 13C26 6.4 20.6 1 14 1Z" fill="' + pinColor + '" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>'
+        + '<circle cx="14" cy="13" r="7" fill="rgba(0,0,0,0.25)"/>'
+        + '</svg>';
     return {
-        url: c.toDataURL(),
-        scaledSize: new google.maps.Size(W, H),
-        anchor: new google.maps.Point(W / 2, H)
+        url: 'data:image/svg+xml;base64,' + btoa(svg),
+        scaledSize: new google.maps.Size(28, 36),
+        anchor: new google.maps.Point(14, 36)
     };
 }
 
@@ -643,8 +629,22 @@ function openMore()  { document.getElementById('more-sheet').classList.add('open
 function closeMore() { document.getElementById('more-sheet').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
 
 async function initMap() {
+    // Try to get user location before centering map
+    let startCenter = { lat: -35.2809, lng: 149.1300 };
+    try {
+        await new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+                pos => { startCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude }; resolve(); },
+                () => resolve(), // fall back to Canberra on error/denial
+                { enableHighAccuracy: true, timeout: 4000, maximumAge: 30000 }
+            );
+        });
+    } catch(e) {}
+    // Hide splash
+    const splash = document.getElementById('splash');
+    if (splash) { splash.classList.add('hide'); setTimeout(() => splash.remove(), 400); }
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -35.2809, lng: 149.1300 },
+        center: startCenter,
         zoom: 15,
         mapTypeId: 'satellite',
         styles: warmStyle(),
