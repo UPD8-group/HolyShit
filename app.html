@@ -568,7 +568,7 @@ let plannerActive = false, pickingStep = null;
 let planStart = null, planEnd = null, planStartMarker = null, planEndMarker = null;
 let routePolyline = null, routeFacilities = [], routeMarkers = [];
 let geocoder, directionsService;
-let pooIcon = null, goldenIcon = null, burgerIcon = null;
+let pooIcon = null, goldenIcon = null;
 let currentTravelMode = 'WALKING';
 let currentRouteTolerance = 0.0009;
 let cachedRoutePath = null, cachedRouteSummary = null;
@@ -614,9 +614,9 @@ function makeEmojiMarkerIcon(emoji, pinColor) {
 }
 
 const MAP_MODES = [
+    { type: 'satellite',styles: false, icon: '🛰️',  label: 'Satellite', toast: '🛰️ Satellite view' },
     { type: 'hybrid',   styles: false, icon: '🌏',  label: 'Hybrid',    toast: '🌏 Hybrid view' },
     { type: 'roadmap',  styles: true,  icon: '🗺️',  label: 'Map',       toast: '🗺️ Standard map' },
-    { type: 'satellite',styles: false, icon: '🛰️',  label: 'Satellite', toast: '🛰️ Satellite view' },
 ];
 let mapModeIdx = 0;
 
@@ -646,7 +646,7 @@ async function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: -35.2809, lng: 149.1300 },
         zoom: 15,
-        mapTypeId: 'hybrid',
+        mapTypeId: 'satellite',
         styles: warmStyle(),
         gestureHandling: 'greedy',
         disableDefaultUI: true,
@@ -659,7 +659,6 @@ async function initMap() {
     document.getElementById('hud-pace-lbl').innerText = UNITS.pace;
     pooIcon    = makeEmojiMarkerIcon('💩', '#e8601a');
     goldenIcon = makeEmojiMarkerIcon('⭐', '#FFD700');
-    burgerIcon = makeEmojiMarkerIcon('🍔', '#2d7a3a');
     map.addListener('click', handleMapClick);
     map.addListener('idle', renderVisibleMarkers);
     map.addListener('dragstart', () => { userHasPanned = true; });
