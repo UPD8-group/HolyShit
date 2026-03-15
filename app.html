@@ -565,7 +565,14 @@ function triggerInstall() { if (!deferredInstallPrompt) return; deferredInstallP
 function dismissInstall() { document.getElementById('install-banner').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
 function checkIosInstall() { if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !sessionStorage.getItem(INSTALL_KEY)) setTimeout(() => document.getElementById('ios-nudge').classList.add('show'), 5000); }
 function dismissIosNudge() { document.getElementById('ios-nudge').classList.remove('show'); sessionStorage.setItem(INSTALL_KEY,'1'); }
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
+    try {
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
+    } catch (err) {
+        console.error('[HolyShit] Service worker registration failed', err);
+    }
+});
 
 // STATE
 // Read travel mode saved from landing page (default: WALKING)
@@ -688,9 +695,42 @@ function warmStyle() {
     ];
 }
 
+const TOILET_DATA_CANDIDATES = [
+    '/toilets-au.json',
+    '/2toilets-au.json'
+];
+
+async function fetchJsonArray(url) {
+    const bust = 'v=' + encodeURIComponent((window.__HS_BUILD_VERSION || '2026-03-15'));
+    const join = url.includes('?') ? '&' : '?';
+    const res = await fetch(url + join + bust, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + url);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('Invalid JSON structure for ' + url);
+    return data;
+}
+
 async function loadData() {
-    try { const res = await fetch('toilets-au.json'); allLoos = await res.json(); renderVisibleMarkers(); }
-    catch(e) { allLoos = []; }
+    const errors = [];
+
+    for (const url of TOILET_DATA_CANDIDATES) {
+        try {
+            const data = await fetchJsonArray(url);
+            const valid = data.filter(l => l && typeof l.lat === 'number' && typeof l.lon === 'number');
+            if (!valid.length) throw new Error('No valid toilet records found in ' + url);
+            allLoos = valid;
+            console.log('[HolyShit] Loaded ' + allLoos.length + ' toilet locations from ' + url);
+            renderVisibleMarkers();
+            return;
+        } catch (err) {
+            console.error('[HolyShit] Failed to load toilet data from ' + url, err);
+            errors.push(url + ': ' + err.message);
+        }
+    }
+
+    allLoos = [];
+    showToast('Could not load toilet locations');
+    console.error('[HolyShit] Toilet data unavailable. Checked:', errors.join(' | '));
 }
 
 function renderVisibleMarkers() {
@@ -700,11 +740,11 @@ function renderVisibleMarkers() {
     const centre = map.getCenter();
     const clat = centre.lat(), clng = centre.lng();
     allLoos
-        .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
+        .filter(l => l && typeof l.lat === 'number' && typeof l.lon === 'number' && bounds.contains({ lat: l.lat, lng: l.lon }))
         .sort((a,b) => haversineKm(clat,clng,a.lat,a.lon) - haversineKm(clat,clng,b.lat,b.lon))
         .slice(0, 200).forEach(loo => {
         const icon = pooIcon;
-        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, title: loo.n, optimized: false });
+        const marker = new google.maps.Marker({ position: { lat: loo.lat, lng: loo.lon }, map, icon, title: loo.n || 'Toilet location', optimized: false });
         marker.addListener('click', () => { if (!pickingStep) openSheet(loo); });
         markers.push(marker);
     });
