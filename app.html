@@ -197,6 +197,7 @@
     }
     .iw-address { font-size: 0.72rem; color: var(--text-mid); margin: 0 0 14px; line-height: 1.4; }
     .iw-dist { font-size: 0.72rem; color: var(--orange); font-weight: 600; margin: 0 0 14px; }
+    .iw-type { font-size: 0.7rem; color: var(--text-mid); margin: 0 0 10px; padding: 5px 8px; background: var(--card); border-radius: 6px; border: 1px solid var(--border); }
 
     /* 3-button grid */
     .iw-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -681,6 +682,9 @@ function initMap(center) {
     // Force resize after paint
     setTimeout(() => google.maps.event.trigger(map, 'resize'), 100);
 
+    // Suppress Google POI labels immediately (important for when user switches to roadmap)
+    map.setOptions({ styles: [] }); // satellite starts clean; applyMapMode handles roadmap
+
     // Build marker icon
     pooIcon = makePinIcon('#e8601a');
 
@@ -721,17 +725,30 @@ function makePinIcon(color) {
 /* ═══════════════════════════════════════════════
    MAP MODES
 ═══════════════════════════════════════════════ */
+// Suppresses ALL Google POI icons/labels on roadmap mode so only our
+// toilet markers are visible. Satellite and hybrid don't support styles.
+const POI_SUPPRESSION = [
+    { featureType: 'poi',            elementType: 'all',         stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park',       elementType: 'labels',      stylers: [{ visibility: 'off' }] },
+    { featureType: 'transit',        elementType: 'labels',      stylers: [{ visibility: 'off' }] },
+    { featureType: 'road',           elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+];
+
 const MAP_MODES = [
-    { type: 'satellite', label: '🛰️', toast: '🛰️ Satellite view' },
-    { type: 'hybrid',    label: '🌏', toast: '🌏 Hybrid view'    },
-    { type: 'roadmap',   label: '🗺️', toast: '🗺️ Map view'       },
+    { type: 'satellite', label: '🛰️', toast: '🛰️ Satellite view', styles: [] },
+    { type: 'hybrid',    label: '🌏', toast: '🌏 Hybrid view',     styles: [] },
+    { type: 'roadmap',   label: '🗺️', toast: '🗺️ Map view',        styles: POI_SUPPRESSION },
 ];
 function cycleMapMode() {
     mapModeIdx = (mapModeIdx + 1) % MAP_MODES.length;
+    applyMapMode();
+    showToast(MAP_MODES[mapModeIdx].toast);
+}
+function applyMapMode() {
     const m = MAP_MODES[mapModeIdx];
     map.setMapTypeId(m.type);
+    map.setOptions({ styles: m.styles });
     document.getElementById('map-type-icon').textContent = m.label;
-    showToast(m.toast);
 }
 
 /* ═══════════════════════════════════════════════
@@ -929,20 +946,27 @@ function openInfoWindow(loo, marker) {
           ))
         : null;
 
-    const travelModeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
-    const activeMode = localStorage.getItem('hs_travel_mode') || 'WALKING';
-    const modeEmoji  = travelModeEmoji[activeMode] || '🏃';
+    const mode     = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
+
+    // Determine venue type for emoji and subtitle
+    const isFastFood = loo.ff && !loo.golden;
+    const emoji    = loo.golden ? '⭐' : isFastFood ? '🍔' : '💩';
+    const typeTag  = isFastFood
+        ? '<div class="iw-type">🍔 Restaurant / fast food — has accessible toilet</div>'
+        : '';
 
     const html = `
     <div class="iw-card">
         <button class="iw-close" onclick="closeInfoWindow()">✕</button>
-        <span class="iw-emoji">💩</span>
+        <span class="iw-emoji">${emoji}</span>
         <div class="iw-name">${escapeHtml(loo.n)}</div>
-        ${loo.a ? `<div class="iw-address">${escapeHtml(loo.a)}</div>` : ''}
-        ${dist  ? `<div class="iw-dist">${dist} away</div>` : ''}
+        ${loo.a  ? `<div class="iw-address">${escapeHtml(loo.a)}</div>` : ''}
+        ${typeTag}
+        ${dist   ? `<div class="iw-dist">${dist} away</div>` : ''}
         <div class="iw-actions">
             <button class="iw-btn iw-btn-nav"    onclick="startNavigation()">
-                <span class="iw-btn-icon">${modeEmoji}</span>
+                <span class="iw-btn-icon">${modeEmoji[mode] || '🏃'}</span>
                 <span class="iw-btn-label">NAVIGATE</span>
             </button>
             <button class="iw-btn iw-btn-street" onclick="openStreetView()">
