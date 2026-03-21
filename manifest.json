@@ -1,12 +1,12 @@
 {
-    "name": "HolyShit — Seek Sanctuary",
+    "name": "HolyShit.app — Relief Radar",
     "short_name": "HolyShit",
-    "description": "Find public toilets near you, instantly. For runners, cyclists, and the desperately human.",
-    "start_url": "/",
+    "description": "Find public toilets near you, instantly. For runners, cyclists, road trippers and anyone who just needs to go.",
+    "start_url": "/app.html",
     "scope": "/",
     "display": "standalone",
-    "background_color": "#FDF6E8",
-    "theme_color": "#8B2635",
+    "background_color": "#faf8f3",
+    "theme_color": "#e8601a",
     "orientation": "portrait-primary",
     "categories": ["navigation", "utilities"],
     "icons": [
