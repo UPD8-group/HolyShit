@@ -1141,6 +1141,7 @@ function saveTravel() {
     localStorage.setItem('hs_travel_mode', travelSelected);
     document.getElementById('travel-overlay').classList.remove('show');
     syncModeButtons();
+    refreshInfoWindowMode();
     const labels = { DRIVING: '🚗 Drive', WALKING: '🏃 Walk/Run', BICYCLING: '🚴 Cycle' };
     showToast(labels[travelSelected] + ' mode saved');
 }
@@ -1156,6 +1157,7 @@ function travelOverlayTap(e) {
 function setMode(mode) {
     localStorage.setItem('hs_travel_mode', mode);
     syncModeButtons();
+    refreshInfoWindowMode();
     const labels = { DRIVING: '🚗 Drive', WALKING: '🏃 Walk/Run', BICYCLING: '🚴 Cycle' };
     showToast(labels[mode] + ' mode set');
 }
@@ -1166,6 +1168,19 @@ function syncModeButtons() {
         document.getElementById(id)?.classList.remove('active');
     });
     document.getElementById(map2[mode])?.classList.add('active');
+}
+
+/* If the info window card is open, update the navigate button emoji live */
+function refreshInfoWindowMode() {
+    if (!infoWindow) return;
+    const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
+    const mode = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    // The infowindow content lives inside a shadow-ish Google iframe pane —
+    // query the actual DOM node Google inserts for us
+    const iwContainer = document.querySelector('.gm-style-iw-d');
+    if (!iwContainer) return;
+    const icon = iwContainer.querySelector('.iw-btn-nav .iw-btn-icon');
+    if (icon) icon.textContent = modeEmoji[mode] || '🏃';
 }
 
 /* ═══════════════════════════════════════════════
