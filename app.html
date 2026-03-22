@@ -926,6 +926,18 @@ async function loadData() {
 }
 
 /* ═══════════════════════════════════════════════
+   VENUE TYPE HELPERS
+   Data uses an 'e' emoji field to identify type.
+   Toilets have 💩/🚻/🚽 or no emoji.
+   Cafes/restaurants have ☕/🍔/🍽️ etc.
+═══════════════════════════════════════════════ */
+const TOILET_EMOJI = new Set(['💩','🚻','🚽','🚾','♿']);
+function isToilet(loo) {
+    if (!loo.e) return true; // no emoji = public toilet
+    return TOILET_EMOJI.has(loo.e);
+}
+
+/* ═══════════════════════════════════════════════
    RENDER MARKERS
 ═══════════════════════════════════════════════ */
 function renderVisibleMarkers() {
@@ -948,7 +960,7 @@ function renderVisibleMarkers() {
         .slice(0, 200)
         .forEach(loo => {
             // Fast-food venues get a muted blue-grey pin so they're visually distinct
-            const icon = (loo.ff && !loo.golden) ? ffIcon : pooIcon;
+            const icon = isToilet(loo) ? pooIcon : ffIcon;
             const marker = new google.maps.Marker({
                 position: { lat: loo.lat, lng: loo.lon },
                 map,
@@ -1079,11 +1091,11 @@ function openInfoWindow(loo) {
     const mode     = localStorage.getItem('hs_travel_mode') || 'WALKING';
     const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
 
-    // Determine venue type for emoji and subtitle
-    const isFastFood = loo.ff && !loo.golden;
-    const emoji    = loo.golden ? '⭐' : isFastFood ? '🍔' : '💩';
-    const typeTag  = isFastFood
-        ? '<div class="iw-type">🍔 Restaurant / fast food</div>'
+    // Determine venue type from emoji field
+    const toilet   = isToilet(loo);
+    const emoji    = loo.e || (toilet ? '💩' : '🍽️');
+    const typeTag  = !toilet
+        ? `<div class="iw-type">${emoji} ${loo.c ? loo.c.charAt(0).toUpperCase() + loo.c.slice(1) : 'Restaurant / cafe'}</div>`
         : '';
 
     const html = `
