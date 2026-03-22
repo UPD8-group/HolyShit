@@ -23,6 +23,10 @@
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    /* Remove 300ms tap delay on iOS for all buttons/interactive elements */
+    button, [onclick], .nav-tab, .report-option, .travel-option, .iw-btn {
+        touch-action: manipulation;
+    }
 
     :root {
         --cream:       #faf8f3;
@@ -53,6 +57,8 @@
         background: var(--cream); color: var(--text);
         font-family: var(--font-b);
         -webkit-font-smoothing: antialiased;
+        /* Prevent iOS rubber-band scroll on the body which can expose the bg colour */
+        overscroll-behavior: none;
     }
 
     /* ── MAP ── */
@@ -171,7 +177,7 @@
     .gm-style .gm-style-iw-c {
         padding: 0 !important; border-radius: 20px !important;
         box-shadow: var(--shadow) !important;
-        max-width: 92vw !important; width: 300px !important;
+        max-width: 92vw !important; width: min(300px, 92vw) !important;
     }
     .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
     .gm-style .gm-style-iw-t::after { background: var(--cream) !important; }
@@ -179,7 +185,7 @@
 
     .iw-card {
         background: var(--cream); border-radius: 20px;
-        padding: 16px 16px 14px; width: 300px;
+        padding: 16px 16px 14px; width: min(300px, 88vw);
         font-family: var(--font-b); color: var(--text);
         position: relative;
     }
@@ -255,6 +261,10 @@
         transform: translateY(100%);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         color: var(--text); border-top: 1.5px solid var(--border);
+        /* iOS smooth scroll inside sheet */
+        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        max-height: 90vh;
     }
     #report-sheet.open { transform: translateY(0); }
     #report-sheet::before {
@@ -607,7 +617,7 @@ let currentLoo = null, infoWindow = null;
 let navPolyline = null;
 let panorama = null;
 let geocoder, directionsService;
-let pooIcon = null;
+let pooIcon = null, ffIcon = null;
 let _loadedStateFile = null;
 let mapModeIdx = 0;
 let travelSelected = null;
@@ -620,16 +630,27 @@ let deferredInstallPrompt = null;
 ═══════════════════════════════════════════════ */
 if (sessionStorage.getItem('hs_from_landing')) {
     sessionStorage.removeItem('hs_from_landing');
-    document.getElementById('splash-btn').style.display = 'none';
-    document.getElementById('splash-sub').textContent = 'Finding your location…';
+    const _sb = document.getElementById('splash-btn');
+    if (_sb) _sb.style.display = 'none';
+    const _ss = document.getElementById('splash-sub');
+    if (_ss) _ss.textContent = 'Finding your location…';
     window._autoStart = true;
 }
 
 /* ═══════════════════════════════════════════════
    GOOGLE MAPS CALLBACK
+   Also called directly if Maps was already loaded
+   before this script ran (fast cache / repeat visit)
 ═══════════════════════════════════════════════ */
 function googleMapsReady() {
-    if (window._autoStart) { window._autoStart = false; startApp(); }
+    if (window._autoStart) { window._autoStart = false; startApp(); return; }
+    // startApp ran before Maps was ready — drain pending center
+    if (window._pendingStart) { const c = window._pendingStart; window._pendingStart = null; initMap(c); }
+}
+// If Maps SDK already loaded (cached), fire immediately
+if (window._autoStart && typeof google !== 'undefined' && google.maps) {
+    window._autoStart = false;
+    startApp();
 }
 
 /* ═══════════════════════════════════════════════
@@ -641,25 +662,36 @@ async function startApp() {
 
     let startCenter = { lat: -25.2744, lng: 133.7751 }; // AU centre fallback
 
-    try {
-        await new Promise(resolve => {
-            navigator.geolocation.getCurrentPosition(
-                pos => {
-                    startCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    resolve();
-                },
-                () => resolve(),
-                { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-            );
-        });
-    } catch(e) {}
+    // Request GPS with a hard 8-second cap — always resolves
+    await new Promise(resolve => {
+        if (!navigator.geolocation) { resolve(); return; }
+        const t = setTimeout(resolve, 8000);
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                clearTimeout(t);
+                startCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                resolve();
+            },
+            () => { clearTimeout(t); resolve(); },
+            { enableHighAccuracy: true, timeout: 7500, maximumAge: 60000 }
+        );
+    });
 
-    // Hide splash
+    // Hide splash safely
     const splash = document.getElementById('splash');
-    splash.classList.add('hide');
-    setTimeout(() => splash.remove(), 400);
+    if (splash) {
+        splash.classList.add('hide');
+        setTimeout(() => splash.parentNode && splash.remove(), 400);
+    }
 
     window._startCenter = startCenter;
+
+    // Guard: Maps SDK must be ready before initMap
+    if (typeof google === 'undefined' || !google.maps) {
+        // Shouldn't happen — but if it does, wait for the callback
+        window._pendingStart = startCenter;
+        return;
+    }
     initMap(startCenter);
 }
 
@@ -685,16 +717,20 @@ function initMap(center) {
     // Suppress Google POI labels immediately (important for when user switches to roadmap)
     map.setOptions({ styles: [] }); // satellite starts clean; applyMapMode handles roadmap
 
-    // Build marker icon
+    // Build marker icons — orange for public toilets, muted blue for fast-food/restaurant
     pooIcon = makePinIcon('#e8601a');
+    ffIcon  = makePinIcon('#6b8fa8');
 
     // Map events
     map.addListener('click',    () => { closeInfoWindow(); });
-    map.addListener('idle',     renderVisibleMarkers);
-    map.addListener('dragstart', () => { userHasPanned = true; });
+    map.addListener('idle',     debounce(renderVisibleMarkers, 200));
+    map.addListener('dragstart', () => {
+        userHasPanned = true;
+        followMode = false; // user grabbed the map — stop following immediately
+    });
 
     // Start GPS blue dot
-    startBlueDot(center);
+    startBlueDot();
 
     // Load data for starting location
     loadData(center.lat, center.lng);
@@ -710,10 +746,11 @@ function initMap(center) {
    PIN ICON (SVG data URL)
 ═══════════════════════════════════════════════ */
 function makePinIcon(color) {
+    // Simple filled-dot pin — emoji in SVG text is unreliable on Android WebView / Samsung Browser
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
-        <path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 22 12 22S26 21.5 26 13C26 6.4 20.6 1 14 1Z" fill="${color}" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
-        <circle cx="14" cy="13" r="7" fill="rgba(0,0,0,0.25)"/>
-        <text x="14" y="18" text-anchor="middle" font-size="10" fill="white">💩</text>
+        <path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 22 12 22S26 21.5 26 13C26 6.4 20.6 1 14 1Z" fill="${color}" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+        <circle cx="14" cy="13" r="5" fill="rgba(255,255,255,0.9)"/>
+        <circle cx="14" cy="13" r="3" fill="${color}"/>
     </svg>`;
     return {
         url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg))),
@@ -803,10 +840,12 @@ async function loadData(lat, lng) {
 ═══════════════════════════════════════════════ */
 function renderVisibleMarkers() {
     if (!map || !pooIcon) return;
+    // Don't redraw markers during active turn-by-turn nav — it's distracting
+    if (document.getElementById('nav-bar').classList.contains('active')) return;
+
     const bounds = map.getBounds();
     if (!bounds) return;
 
-    // Remove old markers
     markers.forEach(m => m.setMap(null));
     markers = [];
 
@@ -818,14 +857,16 @@ function renderVisibleMarkers() {
         .sort((a, b) => haversineKm(clat, clng, a.lat, a.lon) - haversineKm(clat, clng, b.lat, b.lon))
         .slice(0, 200)
         .forEach(loo => {
+            // Fast-food venues get a muted blue-grey pin so they're visually distinct
+            const icon = (loo.ff && !loo.golden) ? ffIcon : pooIcon;
             const marker = new google.maps.Marker({
                 position: { lat: loo.lat, lng: loo.lon },
                 map,
-                icon: pooIcon,
+                icon,
                 title: loo.n,
-                optimized: false,
+                optimized: true,
             });
-            marker.addListener('click', () => openInfoWindow(loo, marker));
+            marker.addListener('click', () => openInfoWindow(loo));
             markers.push(marker);
         });
 }
@@ -833,7 +874,12 @@ function renderVisibleMarkers() {
 /* ═══════════════════════════════════════════════
    BLUE DOT (live GPS)
 ═══════════════════════════════════════════════ */
-function startBlueDot(initialCenter) {
+
+// followMode: true  = map re-centres on every GPS update (only during navigation or on first fix)
+//             false = user has panned freely, leave them alone
+let followMode = false;
+
+function startBlueDot() {
     if (!navigator.geolocation) return;
     document.getElementById('locate-fab').classList.add('waiting');
 
@@ -842,6 +888,7 @@ function startBlueDot(initialCenter) {
             const { latitude: lat, longitude: lng, accuracy } = pos.coords;
 
             if (!blueDotMarker) {
+                // First GPS fix
                 document.getElementById('locate-fab').classList.remove('waiting');
 
                 blueDotAccuracy = new google.maps.Circle({
@@ -862,19 +909,23 @@ function startBlueDot(initialCenter) {
                     zIndex: 10, clickable: false,
                 });
 
-                // Pan to user on first fix (if they haven't dragged)
-                if (!userHasPanned) map.panTo({ lat, lng });
+                // Pan once to the user on first fix only if they haven't manually panned
+                if (!userHasPanned) {
+                    map.panTo({ lat, lng });
+                    // Don't set followMode — one-time pan only, then they're free to browse
+                }
 
-                // Load the correct state data for user's actual location
+                // Load the correct state data
                 loadData(lat, lng);
 
             } else {
+                // Subsequent GPS updates — only move the dot, never auto-pan
                 blueDotMarker.setPosition({ lat, lng });
                 blueDotAccuracy.setCenter({ lat, lng });
                 blueDotAccuracy.setRadius(accuracy);
 
-                // Follow during active navigation
-                if (document.getElementById('nav-bar').classList.contains('active')) {
+                // Only follow if explicitly in follow mode (set by centreOnUser or active navigation)
+                if (followMode) {
                     map.panTo({ lat, lng });
                 }
 
@@ -896,6 +947,7 @@ function centreOnUser() {
         map.panTo(blueDotMarker.getPosition());
         map.setZoom(16);
         userHasPanned = false;
+        followMode = true; // user explicitly asked to follow — keep following until they drag
     } else {
         showToast('📍 Waiting for GPS fix…');
     }
@@ -919,13 +971,8 @@ function findNearest() {
     if (nearest) {
         map.panTo({ lat: nearest.lat, lng: nearest.lon });
         map.setZoom(17);
-        // Find and click the marker, or open directly
-        const mk = markers.find(m =>
-            Math.abs(m.getPosition().lat() - nearest.lat) < 0.0001 &&
-            Math.abs(m.getPosition().lng() - nearest.lon) < 0.0001
-        );
-        if (mk) openInfoWindow(nearest, mk);
-        else openInfoWindow(nearest, null);
+        // Open card directly — don't search stale markers[] which reflect pre-zoom state
+        openInfoWindow(nearest);
     } else {
         showToast('😕 No facilities found nearby.');
     }
@@ -934,7 +981,7 @@ function findNearest() {
 /* ═══════════════════════════════════════════════
    INFO WINDOW  (the main 3-button card)
 ═══════════════════════════════════════════════ */
-function openInfoWindow(loo, marker) {
+function openInfoWindow(loo) {
     currentLoo = loo;
     closeInfoWindow();
 
@@ -1020,11 +1067,11 @@ function startNavigation() {
     document.getElementById('nav-bar-meta').innerHTML   = 'Calculating…';
     document.getElementById('nav-bar').classList.add('active');
 
+    // Follow the user while navigating
+    followMode = true;
+
     directionsService.route(
-        {
-            origin, destination: dest,
-            travelMode: google.maps.TravelMode[mode],
-        },
+        { origin, destination: dest, travelMode: google.maps.TravelMode[mode] },
         (result, status) => {
             if (status !== 'OK') {
                 document.getElementById('nav-bar-meta').textContent = 'Could not find route';
@@ -1051,6 +1098,7 @@ function startNavigation() {
 function cancelNavigation(panToUser = false) {
     if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
     document.getElementById('nav-bar').classList.remove('active');
+    followMode = false; // stop following when nav is cancelled
     if (panToUser && blueDotMarker) map.panTo(blueDotMarker.getPosition());
 }
 
@@ -1194,22 +1242,29 @@ function syncModeButtons() {
     document.getElementById(map2[mode])?.classList.add('active');
 }
 
-/* If the info window card is open, update the navigate button emoji live */
+/* If the info window card is open, re-render it with the updated travel mode.
+   Direct DOM mutation into Google's infowindow wrapper is unreliable — some
+   browsers/versions re-render the content and wipe mutations. Re-opening is
+   instant and guaranteed correct. */
 function refreshInfoWindowMode() {
-    if (!infoWindow) return;
-    const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
-    const mode = localStorage.getItem('hs_travel_mode') || 'WALKING';
-    // The infowindow content lives inside a shadow-ish Google iframe pane —
-    // query the actual DOM node Google inserts for us
-    const iwContainer = document.querySelector('.gm-style-iw-d');
-    if (!iwContainer) return;
-    const icon = iwContainer.querySelector('.iw-btn-nav .iw-btn-icon');
-    if (icon) icon.textContent = modeEmoji[mode] || '🏃';
+    if (!infoWindow || !currentLoo) return;
+    openInfoWindow(currentLoo);
 }
 
 /* ═══════════════════════════════════════════════
-   HAVERSINE
+   UTILITIES
 ═══════════════════════════════════════════════ */
+function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function haversineKm(la1, lo1, la2, lo2) {
     const R  = 6371;
     const dL = (la2 - la1) * Math.PI / 180;
@@ -1220,21 +1275,12 @@ function haversineKm(la1, lo1, la2, lo2) {
 }
 
 /* ═══════════════════════════════════════════════
-   UTIL
-═══════════════════════════════════════════════ */
-function escapeHtml(s) {
-    return String(s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ═══════════════════════════════════════════════
    PWA
 ═══════════════════════════════════════════════ */
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredInstallPrompt = e;
-    if (!sessionStorage.getItem(INSTALL_KEY)) {
+    if (!localStorage.getItem(INSTALL_KEY)) {
         setTimeout(() => document.getElementById('install-banner').classList.add('show'), 4000);
     }
 });
@@ -1251,18 +1297,18 @@ function triggerInstall() {
 }
 function dismissInstall() {
     document.getElementById('install-banner').classList.remove('show');
-    sessionStorage.setItem(INSTALL_KEY, '1');
+    localStorage.setItem(INSTALL_KEY, '1');
 }
 function checkIosInstall() {
     if (/iphone|ipad|ipod/i.test(navigator.userAgent)
         && !window.navigator.standalone
-        && !sessionStorage.getItem(INSTALL_KEY)) {
+        && !localStorage.getItem(INSTALL_KEY)) {
         setTimeout(() => document.getElementById('ios-nudge').classList.add('show'), 5000);
     }
 }
 function dismissIosNudge() {
     document.getElementById('ios-nudge').classList.remove('show');
-    sessionStorage.setItem(INSTALL_KEY, '1');
+    localStorage.setItem(INSTALL_KEY, '1');
 }
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () =>
