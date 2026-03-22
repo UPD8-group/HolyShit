@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HolyShit.app — Relief Radar</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="shortcut icon" href="favicon.png">
+    <meta name="theme-color" content="#faf8f3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="HolyShit">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    /* Remove 300ms tap delay on iOS for all buttons/interactive elements */
+    button, [onclick], .nav-tab, .report-option, .travel-option, .iw-btn {
+        touch-action: manipulation;
+    }
+
+    :root {
+        --cream:       #faf8f3;
+        --card:        #eeecea;
+        --card-hi:     #e5e2da;
+        --border:      #dbd8d0;
+        --border-hi:   #c8c4bc;
+        --orange:      #e8601a;
+        --orange-lt:   rgba(232,96,26,0.10);
+        --orange-glow: rgba(232,96,26,0.25);
+        --orange-dk:   #c44e10;
+        --water:       #1a8fd9;
+        --water-lt:    rgba(26,143,217,0.10);
+        --green:       #2a9d4e;
+        --green-lt:    rgba(42,157,78,0.10);
+        --text:        #1a1008;
+        --text-mid:    #6b6258;
+        --text-dim:    #a89e94;
+        --shadow:      0 4px 20px rgba(100,80,60,0.15);
+        --shadow-sm:   0 2px 10px rgba(100,80,60,0.10);
+        --font-d:      'Anton', sans-serif;
+        --font-b:      'DM Sans', sans-serif;
+        --nav-h:       calc(64px + env(safe-area-inset-bottom, 0px));
+    }
+
+    html, body {
+        height: 100%; width: 100%; overflow: hidden;
+        background: var(--cream); color: var(--text);
+        font-family: var(--font-b);
+        -webkit-font-smoothing: antialiased;
+        /* Prevent iOS rubber-band scroll on the body which can expose the bg colour */
+        overscroll-behavior: none;
+    }
+
+    /* ── MAP ── */
+    #map {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 100%; z-index: 0;
+        background: var(--card);
+    }
+
+    /* Push Google controls above nav */
+    .gm-bundled-control,
+    .gmnoprint.gm-bundled-control-on-bottom,
+    .gm-fullscreen-control,
+    .gm-svpc { bottom: calc(var(--nav-h) + 12px) !important; }
+
+    /* ── BOTTOM NAV ── */
+    #bottom-nav {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        height: var(--nav-h); z-index: 2500;
+        background: rgba(250,248,243,0.97);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-top: 1.5px solid var(--border);
+        display: flex; align-items: flex-start;
+        padding-top: 8px;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -4px 20px rgba(100,80,60,0.12);
+    }
+    .nav-tab {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; gap: 4px;
+        cursor: pointer; padding: 6px 4px 0;
+        border: none; background: none;
+        -webkit-appearance: none; appearance: none;
+    }
+    .nav-icon {
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; border-radius: 8px;
+        transition: background 0.15s, transform 0.15s;
+    }
+    .nav-label {
+        font-family: var(--font-b); font-size: 0.6rem; font-weight: 700;
+        letter-spacing: 0.3px; color: var(--text-mid);
+        transition: color 0.15s; white-space: nowrap;
+    }
+    .nav-tab.active .nav-icon  { background: var(--orange-lt); }
+    .nav-tab.active .nav-label { color: var(--orange); }
+    .nav-tab:active .nav-icon  { transform: scale(0.9); }
+
+    /* Big poo button */
+    .nav-tab-poo { flex: 1.2; }
+    .nav-icon-poo { font-size: 1.7rem !important; width: 38px !important; height: 38px !important; margin-top: -6px; }
+
+    /* ── LOCATE FAB ── */
+    #locate-fab {
+        position: fixed;
+        bottom: calc(var(--nav-h) + 80px); right: 16px;
+        width: 52px; height: 52px; border-radius: 50%;
+        background: var(--water); border: none;
+        box-shadow: 0 4px 14px rgba(26,143,217,0.45);
+        cursor: pointer; z-index: 2000;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    #locate-fab:active { transform: scale(0.92); }
+    #locate-fab svg { width: 24px; height: 24px; fill: white; }
+    #locate-fab.waiting { animation: fab-pulse 1.4s ease-in-out infinite; }
+    @keyframes fab-pulse {
+        0%   { box-shadow: 0 0 0 0   rgba(26,143,217,0.55); }
+        60%  { box-shadow: 0 0 0 14px rgba(26,143,217,0); }
+        100% { box-shadow: 0 0 0 0   rgba(26,143,217,0); }
+    }
+
+    /* ── MAP TYPE FAB ── */
+    #map-type-fab {
+        position: fixed;
+        bottom: calc(var(--nav-h) + 16px); right: 16px;
+        width: 52px; height: 52px; border-radius: 16px;
+        background: white; border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        cursor: pointer; z-index: 2000;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        transition: transform 0.15s;
+    }
+    #map-type-fab:active { transform: scale(0.92); }
+
+    /* ── TOAST ── */
+    #msg-toast {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 16px);
+        left: 50%; transform: translateX(-50%) translateY(-8px);
+        z-index: 3000;
+        background: rgba(26,16,8,0.88);
+        color: var(--cream); padding: 10px 20px;
+        border-radius: 30px;
+        font-family: var(--font-b); font-size: 0.83rem; font-weight: 600;
+        white-space: nowrap; max-width: min(90vw, 320px);
+        text-align: center; opacity: 0; pointer-events: none;
+        transition: opacity 0.2s, transform 0.2s;
+        display: flex; align-items: center; gap: 8px;
+        box-shadow: var(--shadow);
+    }
+    #msg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .spinner {
+        width: 14px; height: 14px;
+        border: 2px solid rgba(250,248,243,0.3);
+        border-top-color: var(--orange);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── INFO WINDOW ── */
+    .gm-style .gm-style-iw-c {
+        padding: 0 !important; border-radius: 20px !important;
+        box-shadow: var(--shadow) !important;
+        max-width: 92vw !important; width: min(300px, 92vw) !important;
+    }
+    .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
+    .gm-style .gm-style-iw-t::after { background: var(--cream) !important; }
+    .gm-style .gm-ui-hover-effect { display: none !important; }
+
+    .iw-card {
+        background: var(--cream); border-radius: 20px;
+        padding: 16px 16px 14px; width: min(300px, 88vw);
+        font-family: var(--font-b); color: var(--text);
+        position: relative;
+    }
+    .iw-close {
+        position: absolute; top: 12px; right: 12px;
+        width: 26px; height: 26px; border-radius: 50%;
+        background: var(--card); border: 1px solid var(--border);
+        cursor: pointer; font-size: 0.75rem; color: var(--text-mid);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .iw-emoji { font-size: 2.4rem; line-height: 1; margin-bottom: 8px; display: block; }
+    .iw-name {
+        font-family: var(--font-d); font-size: 1.35rem; line-height: 1.1;
+        color: var(--text); margin: 0 28px 4px 0; letter-spacing: 0.3px;
+    }
+    .iw-address { font-size: 0.72rem; color: var(--text-mid); margin: 0 0 14px; line-height: 1.4; }
+    .iw-dist { font-size: 0.72rem; color: var(--orange); font-weight: 600; margin: 0 0 14px; }
+    .iw-type { font-size: 0.7rem; color: var(--text-mid); margin: 0 0 10px; padding: 5px 8px; background: var(--card); border-radius: 6px; border: 1px solid var(--border); }
+
+    /* 3-button grid */
+    .iw-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .iw-btn {
+        padding: 11px 4px 9px; border-radius: 10px; border: none;
+        cursor: pointer; text-align: center;
+        transition: transform 0.1s, opacity 0.15s;
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .iw-btn:active { transform: scale(0.94); }
+    .iw-btn-icon  { font-size: 1.3rem; line-height: 1; }
+    .iw-btn-label { font-family: var(--font-d); font-size: 0.7rem; letter-spacing: 0.5px; }
+
+    .iw-btn-nav    { background: var(--orange); color: #fff; box-shadow: 0 3px 0 var(--orange-dk); }
+    .iw-btn-report { background: var(--card); color: var(--text-mid); border: 1.5px solid var(--border); }
+    .iw-btn-street { background: var(--water-lt); color: var(--water); border: 1.5px solid rgba(26,143,217,0.25); }
+
+    /* ── IN-APP NAV BAR ── */
+    #nav-bar {
+        position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+        z-index: 2000; background: var(--cream);
+        border-top: 3px solid var(--orange);
+        padding: 12px 16px;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 -4px 20px rgba(100,80,60,0.15);
+        border-bottom: 1px solid var(--border);
+    }
+    #nav-bar.active { transform: translateY(0); }
+    .nav-bar-icon  { font-size: 1.4rem; flex-shrink: 0; }
+    .nav-bar-info  { flex: 1; min-width: 0; }
+    .nav-bar-name  {
+        font-family: var(--font-d); font-size: 1.1rem; color: var(--text);
+        line-height: 1.1; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; letter-spacing: 0.3px;
+    }
+    .nav-bar-meta  { font-family: var(--font-b); font-size: 0.72rem; color: var(--text-mid); margin-top: 1px; }
+    .nav-bar-meta span { color: var(--orange); font-weight: 700; }
+    #nav-bar-cancel {
+        background: var(--card); border: 1.5px solid var(--border);
+        color: var(--text-mid); padding: 8px 16px; border-radius: 8px;
+        font-family: var(--font-b); font-weight: 700; font-size: 0.85rem;
+        cursor: pointer; flex-shrink: 0; white-space: nowrap;
+    }
+    #nav-bar-cancel:active { background: var(--card-hi); }
+
+    /* ── REPORT SHEET ── */
+    #report-sheet {
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 3500;
+        background: var(--cream); border-radius: 20px 20px 0 0;
+        padding: 8px 0 calc(var(--nav-h) + 8px);
+        box-shadow: 0 -8px 40px rgba(100,80,60,0.2);
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        color: var(--text); border-top: 1.5px solid var(--border);
+        /* iOS smooth scroll inside sheet */
+        -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+    #report-sheet.open { transform: translateY(0); }
+    #report-sheet::before {
+        content: ''; display: block; width: 36px; height: 4px;
+        background: var(--border); border-radius: 2px; margin: 8px auto 0;
+    }
+    .report-title   { font-family: var(--font-d); font-size: 1.3rem; color: var(--text); padding: 12px 20px 4px; letter-spacing: 0.5px; }
+    .report-sub     { font-family: var(--font-b); font-size: 0.78rem; color: var(--text-mid); padding: 0 20px 16px; }
+    .report-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 16px 20px; }
+    .report-option  {
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+        padding: 12px 6px; border-radius: 12px;
+        border: 1.5px solid var(--border); background: var(--card);
+        cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+    .report-option:active { transform: scale(0.93); }
+    .report-option.selected { border-color: var(--orange); background: var(--orange-lt); }
+    .report-emoji { font-size: 2rem; line-height: 1; }
+    .report-label  { font-family: var(--font-b); font-size: 0.6rem; font-weight: 700; text-align: center; color: var(--text-mid); line-height: 1.2; }
+    .report-option.selected .report-label { color: var(--orange); }
+
+    .report-loc {
+        display: flex; align-items: center; gap: 8px;
+        margin: 0 16px 16px; padding: 10px 14px;
+        background: var(--card); border-radius: 10px; border: 1px solid var(--border);
+        font-family: var(--font-b); font-size: 0.78rem; color: var(--text-mid);
+    }
+    .report-loc span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    #report-submit {
+        margin: 0 16px; width: calc(100% - 32px); padding: 14px;
+        border-radius: 10px; border: none;
+        background: var(--orange); color: white;
+        font-family: var(--font-d); font-size: 1.1rem; letter-spacing: 0.5px;
+        cursor: pointer; box-shadow: 0 4px 0 var(--orange-dk);
+        transition: transform 0.1s, opacity 0.2s;
+    }
+    #report-submit:disabled { opacity: 0.35; box-shadow: none; pointer-events: none; }
+    #report-submit:not(:disabled):active { transform: scale(0.98); }
+
+    #report-thanks {
+        display: none; flex-direction: column; align-items: center;
+        padding: 28px 20px; text-align: center;
+    }
+    .thanks-emoji { font-size: 3rem; margin-bottom: 10px; }
+    .thanks-title { font-family: var(--font-d); font-size: 1.5rem; color: var(--text); margin-bottom: 4px; letter-spacing: 0.5px; }
+    .thanks-sub   { font-family: var(--font-b); font-size: 0.83rem; color: var(--text-mid); }
+
+    /* ── OVERLAY ── */
+    #overlay {
+        position: fixed; inset: 0; z-index: 1800;
+        background: rgba(26,16,8,0.35);
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    #overlay.show { opacity: 1; pointer-events: auto; }
+
+    /* ── STREET VIEW ── */
+    #sv-modal {
+        position: fixed; inset: 0; z-index: 9000;
+        background: #000; display: none; flex-direction: column;
+    }
+    #sv-modal.open { display: flex; }
+    #sv-panorama   { flex: 1; width: 100%; }
+    #sv-toolbar {
+        position: absolute; top: 0; left: 0; right: 0;
+        padding: calc(env(safe-area-inset-top,0px) + 14px) 16px 32px;
+        display: flex; align-items: center; gap: 12px;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        z-index: 9100; pointer-events: none;
+    }
+    #sv-close {
+        pointer-events: auto;
+        background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+        color: white; width: 38px; height: 38px;
+        border-radius: 50%; cursor: pointer; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+    }
+    #sv-title { flex: 1; color: white; font-family: var(--font-d); font-size: 1.1rem; letter-spacing: 0.5px; }
+    .sv-nav {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        z-index: 9100; background: rgba(0,0,0,0.45);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white; font-size: 1.8rem;
+        width: 48px; height: 48px; border-radius: 50%;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    #sv-prev { left: 14px; } #sv-next { right: 14px; }
+
+    /* ── TRAVEL MODE MODAL ── */
+    #travel-overlay {
+        position: fixed; inset: 0; z-index: 4000;
+        background: rgba(26,16,8,0.45);
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        display: flex; align-items: flex-end;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    #travel-overlay.show { opacity: 1; pointer-events: auto; }
+    #travel-modal {
+        width: 100%; background: var(--cream);
+        border-radius: 24px 24px 0 0;
+        padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 20px);
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 -8px 40px rgba(100,80,60,0.2);
+        border-top: 1.5px solid var(--border);
+    }
+    #travel-overlay.show #travel-modal { transform: translateY(0); }
+    .travel-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 14px auto 0; }
+    .travel-title  { font-family: var(--font-d); font-size: 1.5rem; color: var(--text); text-align: center; padding: 16px 24px 4px; letter-spacing: 0.5px; }
+    .travel-sub    { text-align: center; font-size: 0.78rem; color: var(--text-mid); padding: 0 24px 20px; line-height: 1.5; }
+    .travel-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px 18px; }
+    .travel-option {
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        padding: 20px 8px 16px; border-radius: 14px;
+        border: 2px solid var(--border); background: var(--card);
+        cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .travel-option:active { transform: scale(0.95); }
+    .travel-option.selected { border-color: var(--orange); background: var(--orange-lt); }
+    .travel-emoji  { font-size: 2.2rem; line-height: 1; }
+    .travel-name   { font-family: var(--font-d); font-size: 0.85rem; color: var(--text); letter-spacing: 0.5px; text-align: center; line-height: 1.2; }
+    .travel-option.selected .travel-name { color: var(--orange); }
+
+    #travel-save {
+        display: block; margin: 0 16px 4px; width: calc(100% - 32px);
+        background: var(--orange); color: #fff; border: none; padding: 14px;
+        border-radius: 10px; font-family: var(--font-d); font-size: 1.1rem;
+        letter-spacing: 0.5px; cursor: pointer;
+        box-shadow: 0 4px 0 var(--orange-dk);
+        transition: transform 0.1s, opacity 0.2s;
+        opacity: 0.35; pointer-events: none;
+    }
+    #travel-save.ready { opacity: 1; pointer-events: auto; }
+    #travel-save.ready:active { transform: scale(0.98); }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+        position: fixed; bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px;
+        z-index: 3000; display: flex; align-items: center; gap: 12px;
+        background: var(--cream); border: 1.5px solid var(--orange);
+        border-radius: 16px; padding: 12px 14px;
+        box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+        transform: translateY(12px); transition: opacity 0.3s, transform 0.3s;
+    }
+    #install-banner.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .ib-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .ib-text strong { display: block; font-family: var(--font-d); font-size: 1rem; color: var(--text); letter-spacing: 0.3px; }
+    .ib-text span   { font-family: var(--font-b); font-size: 0.73rem; color: var(--text-mid); }
+    #install-btn     { background: var(--orange); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-family: var(--font-d); font-size: 0.9rem; letter-spacing: 0.5px; cursor: pointer; flex-shrink: 0; }
+    #install-dismiss { background: none; border: none; color: var(--text-dim); font-size: 1rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+    #ios-nudge {
+        position: fixed; bottom: calc(var(--nav-h) + 12px); left: 12px; right: 12px;
+        z-index: 3000; background: var(--cream); border: 1.5px solid var(--border);
+        border-radius: 16px; padding: 16px 18px; text-align: center;
+        box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+        transform: translateY(12px); transition: opacity 0.3s, transform 0.3s;
+    }
+    #ios-nudge.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #ios-nudge p    { margin: 0 0 6px; font-family: var(--font-b); font-size: 0.83rem; color: var(--text-mid); line-height: 1.4; }
+    #ios-nudge strong { color: var(--text); }
+    #ios-nudge-close { background: none; border: 1.5px solid var(--border); color: var(--text-mid); padding: 6px 20px; border-radius: 8px; cursor: pointer; font-family: var(--font-b); font-size: 0.8rem; margin-top: 8px; }
+
+    /* ── SPLASH ── */
+    #splash {
+        position: fixed; inset: 0; background: #1a0a00;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 99999; transition: opacity 0.4s; padding: 32px;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    .splash-emoji { font-size: 5rem; margin-bottom: 16px; animation: splashbounce 0.8s ease-in-out infinite alternate; }
+    .splash-title { font-family: var(--font-b); font-size: 1.8rem; font-weight: 800; color: #faf8f3; letter-spacing: -0.02em; }
+    .splash-sub   { font-family: var(--font-b); font-size: 0.85rem; color: rgba(250,248,243,0.5); margin-top: 8px; margin-bottom: 40px; text-align: center; }
+    #splash-btn {
+        background: #e8601a; color: white; border: none;
+        border-radius: 16px; padding: 18px 36px;
+        font-family: var(--font-b); font-size: 1.1rem; font-weight: 800;
+        cursor: pointer; letter-spacing: 0.02em;
+        box-shadow: 0 4px 20px rgba(232,96,26,0.5);
+        transition: transform 0.1s;
+    }
+    #splash-btn:active { transform: scale(0.96); }
+    @keyframes splashbounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+    </style>
+</head>
+<body>
+
+<!-- Hidden Netlify form for report submissions -->
+<form name="holyshit-report" netlify netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name"      value="holyshit-report">
+    <input type="hidden" name="bot-field">
+    <input type="hidden" name="status">
+    <input type="hidden" name="location_name">
+    <input type="hidden" name="location_id">
+    <input type="hidden" name="latitude">
+    <input type="hidden" name="longitude">
+    <input type="hidden" name="reported_at">
+</form>
+
+<!-- Splash -->
+<div id="splash">
+    <div class="splash-emoji">💩</div>
+    <div class="splash-title">HolyShit.app</div>
+    <div class="splash-sub" id="splash-sub">Find a toilet. Right now.</div>
+    <button id="splash-btn" onclick="startApp()">Find toilets near me 💩</button>
+</div>
+
+<!-- Map -->
+<div id="map"></div>
+
+<!-- FABs -->
+<button id="map-type-fab" onclick="cycleMapMode()" title="Change map type">
+    <span id="map-type-icon">🛰️</span>
+</button>
+<button id="locate-fab" onclick="centreOnUser()" title="My location">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/>
+    </svg>
+</button>
+
+<!-- Toast -->
+<div id="msg-toast"></div>
+
+<!-- In-app nav bar (shown during active navigation) -->
+<div id="nav-bar">
+    <div class="nav-bar-icon">🧭</div>
+    <div class="nav-bar-info">
+        <div class="nav-bar-name" id="nav-bar-name">—</div>
+        <div class="nav-bar-meta" id="nav-bar-meta">Calculating route…</div>
+    </div>
+    <button id="nav-bar-cancel" onclick="cancelNavigation(true)">✕ Cancel</button>
+</div>
+
+<!-- Report sheet -->
+<div id="report-sheet">
+    <div id="report-form">
+        <div class="report-title">How's the Situation?</div>
+        <div class="report-sub">Select a status to report this location</div>
+        <div class="report-grid">
+            <div class="report-option" onclick="selectReport(this,'💩','All Good')">          <div class="report-emoji">💩</div><div class="report-label">All Good</div></div>
+            <div class="report-option" onclick="selectReport(this,'🚽','Needs Clean')">       <div class="report-emoji">🚽</div><div class="report-label">Needs Clean</div></div>
+            <div class="report-option" onclick="selectReport(this,'🔒','Locked')">            <div class="report-emoji">🔒</div><div class="report-label">Locked</div></div>
+            <div class="report-option" onclick="selectReport(this,'⚠️','Out of Order')">     <div class="report-emoji">⚠️</div><div class="report-label">Out of Order</div></div>
+            <div class="report-option" onclick="selectReport(this,'💀','No Longer There')">  <div class="report-emoji">💀</div><div class="report-label">No Longer There</div></div>
+            <div class="report-option" onclick="selectReport(this,'📷','Wrong Location')">   <div class="report-emoji">📷</div><div class="report-label">Wrong Location</div></div>
+        </div>
+        <div class="report-loc"><span>📍</span><span id="report-loc-name">Your current location</span></div>
+        <button id="report-submit" disabled onclick="submitReport()">SUBMIT REPORT</button>
+    </div>
+    <div id="report-thanks">
+        <div class="thanks-emoji" id="thanks-emoji">💩</div>
+        <div class="thanks-title">Thanks for the heads up!</div>
+        <div class="thanks-sub">Your report helps everyone nearby.</div>
+    </div>
+</div>
+
+<!-- Overlay (tapping closes sheets) -->
+<div id="overlay" onclick="closeAll()"></div>
+
+<!-- Street View -->
+<div id="sv-modal">
+    <div id="sv-panorama"></div>
+    <div id="sv-toolbar">
+        <button id="sv-close" onclick="closeStreetView()">✕</button>
+        <span id="sv-title">Street View</span>
+    </div>
+    <button class="sv-nav" id="sv-prev" onclick="svRotate(-35)">‹</button>
+    <button class="sv-nav" id="sv-next" onclick="svRotate(35)">›</button>
+</div>
+
+<!-- Travel mode modal -->
+<div id="travel-overlay" onclick="travelOverlayTap(event)">
+    <div id="travel-modal">
+        <div class="travel-handle"></div>
+        <div class="travel-title">TRAVEL MODE</div>
+        <div class="travel-sub">How do you get around? Used for directions.</div>
+        <div class="travel-options">
+            <div class="travel-option" id="topt-drive"   onclick="selectTravel('DRIVING',   this)"><span class="travel-emoji">🚗</span><span class="travel-name">DRIVE</span></div>
+            <div class="travel-option" id="topt-walk"    onclick="selectTravel('WALKING',   this)"><span class="travel-emoji">🏃</span><span class="travel-name">WALK / RUN</span></div>
+            <div class="travel-option" id="topt-cycle"   onclick="selectTravel('BICYCLING', this)"><span class="travel-emoji">🚴</span><span class="travel-name">CYCLE</span></div>
+        </div>
+        <button id="travel-save" onclick="saveTravel()">SAVE</button>
+    </div>
+</div>
+
+<!-- Bottom nav -->
+<nav id="bottom-nav">
+    <button class="nav-tab" id="tab-drive"  onclick="setMode('DRIVING')">   <div class="nav-icon">🚗</div><div class="nav-label">Drive</div></button>
+    <button class="nav-tab" id="tab-walk"   onclick="setMode('WALKING')">   <div class="nav-icon">🏃</div><div class="nav-label">Walk/Run</div></button>
+    <button class="nav-tab" id="tab-cycle"  onclick="setMode('BICYCLING')"> <div class="nav-icon">🚴</div><div class="nav-label">Cycle</div></button>
+    <button class="nav-tab nav-tab-poo" id="tab-near" onclick="findNearest()"><div class="nav-icon nav-icon-poo">💩</div><div class="nav-label">Near Me</div></button>
+</nav>
+
+<!-- PWA banners -->
+<div id="install-banner">
+    <div class="ib-icon">💩</div>
+    <div class="ib-text"><strong>Install HolyShit.app</strong><span>Add to home screen — runs like a native app</span></div>
+    <button id="install-btn"     onclick="triggerInstall()">INSTALL</button>
+    <button id="install-dismiss" onclick="dismissInstall()">✕</button>
+</div>
+<div id="ios-nudge">
+    <p><strong>Install HolyShit.app 💩</strong></p>
+    <p>Tap <strong>⬆️</strong> then <strong>"Add to Home Screen"</strong></p>
+    <button id="ios-nudge-close" onclick="dismissIosNudge()">Got it</button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   UNIT HELPERS
+═══════════════════════════════════════════════ */
+const UNITS = (function() {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const useMiles = tz.startsWith('America/') || tz.startsWith('US/');
+    return {
+        fmtDist: km => useMiles
+            ? (km * 0.621371).toFixed(1) + ' mi'
+            : km < 1 ? Math.round(km * 1000) + 'm' : km.toFixed(1) + ' km'
+    };
+})();
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+let _toastTimer = null;
+function showToast(msg, dur = 2800, spinner = false) {
+    const el = document.getElementById('msg-toast');
+    el.innerHTML = spinner
+        ? `<div class="spinner"></div>${msg}`
+        : msg;
+    el.classList.add('show');
+    clearTimeout(_toastTimer);
+    if (dur > 0) _toastTimer = setTimeout(() => el.classList.remove('show'), dur);
+}
+function hideToast() {
+    clearTimeout(_toastTimer);
+    document.getElementById('msg-toast').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let map, allLoos = [], markers = [];
+let blueDotMarker = null, blueDotAccuracy = null, blueWatchId = null;
+let userHasPanned = false;
+let currentLoo = null, infoWindow = null;
+let navPolyline = null;
+let panorama = null;
+let geocoder, directionsService;
+let pooIcon = null, ffIcon = null;
+let _loadedStateFile = null;
+let mapModeIdx = 0;
+let travelSelected = null;
+
+const INSTALL_KEY = 'hs_install_dismissed';
+let deferredInstallPrompt = null;
+
+/* ═══════════════════════════════════════════════
+   AUTO-START (from landing page)
+═══════════════════════════════════════════════ */
+if (sessionStorage.getItem('hs_from_landing')) {
+    sessionStorage.removeItem('hs_from_landing');
+    const _sb = document.getElementById('splash-btn');
+    if (_sb) _sb.style.display = 'none';
+    const _ss = document.getElementById('splash-sub');
+    if (_ss) _ss.textContent = 'Finding your location…';
+    window._autoStart = true;
+}
+
+/* ═══════════════════════════════════════════════
+   GOOGLE MAPS CALLBACK
+   Also called directly if Maps was already loaded
+   before this script ran (fast cache / repeat visit)
+═══════════════════════════════════════════════ */
+function googleMapsReady() {
+    if (window._autoStart) { window._autoStart = false; startApp(); return; }
+    // startApp ran before Maps was ready — drain pending center
+    if (window._pendingStart) { const c = window._pendingStart; window._pendingStart = null; initMap(c); }
+}
+// If Maps SDK already loaded (cached), fire immediately
+if (window._autoStart && typeof google !== 'undefined' && google.maps) {
+    window._autoStart = false;
+    startApp();
+}
+
+/* ═══════════════════════════════════════════════
+   SPLASH → APP START
+═══════════════════════════════════════════════ */
+async function startApp() {
+    const btn = document.getElementById('splash-btn');
+    if (btn) { btn.textContent = '📍 Finding you…'; btn.disabled = true; }
+
+    let startCenter = { lat: -25.2744, lng: 133.7751 }; // AU centre fallback
+
+    // Request GPS with a hard 8-second cap — always resolves
+    await new Promise(resolve => {
+        if (!navigator.geolocation) { resolve(); return; }
+        const t = setTimeout(resolve, 8000);
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                clearTimeout(t);
+                startCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                resolve();
+            },
+            () => { clearTimeout(t); resolve(); },
+            { enableHighAccuracy: true, timeout: 7500, maximumAge: 60000 }
+        );
+    });
+
+    // Hide splash safely
+    const splash = document.getElementById('splash');
+    if (splash) {
+        splash.classList.add('hide');
+        setTimeout(() => splash.parentNode && splash.remove(), 400);
+    }
+
+    window._startCenter = startCenter;
+
+    // Guard: Maps SDK must be ready before initMap
+    if (typeof google === 'undefined' || !google.maps) {
+        // Shouldn't happen — but if it does, wait for the callback
+        window._pendingStart = startCenter;
+        return;
+    }
+    initMap(startCenter);
+}
+
+/* ═══════════════════════════════════════════════
+   MAP INIT
+═══════════════════════════════════════════════ */
+function initMap(center) {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center,
+        zoom: 15,
+        mapTypeId: 'satellite',
+        gestureHandling: 'greedy',
+        disableDefaultUI: true,
+        clickableIcons: false,
+    });
+
+    geocoder          = new google.maps.Geocoder();
+    directionsService = new google.maps.DirectionsService();
+
+    // Force resize after paint
+    setTimeout(() => google.maps.event.trigger(map, 'resize'), 100);
+
+    // Suppress Google POI labels immediately (important for when user switches to roadmap)
+    map.setOptions({ styles: [] }); // satellite starts clean; applyMapMode handles roadmap
+
+    // Build marker icons — orange for public toilets, muted blue for fast-food/restaurant
+    pooIcon = makePinIcon('#e8601a');
+    ffIcon  = makePinIcon('#6b8fa8');
+
+    // Map events
+    map.addListener('click',    () => { closeInfoWindow(); });
+    map.addListener('idle',     debounce(renderVisibleMarkers, 200));
+    map.addListener('dragstart', () => {
+        userHasPanned = true;
+        followMode = false; // user grabbed the map — stop following immediately
+    });
+
+    // Start GPS blue dot
+    startBlueDot();
+
+    // Load data for starting location
+    loadData(center.lat, center.lng);
+
+    // Sync mode button
+    syncModeButtons();
+
+    // PWA checks
+    checkIosInstall();
+}
+
+/* ═══════════════════════════════════════════════
+   PIN ICON (SVG data URL)
+═══════════════════════════════════════════════ */
+function makePinIcon(color) {
+    // Simple filled-dot pin — emoji in SVG text is unreliable on Android WebView / Samsung Browser
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+        <path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 22 12 22S26 21.5 26 13C26 6.4 20.6 1 14 1Z" fill="${color}" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+        <circle cx="14" cy="13" r="5" fill="rgba(255,255,255,0.9)"/>
+        <circle cx="14" cy="13" r="3" fill="${color}"/>
+    </svg>`;
+    return {
+        url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg))),
+        scaledSize: new google.maps.Size(28, 36),
+        anchor: new google.maps.Point(14, 36)
+    };
+}
+
+/* ═══════════════════════════════════════════════
+   MAP MODES
+═══════════════════════════════════════════════ */
+// Suppresses ALL Google POI icons/labels on roadmap mode so only our
+// toilet markers are visible. Satellite and hybrid don't support styles.
+const POI_SUPPRESSION = [
+    { featureType: 'poi',            elementType: 'all',         stylers: [{ visibility: 'off' }] },
+    { featureType: 'poi.park',       elementType: 'labels',      stylers: [{ visibility: 'off' }] },
+    { featureType: 'transit',        elementType: 'labels',      stylers: [{ visibility: 'off' }] },
+    { featureType: 'road',           elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+];
+
+const MAP_MODES = [
+    { type: 'satellite', label: '🛰️', toast: '🛰️ Satellite view', styles: [] },
+    { type: 'hybrid',    label: '🌏', toast: '🌏 Hybrid view',     styles: [] },
+    { type: 'roadmap',   label: '🗺️', toast: '🗺️ Map view',        styles: POI_SUPPRESSION },
+];
+function cycleMapMode() {
+    mapModeIdx = (mapModeIdx + 1) % MAP_MODES.length;
+    applyMapMode();
+    showToast(MAP_MODES[mapModeIdx].toast);
+}
+function applyMapMode() {
+    const m = MAP_MODES[mapModeIdx];
+    map.setMapTypeId(m.type);
+    map.setOptions({ styles: m.styles });
+    document.getElementById('map-type-icon').textContent = m.label;
+}
+
+/* ═══════════════════════════════════════════════
+   STATE FILE ROUTING
+═══════════════════════════════════════════════ */
+function getStateFile(lat, lng) {
+    const states = [
+        ['act', -35.92, -35.12, 148.76, 149.40],
+        ['nsw', -37.51, -28.16, 140.99, 153.64],
+        ['vic', -39.16, -33.98, 140.96, 149.98],
+        ['qld', -29.18, -10.68, 137.99, 153.55],
+        ['sa',  -38.06, -25.99, 129.00, 141.00],
+        ['wa',  -35.13, -13.69, 112.92, 129.00],
+        ['tas', -43.65, -39.57, 143.81, 148.48],
+        ['nt',  -26.00, -10.97, 129.00, 138.00],
+    ];
+    for (const [s, minLat, maxLat, minLon, maxLon] of states) {
+        if (lat >= minLat && lat <= maxLat && lng >= minLon && lng <= maxLon) {
+            return 'toilets-' + s + '.json';
+        }
+    }
+    return 'toilets-nsw.json'; // fallback
+}
+
+/* ═══════════════════════════════════════════════
+   DATA LOADING
+═══════════════════════════════════════════════ */
+async function loadData(lat, lng) {
+    const file = getStateFile(lat, lng);
+    if (file === _loadedStateFile) return; // already loaded
+    _loadedStateFile = file;
+
+    showToast('📡 Loading facilities…', 0, true);
+    try {
+        const res = await fetch(file);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        allLoos = await res.json();
+        renderVisibleMarkers();
+        hideToast();
+        showToast('✅ ' + allLoos.length.toLocaleString() + ' facilities loaded');
+    } catch(e) {
+        allLoos = [];
+        _loadedStateFile = null; // allow retry
+        hideToast();
+        showToast('⚠️ Could not load facility data. Check connection and reload.', 6000);
+        console.error('loadData failed:', e);
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER MARKERS
+═══════════════════════════════════════════════ */
+function renderVisibleMarkers() {
+    if (!map || !pooIcon) return;
+    // Don't redraw markers during active turn-by-turn nav — it's distracting
+    if (document.getElementById('nav-bar').classList.contains('active')) return;
+
+    const bounds = map.getBounds();
+    if (!bounds) return;
+
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+
+    const centre = map.getCenter();
+    const clat = centre.lat(), clng = centre.lng();
+
+    allLoos
+        .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
+        .sort((a, b) => haversineKm(clat, clng, a.lat, a.lon) - haversineKm(clat, clng, b.lat, b.lon))
+        .slice(0, 200)
+        .forEach(loo => {
+            // Fast-food venues get a muted blue-grey pin so they're visually distinct
+            const icon = (loo.ff && !loo.golden) ? ffIcon : pooIcon;
+            const marker = new google.maps.Marker({
+                position: { lat: loo.lat, lng: loo.lon },
+                map,
+                icon,
+                title: loo.n,
+                optimized: true,
+            });
+            marker.addListener('click', () => openInfoWindow(loo));
+            markers.push(marker);
+        });
+}
+
+/* ═══════════════════════════════════════════════
+   BLUE DOT (live GPS)
+═══════════════════════════════════════════════ */
+
+// followMode: true  = map re-centres on every GPS update (only during navigation or on first fix)
+//             false = user has panned freely, leave them alone
+let followMode = false;
+
+function startBlueDot() {
+    if (!navigator.geolocation) return;
+    document.getElementById('locate-fab').classList.add('waiting');
+
+    blueWatchId = navigator.geolocation.watchPosition(
+        pos => {
+            const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+
+            if (!blueDotMarker) {
+                // First GPS fix
+                document.getElementById('locate-fab').classList.remove('waiting');
+
+                blueDotAccuracy = new google.maps.Circle({
+                    map,
+                    center: { lat, lng },
+                    radius: accuracy,
+                    fillColor: '#1a8fd9', fillOpacity: 0.12,
+                    strokeColor: '#1a8fd9', strokeOpacity: 0.30, strokeWeight: 1,
+                    clickable: false, zIndex: 1,
+                });
+                blueDotMarker = new google.maps.Marker({
+                    position: { lat, lng }, map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: '#1a8fd9', fillOpacity: 1,
+                        strokeColor: '#FFFFFF', strokeWeight: 3, scale: 9,
+                    },
+                    zIndex: 10, clickable: false,
+                });
+
+                // Pan once to the user on first fix only if they haven't manually panned
+                if (!userHasPanned) {
+                    map.panTo({ lat, lng });
+                    // Don't set followMode — one-time pan only, then they're free to browse
+                }
+
+                // Load the correct state data
+                loadData(lat, lng);
+
+            } else {
+                // Subsequent GPS updates — only move the dot, never auto-pan
+                blueDotMarker.setPosition({ lat, lng });
+                blueDotAccuracy.setCenter({ lat, lng });
+                blueDotAccuracy.setRadius(accuracy);
+
+                // Only follow if explicitly in follow mode (set by centreOnUser or active navigation)
+                if (followMode) {
+                    map.panTo({ lat, lng });
+                }
+
+                // Cross-state detection
+                const newFile = getStateFile(lat, lng);
+                if (newFile !== _loadedStateFile) loadData(lat, lng);
+            }
+        },
+        err => {
+            document.getElementById('locate-fab').classList.remove('waiting');
+            console.warn('GPS watch error:', err.message);
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
+    );
+}
+
+function centreOnUser() {
+    if (blueDotMarker) {
+        map.panTo(blueDotMarker.getPosition());
+        map.setZoom(16);
+        userHasPanned = false;
+        followMode = true; // user explicitly asked to follow — keep following until they drag
+    } else {
+        showToast('📍 Waiting for GPS fix…');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   FIND NEAREST
+═══════════════════════════════════════════════ */
+function findNearest() {
+    if (!blueDotMarker) { showToast('📍 Waiting for GPS fix…'); return; }
+    if (!allLoos.length) { showToast('⚠️ Facility data still loading…'); return; }
+
+    const { lat, lng } = blueDotMarker.getPosition().toJSON();
+    let nearest = null, bestDist = Infinity;
+
+    allLoos.forEach(l => {
+        const d = haversineKm(lat, lng, l.lat, l.lon);
+        if (d < bestDist) { bestDist = d; nearest = l; }
+    });
+
+    if (nearest) {
+        map.panTo({ lat: nearest.lat, lng: nearest.lon });
+        map.setZoom(17);
+        // Open card directly — don't search stale markers[] which reflect pre-zoom state
+        openInfoWindow(nearest);
+    } else {
+        showToast('😕 No facilities found nearby.');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   INFO WINDOW  (the main 3-button card)
+═══════════════════════════════════════════════ */
+function openInfoWindow(loo) {
+    currentLoo = loo;
+    closeInfoWindow();
+
+    const dist = blueDotMarker
+        ? UNITS.fmtDist(haversineKm(
+            blueDotMarker.getPosition().lat(),
+            blueDotMarker.getPosition().lng(),
+            loo.lat, loo.lon
+          ))
+        : null;
+
+    const mode     = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
+
+    // Determine venue type for emoji and subtitle
+    const isFastFood = loo.ff && !loo.golden;
+    const emoji    = loo.golden ? '⭐' : isFastFood ? '🍔' : '💩';
+    const typeTag  = isFastFood
+        ? '<div class="iw-type">🍔 Restaurant / fast food</div>'
+        : '';
+
+    const html = `
+    <div class="iw-card">
+        <button class="iw-close" onclick="closeInfoWindow()">✕</button>
+        <span class="iw-emoji">${emoji}</span>
+        <div class="iw-name">${escapeHtml(loo.n)}</div>
+        ${loo.a  ? `<div class="iw-address">${escapeHtml(loo.a)}</div>` : ''}
+        ${typeTag}
+        ${dist   ? `<div class="iw-dist">${dist} away</div>` : ''}
+        <div class="iw-actions">
+            <button class="iw-btn iw-btn-nav"    onclick="startNavigation()">
+                <span class="iw-btn-icon">${modeEmoji[mode] || '🏃'}</span>
+                <span class="iw-btn-label">NAVIGATE</span>
+            </button>
+            <button class="iw-btn iw-btn-street" onclick="openStreetView()">
+                <span class="iw-btn-icon">👁</span>
+                <span class="iw-btn-label">STREET</span>
+            </button>
+            <button class="iw-btn iw-btn-report" onclick="openReport()">
+                <span class="iw-btn-icon">🚨</span>
+                <span class="iw-btn-label">REPORT</span>
+            </button>
+        </div>
+    </div>`;
+
+    infoWindow = new google.maps.InfoWindow({
+        content: html,
+        pixelOffset: new google.maps.Size(0, -8),
+        disableAutoPan: false,
+    });
+    infoWindow.open(map);
+    infoWindow.setPosition({ lat: loo.lat, lng: loo.lon });
+}
+
+function closeInfoWindow() {
+    if (infoWindow) { infoWindow.close(); infoWindow = null; }
+}
+
+function closeAll() {
+    closeInfoWindow();
+    closeReport();
+    document.getElementById('overlay').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════
+   IN-APP NAVIGATION
+═══════════════════════════════════════════════ */
+function startNavigation() {
+    if (!currentLoo) return;
+    if (!blueDotMarker) { showToast('📍 Waiting for GPS fix — try again shortly.'); return; }
+
+    const loo    = currentLoo;          // capture before closeInfoWindow nulls it
+    const origin = blueDotMarker.getPosition();
+    const dest   = { lat: loo.lat, lng: loo.lon };
+    const mode   = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    const modeLabels = { DRIVING: '🚗 driving', WALKING: '🏃 walking', BICYCLING: '🚴 cycling' };
+
+    closeInfoWindow();
+
+    // Keep currentLoo set after closing the card — needed so mode changes can re-route
+    currentLoo = loo;
+
+    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
+
+    document.getElementById('nav-bar-name').textContent = loo.n;
+    document.getElementById('nav-bar-meta').innerHTML   = 'Calculating…';
+    document.getElementById('nav-bar').classList.add('active');
+    followMode = true;
+
+    directionsService.route(
+        { origin, destination: dest, travelMode: google.maps.TravelMode[mode] },
+        (result, status) => {
+            if (status !== 'OK') {
+                document.getElementById('nav-bar-meta').textContent = 'Could not find route';
+                return;
+            }
+            const leg  = result.routes[0].legs[0];
+            const path = result.routes[0].overview_path;
+
+            navPolyline = new google.maps.Polyline({
+                path, geodesic: true,
+                strokeColor: '#e8601a', strokeOpacity: 0.9, strokeWeight: 5, map,
+            });
+
+            document.getElementById('nav-bar-meta').innerHTML =
+                `<span>${leg.distance.text}</span> · ${leg.duration.text} ${modeLabels[mode] || '🏃 walking'}`;
+
+            const bounds = new google.maps.LatLngBounds();
+            path.forEach(p => bounds.extend(p));
+            map.fitBounds(bounds, { top: 80, right: 40, bottom: 140, left: 40 });
+        }
+    );
+}
+
+function cancelNavigation(panToUser = false) {
+    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
+    document.getElementById('nav-bar').classList.remove('active');
+    followMode = false;
+    currentLoo = null; // clear destination so mode changes don't re-route after cancel
+    if (panToUser && blueDotMarker) map.panTo(blueDotMarker.getPosition());
+}
+
+/* ═══════════════════════════════════════════════
+   STREET VIEW
+═══════════════════════════════════════════════ */
+function openStreetView() {
+    if (!currentLoo) return;
+    document.getElementById('sv-title').textContent = currentLoo.n;
+    document.getElementById('sv-modal').classList.add('open');
+
+    if (panorama) { panorama.setVisible(false); panorama = null; }
+    panorama = new google.maps.StreetViewPanorama(
+        document.getElementById('sv-panorama'), {
+            position: { lat: currentLoo.lat, lng: currentLoo.lon },
+            addressControl: false, motionTracking: false, motionTrackingControl: false,
+            enableCloseButton: false, linksControl: false, panControl: false,
+            zoomControl: false, fullscreenControl: false, showRoadLabels: false,
+        }
+    );
+}
+function closeStreetView() {
+    document.getElementById('sv-modal').classList.remove('open');
+    if (panorama) { panorama.setVisible(false); panorama = null; }
+}
+function svRotate(deg) {
+    if (!panorama) return;
+    const p = panorama.getPov();
+    panorama.setPov({ heading: (p.heading + deg + 360) % 360, pitch: p.pitch });
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStreetView(); });
+
+/* ═══════════════════════════════════════════════
+   REPORT
+═══════════════════════════════════════════════ */
+let _selectedReport = null;
+
+function openReport() {
+    _selectedReport = null;
+    document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('report-submit').disabled = true;
+    document.getElementById('report-form').style.display   = '';
+    document.getElementById('report-thanks').style.display = 'none';
+    document.getElementById('report-loc-name').textContent = currentLoo ? currentLoo.n : 'Your current location';
+    document.getElementById('report-sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+    closeInfoWindow();
+}
+function closeReport() {
+    document.getElementById('report-sheet').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+}
+function selectReport(el, emoji, label) {
+    document.querySelectorAll('.report-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    _selectedReport = { emoji, label };
+    document.getElementById('report-submit').disabled = false;
+}
+function submitReport() {
+    if (!_selectedReport) return;
+    const btn = document.getElementById('report-submit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    const loc = currentLoo;
+    const gps = blueDotMarker ? blueDotMarker.getPosition() : null;
+
+    const payload = new URLSearchParams({
+        'form-name':     'holyshit-report',
+        'bot-field':     '',
+        'status':        _selectedReport.emoji + ' ' + _selectedReport.label,
+        'location_name': loc ? (loc.n || loc.a || 'Unnamed facility') : 'No facility selected',
+        'location_id':   loc ? (loc.id || '') : '',
+        'latitude':      loc ? loc.lat : (gps ? gps.lat().toFixed(6) : ''),
+        'longitude':     loc ? loc.lon : (gps ? gps.lng().toFixed(6) : ''),
+        'reported_at':   new Date().toISOString(),
+    });
+
+    fetch('/', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    payload.toString(),
+    })
+    .catch(() => {})
+    .finally(() => {
+        document.getElementById('report-form').style.display   = 'none';
+        document.getElementById('thanks-emoji').textContent    = _selectedReport.emoji;
+        document.getElementById('report-thanks').style.display = 'flex';
+        setTimeout(() => closeReport(), 2200);
+    });
+}
+
+/* ═══════════════════════════════════════════════
+   TRAVEL MODE
+═══════════════════════════════════════════════ */
+function openTravel() {
+    const current = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    travelSelected = current;
+    document.querySelectorAll('.travel-option').forEach(o => o.classList.remove('selected'));
+    const map2 = { DRIVING: 'topt-drive', WALKING: 'topt-walk', BICYCLING: 'topt-cycle' };
+    document.getElementById(map2[current])?.classList.add('selected');
+    document.getElementById('travel-save').classList.add('ready');
+    document.getElementById('travel-overlay').classList.add('show');
+}
+function selectTravel(mode, el) {
+    travelSelected = mode;
+    document.querySelectorAll('.travel-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('travel-save').classList.add('ready');
+}
+function saveTravel() {
+    if (!travelSelected) return;
+    localStorage.setItem('hs_travel_mode', travelSelected);
+    document.getElementById('travel-overlay').classList.remove('show');
+    syncModeButtons();
+    const labels = { DRIVING: '🚗 Drive', WALKING: '🏃 Walk/Run', BICYCLING: '🚴 Cycle' };
+    showToast(labels[travelSelected] + ' mode saved');
+}
+function travelOverlayTap(e) {
+    if (e.target === document.getElementById('travel-overlay')) {
+        document.getElementById('travel-overlay').classList.remove('show');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   BOTTOM NAV — MODE BUTTONS
+═══════════════════════════════════════════════ */
+function setMode(mode) {
+    localStorage.setItem('hs_travel_mode', mode);
+    syncModeButtons();
+    const labels = { DRIVING: '🚗 Drive', WALKING: '🏃 Walk/Run', BICYCLING: '🚴 Cycle' };
+    showToast(labels[mode] + ' mode set');
+    // If navigation is already active, re-route immediately with the new mode
+    if (document.getElementById('nav-bar').classList.contains('active') && currentLoo) {
+        startNavigation();
+    }
+}
+function syncModeButtons() {
+    const mode = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    const map2 = { DRIVING: 'tab-drive', WALKING: 'tab-walk', BICYCLING: 'tab-cycle' };
+    ['tab-drive','tab-walk','tab-cycle','tab-near'].forEach(id => {
+        document.getElementById(id)?.classList.remove('active');
+    });
+    document.getElementById(map2[mode])?.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════ */
+function debounce(fn, ms) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function haversineKm(la1, lo1, la2, lo2) {
+    const R  = 6371;
+    const dL = (la2 - la1) * Math.PI / 180;
+    const dO = (lo2 - lo1) * Math.PI / 180;
+    const a  = Math.sin(dL/2)**2
+              + Math.cos(la1*Math.PI/180) * Math.cos(la2*Math.PI/180) * Math.sin(dO/2)**2;
+    return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+/* ═══════════════════════════════════════════════
+   PWA
+═══════════════════════════════════════════════ */
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (!localStorage.getItem(INSTALL_KEY)) {
+        setTimeout(() => document.getElementById('install-banner').classList.add('show'), 4000);
+    }
+});
+window.addEventListener('appinstalled', () => {
+    document.getElementById('install-banner').classList.remove('show');
+});
+function triggerInstall() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(() => {
+        document.getElementById('install-banner').classList.remove('show');
+        deferredInstallPrompt = null;
+    });
+}
+function dismissInstall() {
+    document.getElementById('install-banner').classList.remove('show');
+    localStorage.setItem(INSTALL_KEY, '1');
+}
+function checkIosInstall() {
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)
+        && !window.navigator.standalone
+        && !localStorage.getItem(INSTALL_KEY)) {
+        setTimeout(() => document.getElementById('ios-nudge').classList.add('show'), 5000);
+    }
+}
+function dismissIosNudge() {
+    document.getElementById('ios-nudge').classList.remove('show');
+    localStorage.setItem(INSTALL_KEY, '1');
+}
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () =>
+        navigator.serviceWorker.register('/sw.js').catch(() => {})
+    );
+}
+
+/* ═══════════════════════════════════════════════
+   MAPS AUTH FAILURE HANDLER
+═══════════════════════════════════════════════ */
+window.gm_authFailure = function() {
+    document.getElementById('splash')?.remove();
+    const div = document.createElement('div');
+    div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#faf8f3;border:2px solid #e8601a;border-radius:14px;padding:24px 20px;max-width:320px;font-family:sans-serif;font-size:14px;line-height:1.5;text-align:center;box-shadow:0 8px 30px rgba(100,80,60,0.2)';
+    div.innerHTML = '<strong style="color:#e8601a;font-size:16px">⚠️ Map Failed to Load</strong><br><br>Please check your internet connection and reload the page.';
+    document.body.appendChild(div);
+};
+</script>
+
+<!-- Google Maps (loads async, calls googleMapsReady when ready) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=geometry&callback=googleMapsReady" async defer></script>
+
+</body>
+</html>
