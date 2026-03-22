@@ -795,10 +795,10 @@ function initMap(center) {
 
     // Map events
     map.addListener('click',    () => { closeInfoWindow(); });
-    map.addListener('idle',     debounce(renderVisibleMarkers, 200));
+    map.addListener('idle',     debounce(() => { loadVisibleStates(); renderVisibleMarkers(); }, 200));
     map.addListener('dragstart', () => {
         userHasPanned = true;
-        followMode = false; // user grabbed the map — stop following immediately
+        followMode = false;
     });
 
     // Start GPS blue dot
@@ -883,39 +883,64 @@ function getStateFile(lat, lng) {
 }
 
 /* ═══════════════════════════════════════════════
-   DATA LOADING
-   All 8 state files exist. Load the correct one
-   for the user's location. Cross-state moves are
-   detected and trigger a reload automatically.
+   DATA LOADING — multi-state accumulating cache
+   Each state file is fetched once and merged into
+   allLoos. Panning anywhere in Australia works.
 ═══════════════════════════════════════════════ */
+const _loadedFiles = new Set(); // tracks which state files have been fetched
+
 async function loadData(lat, lng) {
     const file = getStateFile(lat, lng);
-
-    // Already have this state loaded — just re-render
-    if (file === _loadedStateFile && allLoos.length > 0) {
-        renderVisibleMarkers();
-        return;
-    }
-
-    _loadedStateFile = file;
-    showToast('📡 Loading facilities…', 0, true);
+    if (_loadedFiles.has(file)) return; // already have this state
+    _loadedFiles.add(file);
 
     try {
         const res = await fetch(file);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Bad data');
-        allLoos = data;
+        if (!Array.isArray(data) || data.length === 0) throw new Error('Empty');
+        // Merge into the global pool — deduplicate by lat+lon string
+        const existing = new Set(allLoos.map(l => l.lat + ',' + l.lon));
+        const fresh = data.filter(l => !existing.has(l.lat + ',' + l.lon));
+        allLoos = allLoos.concat(fresh);
+        _loadedStateFile = file; // keep for compat
         renderVisibleMarkers();
         hideToast();
         showToast('✅ ' + allLoos.length.toLocaleString() + ' facilities loaded');
     } catch(e) {
-        allLoos = [];
-        _loadedStateFile = null; // allow retry
+        _loadedFiles.delete(file); // allow retry on next pan
         hideToast();
-        showToast('⚠️ Could not load facility data. Check connection and reload.', 6000);
-        console.error('loadData failed:', file, e);
+        console.warn('loadData failed:', file, e.message);
     }
+}
+
+/* Called on every map idle — loads any state currently in view that hasn't been fetched yet */
+function loadVisibleStates() {
+    const bounds = map.getBounds();
+    if (!bounds) return;
+    const centre = map.getCenter();
+    const clat = centre.lat(), clng = centre.lng();
+
+    // Check the centre point first (fast path — the state they're looking at)
+    const centreFile = getStateFile(clat, clng);
+    if (!_loadedFiles.has(centreFile)) {
+        if (allLoos.length === 0) showToast('📡 Loading facilities…', 0, true);
+        loadData(clat, clng);
+    }
+
+    // Also check the four corners of the viewport — catches border-straddling views
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+    const corners = [
+        { lat: ne.lat(), lng: ne.lng() },
+        { lat: sw.lat(), lng: sw.lng() },
+        { lat: ne.lat(), lng: sw.lng() },
+        { lat: sw.lat(), lng: ne.lng() },
+    ];
+    corners.forEach(c => {
+        const f = getStateFile(c.lat, c.lng);
+        if (!_loadedFiles.has(f)) loadData(c.lat, c.lng);
+    });
 }
 
 /* ═══════════════════════════════════════════════
@@ -1011,9 +1036,8 @@ function startBlueDot() {
                 if (followMode) {
                     map.panTo({ lat, lng });
                 }
-                // Cross-state detection — reload when user moves into a different state
-                const newFile = getStateFile(lat, lng);
-                if (newFile !== _loadedStateFile) loadData(lat, lng);
+                // Load this state if not yet fetched (user physically moved to new state)
+                loadData(lat, lng);
             }
         },
         err => {
