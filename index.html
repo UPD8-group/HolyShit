@@ -405,6 +405,20 @@
     .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.2); }
     .footer-copy a { color: rgba(255,255,255,0.3); text-decoration: underline; }
 
+    .oo-credit { display: inline-flex; align-items: center; gap: 8px;
+      font: 600 12px/1 system-ui, sans-serif; color: rgba(255,255,255,0.55);
+      text-decoration: none; transition: color .3s; }
+    .oo-credit:hover { color: var(--orange); }
+    .oo-credit path { fill: none; stroke: currentColor;
+      stroke-width: 1.6; stroke-linecap: round; }
+    .oo-loop { opacity: .35; }
+    .oo-light { stroke-dasharray: 25 75; stroke-dashoffset: 0;
+      animation: oo-trace 2.4s linear infinite; }
+    @keyframes oo-trace { to { stroke-dashoffset: -100; } }
+    @media (prefers-reduced-motion: reduce) {
+      .oo-light { animation: none; opacity: 0; }
+    }
+
     /* ── TRAVEL MODAL ── */
     #travel-overlay {
         position: fixed; inset: 0; z-index: 2000;
@@ -705,8 +719,16 @@
         <a href="/terms.html">Terms of Use</a>
     </div>
     <span class="footer-copy">
-        © 2026 <a href="https://jaybergmann.com" target="_blank" rel="noopener">Made By Jay</a>
+        © 2026 UPD8 Group Pty Ltd
     </span>
+    <a href="https://oo.studio" target="_blank" rel="noopener" class="oo-credit">
+      <span>website by</span>
+      <svg width="36" height="24" viewBox="0 0 36 24" aria-hidden="true">
+        <path class="oo-loop" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+        <path class="oo-light" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+      </svg>
+      <strong>oo.studio</strong>
+    </a>
 </footer>
 
 <div id="travel-overlay" onclick="overlayTap(event)">
