@@ -1,12 +1,12 @@
-/* HolyShit.app — Service Worker v2
+/* HolyShit.app — Service Worker v3
    Strategy:
-   - App shell (HTML, CSS, JS, fonts) → Cache First
-   - State JSON data files            → Network First (data changes)
-   - Google Maps tiles/API            → Network only (can't cache cross-origin)
+   - App shell (HTML, CSS, JS, fonts)   → Cache First
+   - State JSON data files              → Network First (data changes)
+   - Map tiles / routing (cross-origin) → Network only
 */
 
-const CACHE_NAME    = 'holyshit-v2';
-const DATA_CACHE    = 'holyshit-data-v2';
+const CACHE_NAME    = 'holyshit-v3';
+const DATA_CACHE    = 'holyshit-data-v3';
 
 // Files that make up the app shell
 const SHELL_ASSETS = [
