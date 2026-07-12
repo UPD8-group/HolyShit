@@ -40,6 +40,21 @@
     footer { background: #1c1c1e; color: #faf8f3; padding: 32px 24px; text-align: center; }
     footer p { font-size: 0.8rem; color: rgba(250,248,243,0.5); }
     footer a { color: rgba(250,248,243,0.7); margin: 0 12px; font-size: 0.8rem; }
+    footer .oo-credit:hover { text-decoration: none; }
+
+    .oo-credit { display: inline-flex; align-items: center; gap: 8px;
+      font: 600 12px/1 system-ui, sans-serif; color: rgba(250,248,243,0.5);
+      text-decoration: none; transition: color .3s; }
+    .oo-credit:hover { color: #FC4C02; }
+    .oo-credit path { fill: none; stroke: currentColor;
+      stroke-width: 1.6; stroke-linecap: round; }
+    .oo-loop { opacity: .35; }
+    .oo-light { stroke-dasharray: 25 75; stroke-dashoffset: 0;
+      animation: oo-trace 2.4s linear infinite; }
+    @keyframes oo-trace { to { stroke-dashoffset: -100; } }
+    @media (prefers-reduced-motion: reduce) {
+      .oo-light { animation: none; opacity: 0; }
+    }
     </style>
 </head>
 <body>
@@ -69,11 +84,11 @@
     <div class="big-claim">We do not collect your name, email, phone number, or any identifying information. There is no account to create.</div>
 
     <h2>Your location</h2>
-    <p>When you tap "Find toilets near me," your browser asks for permission to access your GPS. If you grant it, your coordinates are used locally on your device to find nearby facilities from our database. Your location is never transmitted to HolyShit.app servers, Google (beyond what's inherent in displaying a map), or any third party.</p>
+    <p>When you tap "Find toilets near me," your browser asks for permission to access your GPS. If you grant it, your coordinates are used locally on your device to find nearby facilities from our database. Your location is never transmitted to HolyShit.app servers. The only exception is when you actively request directions: your start and end coordinates are sent to the routing service (see below) to calculate the route, and nothing else.</p>
     <p>You can revoke location permission at any time through your browser or device settings. The app will still work — you just won't be automatically centred on your location.</p>
 
-    <h2>Google Maps</h2>
-    <p>HolyShit.app uses Google Maps to display the map and calculate directions. When you use these features, Google's own privacy policy applies to that interaction. We use Google Maps under their standard terms and do not pass any personal information to Google beyond what's required to display a map.</p>
+    <h2>Maps &amp; directions</h2>
+    <p>HolyShit.app displays maps using OpenStreetMap-based tiles served by OpenFreeMap, and calculates directions using the community routing service at routing.openstreetmap.de (operated by FOSSGIS e.V.). Loading map tiles sends your device's IP address and the map area you're viewing to the tile server, as with any website. When you request directions, your start and end coordinates are sent to the routing service to compute the route. Neither request includes your identity, and we pass no other personal information to these services.</p>
 
     <h2>Cookies</h2>
     <p>We don't use tracking cookies. The only data stored locally on your device is your travel mode preference (Drive/Walk/Cycle), saved via localStorage so the app remembers your choice next time. This never leaves your device.</p>
@@ -83,7 +98,8 @@
     <p>Our infrastructure uses:</p>
     <ul>
         <li><strong>Netlify</strong> — hosting and anonymous analytics</li>
-        <li><strong>Google Maps Platform</strong> — map display and directions</li>
+        <li><strong>OpenFreeMap</strong> — map tile display (OpenStreetMap data)</li>
+        <li><strong>FOSSGIS e.V.</strong> (routing.openstreetmap.de) — directions calculation</li>
     </ul>
 
     <h2>Children</h2>
@@ -93,4 +109,25 @@
     <p>If we ever change how we handle data in a meaningful way, we'll update this page and the date at the top. Given our minimal data collection, significant changes are unlikely.</p>
 
     <h2>Contact</h2>
-    <p>Questions? Reach us at <a href="/cdn-cgi/l/email-protection#96fef3fafaf9d6fef9faefe5feffe2b8f7e6e6"><span class="__cf_email__" data-cfemail="5b333e3737341b333437222833322f753a2b2b">[email&#160;protected]</span></a>. We're a small Australian team and we'll get back to
+    <p>Questions? Reach us at <a href="/cdn-cgi/l/email-protection#96fef3fafaf9d6fef9faefe5feffe2b8f7e6e6"><span class="__cf_email__" data-cfemail="5b333e3737341b333437222833322f753a2b2b">[email&#160;protected]</span></a>. We're a small Australian team and we'll get back to you as soon as we can.</p>
+</div>
+
+<footer>
+    <p>
+        <a href="/">Home</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Use</a>
+    </p>
+    <p>© 2026 UPD8 Group Pty Ltd</p>
+    <a href="https://oo.studio" target="_blank" rel="noopener" class="oo-credit">
+      <span>website by</span>
+      <svg width="36" height="24" viewBox="0 0 36 24" aria-hidden="true">
+        <path class="oo-loop" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+        <path class="oo-light" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+      </svg>
+      <strong>oo.studio</strong>
+    </a>
+</footer>
+
+</body>
+</html>

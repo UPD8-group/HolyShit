@@ -40,6 +40,21 @@
     footer { background: #1c1c1e; color: #faf8f3; padding: 32px 24px; text-align: center; }
     footer p { font-size: 0.8rem; color: rgba(250,248,243,0.5); }
     footer a { color: rgba(250,248,243,0.7); margin: 0 12px; font-size: 0.8rem; }
+    footer .oo-credit:hover { text-decoration: none; }
+
+    .oo-credit { display: inline-flex; align-items: center; gap: 8px;
+      font: 600 12px/1 system-ui, sans-serif; color: rgba(250,248,243,0.5);
+      text-decoration: none; transition: color .3s; }
+    .oo-credit:hover { color: #FC4C02; }
+    .oo-credit path { fill: none; stroke: currentColor;
+      stroke-width: 1.6; stroke-linecap: round; }
+    .oo-loop { opacity: .35; }
+    .oo-light { stroke-dasharray: 25 75; stroke-dashoffset: 0;
+      animation: oo-trace 2.4s linear infinite; }
+    @keyframes oo-trace { to { stroke-dashoffset: -100; } }
+    @media (prefers-reduced-motion: reduce) {
+      .oo-light { animation: none; opacity: 0; }
+    }
     </style>
 </head>
 <body>
@@ -99,4 +114,25 @@
     <p>These terms are governed by the laws of the Australian Capital Territory, Australia.</p>
 
     <h2>Contact</h2>
-    <p>Questions about these terms? Email us at <a href="/cdn-cgi/l/email-protection#caa2afa6a6a58aa2a5a6b3b9a2a3bee4abbaba"><span class="__cf_email__" data-cfemail="066e636a6a69466e696a7f756e6f7228677676">[email&#160;protected]</span>
+    <p>Questions about these terms? Email us at <a href="/cdn-cgi/l/email-protection#caa2afa6a6a58aa2a5a6b3b9a2a3bee4abbaba"><span class="__cf_email__" data-cfemail="066e636a6a69466e696a7f756e6f7228677676">[email&#160;protected]</span></a>.</p>
+</div>
+
+<footer>
+    <p>
+        <a href="/">Home</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Use</a>
+    </p>
+    <p>© 2026 UPD8 Group Pty Ltd</p>
+    <a href="https://oo.studio" target="_blank" rel="noopener" class="oo-credit">
+      <span>website by</span>
+      <svg width="36" height="24" viewBox="0 0 36 24" aria-hidden="true">
+        <path class="oo-loop" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+        <path class="oo-light" pathLength="100" d="M8 12 C8 7.5, 14.5 7.5, 18 12 C21.5 16.5, 28 16.5, 28 12 C28 7.5, 21.5 7.5, 18 12 C14.5 16.5, 8 16.5, 8 12 Z"/>
+      </svg>
+      <strong>oo.studio</strong>
+    </a>
+</footer>
+
+</body>
+</html>

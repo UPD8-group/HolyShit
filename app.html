@@ -20,6 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
 
     <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -95,11 +96,9 @@
         background: var(--card);
     }
 
-    /* Push Google controls above nav */
-    .gm-bundled-control,
-    .gmnoprint.gm-bundled-control-on-bottom,
-    .gm-fullscreen-control,
-    .gm-svpc { bottom: calc(var(--nav-h) + 12px) !important; }
+    /* Keep MapLibre attribution above the bottom nav */
+    .maplibregl-ctrl-bottom-left,
+    .maplibregl-ctrl-bottom-right { bottom: var(--nav-h); }
 
     /* ── BOTTOM NAV ── */
     #bottom-nav {
@@ -290,15 +289,14 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── INFO WINDOW ── */
-    .gm-style .gm-style-iw-c {
-        padding: 0 !important; border-radius: 20px !important;
-        box-shadow: var(--shadow) !important;
-        max-width: 92vw !important; width: min(300px, 92vw) !important;
+    /* ── INFO WINDOW (MapLibre popup) ── */
+    .maplibregl-popup { z-index: 1500; max-width: none !important; }
+    .maplibregl-popup-content {
+        padding: 0; background: transparent;
+        border-radius: 20px; box-shadow: var(--shadow);
     }
-    .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; }
-    .gm-style .gm-style-iw-t::after { background: var(--cream) !important; }
-    .gm-style .gm-ui-hover-effect { display: none !important; }
+    .maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--cream); }
+    .maplibregl-popup-anchor-top .maplibregl-popup-tip    { border-bottom-color: var(--cream); }
 
     .iw-card {
         background: var(--cream); border-radius: 20px;
@@ -571,7 +569,7 @@
 
 <!-- FABs — right side stack (bottom to top): map-type, mode, locate -->
 <button id="map-type-fab" onclick="cycleMapMode()" title="Change map type">
-    <span id="map-type-icon">🛰️</span>
+    <span id="map-type-icon">🗺️</span>
 </button>
 <button id="mode-fab" onclick="cycleMode()" title="Change travel mode">
     <span id="mode-fab-icon">🏃</span>
@@ -670,6 +668,7 @@
     <button id="ios-nudge-close" onclick="dismissIosNudge()">Got it</button>
 </div>
 
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
 <script>
 /* ═══════════════════════════════════════════════
    UNIT HELPERS
@@ -706,14 +705,17 @@ function hideToast() {
    STATE
 ═══════════════════════════════════════════════ */
 let map, markers = [];
-let blueDotMarker = null, blueDotAccuracy = null, blueWatchId = null;
+let blueDotMarker = null, blueWatchId = null;
 let userHasPanned = false;
 let currentLoo = null, infoWindow = null;
-let navPolyline = null;
-let geocoder, directionsService;
-let pooIcon = null, ffIcon = null;
 let mapModeIdx = 0;
 let travelSelected = null;
+
+// GeoJSON overlay state — kept outside the map so it survives style switches
+let accuracyFeature = null;   // GPS accuracy circle polygon
+let routeFeature    = null;   // active navigation route line
+let _routeSeq       = 0;      // invalidates stale in-flight route requests
+const EMPTY_FC = { type: 'FeatureCollection', features: [] };
 
 const INSTALL_KEY = 'hs_install_dismissed';
 let deferredInstallPrompt = null;
@@ -728,22 +730,6 @@ if (sessionStorage.getItem('hs_from_landing')) {
     const _ss = document.getElementById('splash-sub');
     if (_ss) _ss.textContent = 'Finding your location…';
     window._autoStart = true;
-}
-
-/* ═══════════════════════════════════════════════
-   GOOGLE MAPS CALLBACK
-   Also called directly if Maps was already loaded
-   before this script ran (fast cache / repeat visit)
-═══════════════════════════════════════════════ */
-function googleMapsReady() {
-    if (window._autoStart) { window._autoStart = false; startApp(); return; }
-    // startApp ran before Maps was ready — drain pending center
-    if (window._pendingStart) { const c = window._pendingStart; window._pendingStart = null; initMap(c); }
-}
-// If Maps SDK already loaded (cached), fire immediately
-if (window._autoStart && typeof google !== 'undefined' && google.maps) {
-    window._autoStart = false;
-    startApp();
 }
 
 /* ═══════════════════════════════════════════════
@@ -778,13 +764,6 @@ async function startApp() {
     }
 
     window._startCenter = startCenter;
-
-    // Guard: Maps SDK must be ready before initMap
-    if (typeof google === 'undefined' || !google.maps) {
-        // Shouldn't happen — but if it does, wait for the callback
-        window._pendingStart = startCenter;
-        return;
-    }
     initMap(startCenter);
 }
 
@@ -792,35 +771,24 @@ async function startApp() {
    MAP INIT
 ═══════════════════════════════════════════════ */
 function initMap(center) {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center,
+    map = new maplibregl.Map({
+        container: 'map',
+        style: MAP_MODES[mapModeIdx].style,
+        center: [center.lng, center.lat],
         zoom: 15,
-        mapTypeId: 'satellite',
-        gestureHandling: 'greedy',
-        disableDefaultUI: true,
-        clickableIcons: false,
+        attributionControl: { compact: true },
     });
 
-    geocoder          = new google.maps.Geocoder();
-    directionsService = new google.maps.DirectionsService();
-
-    // Force resize after paint
-    setTimeout(() => google.maps.event.trigger(map, 'resize'), 100);
-
-    // Suppress Google POI labels immediately (important for when user switches to roadmap)
-    map.setOptions({ styles: [] }); // satellite starts clean; applyMapMode handles roadmap
-
-    // Build marker icons — orange for public toilets, muted blue for fast-food/restaurant
-    pooIcon = makePinIcon('#e8601a');
-    ffIcon  = makePinIcon('#6b8fa8');
-
     // Map events
-    map.addListener('click',    () => { closeInfoWindow(); });
-    map.addListener('idle',     debounce(renderVisibleMarkers, 200));
-    map.addListener('dragstart', () => {
+    map.on('click',   () => { closeInfoWindow(); });
+    map.on('moveend', debounce(renderVisibleMarkers, 200));
+    map.on('dragstart', () => {
         userHasPanned = true;
         followMode = false;
     });
+    // Re-add GeoJSON overlays (accuracy circle, route line) after every
+    // style load — setStyle wipes custom sources and layers
+    map.on('style.load', refreshOverlays);
 
     // Start GPS blue dot
     startBlueDot();
@@ -836,38 +804,61 @@ function initMap(center) {
 }
 
 /* ═══════════════════════════════════════════════
-   PIN ICON (SVG data URL)
+   GEOJSON OVERLAYS (accuracy circle + route line)
 ═══════════════════════════════════════════════ */
-function makePinIcon(color) {
+function refreshOverlays() {
+    if (!map || !map.isStyleLoaded()) return;
+    if (!map.getSource('hs-accuracy')) {
+        map.addSource('hs-accuracy', { type: 'geojson', data: EMPTY_FC });
+        map.addLayer({ id: 'hs-accuracy-fill', type: 'fill', source: 'hs-accuracy',
+            paint: { 'fill-color': '#1a8fd9', 'fill-opacity': 0.12 } });
+        map.addLayer({ id: 'hs-accuracy-line', type: 'line', source: 'hs-accuracy',
+            paint: { 'line-color': '#1a8fd9', 'line-opacity': 0.30, 'line-width': 1 } });
+    }
+    if (!map.getSource('hs-route')) {
+        map.addSource('hs-route', { type: 'geojson', data: EMPTY_FC });
+        map.addLayer({ id: 'hs-route-line', type: 'line', source: 'hs-route',
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': '#e8601a', 'line-opacity': 0.9, 'line-width': 5 } });
+    }
+    map.getSource('hs-accuracy').setData(accuracyFeature || EMPTY_FC);
+    map.getSource('hs-route').setData(routeFeature || EMPTY_FC);
+}
+
+// Approximate a metre-radius circle as a GeoJSON polygon
+function circlePolygon(lng, lat, radiusM, steps = 64) {
+    const latR = radiusM / 111320;
+    const lngR = radiusM / (111320 * Math.cos(lat * Math.PI / 180));
+    const coords = [];
+    for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * 2 * Math.PI;
+        coords.push([lng + lngR * Math.cos(t), lat + latR * Math.sin(t)]);
+    }
+    return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [coords] } };
+}
+
+/* ═══════════════════════════════════════════════
+   PIN ICON (SVG marker element)
+═══════════════════════════════════════════════ */
+function makePinEl(color) {
     // Simple filled-dot pin — emoji in SVG text is unreliable on Android WebView / Samsung Browser
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+    const el = document.createElement('div');
+    el.style.cssText = 'width:28px;height:36px;cursor:pointer;line-height:0;';
+    el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
         <path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 22 12 22S26 21.5 26 13C26 6.4 20.6 1 14 1Z" fill="${color}" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
         <circle cx="14" cy="13" r="5" fill="rgba(255,255,255,0.9)"/>
         <circle cx="14" cy="13" r="3" fill="${color}"/>
     </svg>`;
-    return {
-        url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg))),
-        scaledSize: new google.maps.Size(28, 36),
-        anchor: new google.maps.Point(14, 36)
-    };
+    return el;
 }
 
 /* ═══════════════════════════════════════════════
-   MAP MODES
+   MAP MODES — free OpenFreeMap styles, no API key
 ═══════════════════════════════════════════════ */
-// Suppresses ALL Google POI icons/labels on roadmap mode so only our
-// toilet markers are visible. Satellite and hybrid don't support styles.
-const POI_SUPPRESSION = [
-    { featureType: 'poi',            elementType: 'all',         stylers: [{ visibility: 'off' }] },
-    { featureType: 'poi.park',       elementType: 'labels',      stylers: [{ visibility: 'off' }] },
-    { featureType: 'transit',        elementType: 'labels',      stylers: [{ visibility: 'off' }] },
-    { featureType: 'road',           elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-];
-
 const MAP_MODES = [
-    { type: 'satellite', label: '🛰️', toast: '🛰️ Satellite view', styles: [] },
-    { type: 'hybrid',    label: '🌏', toast: '🌏 Hybrid view',     styles: [] },
-    { type: 'roadmap',   label: '🗺️', toast: '🗺️ Map view',        styles: POI_SUPPRESSION },
+    { style: 'https://tiles.openfreemap.org/styles/liberty',  label: '🗺️', toast: '🗺️ Map view' },
+    { style: 'https://tiles.openfreemap.org/styles/bright',   label: '☀️', toast: '☀️ Bright view' },
+    { style: 'https://tiles.openfreemap.org/styles/positron', label: '⬜', toast: '⬜ Minimal view' },
 ];
 function cycleMapMode() {
     mapModeIdx = (mapModeIdx + 1) % MAP_MODES.length;
@@ -876,8 +867,7 @@ function cycleMapMode() {
 }
 function applyMapMode() {
     const m = MAP_MODES[mapModeIdx];
-    map.setMapTypeId(m.type);
-    map.setOptions({ styles: m.styles });
+    map.setStyle(m.style);   // 'style.load' handler restores overlays
     document.getElementById('map-type-icon').textContent = m.label;
 }
 
@@ -1027,34 +1017,31 @@ function isToilet(loo) {
    RENDER MARKERS
 ═══════════════════════════════════════════════ */
 function renderVisibleMarkers() {
-    if (!map || !pooIcon) return;
+    if (!map) return;
     // Don't redraw markers during active turn-by-turn nav — it's distracting
     if (document.getElementById('nav-bar').classList.contains('active')) return;
 
     const bounds = map.getBounds();
     if (!bounds) return;
 
-    markers.forEach(m => m.setMap(null));
+    markers.forEach(m => m.remove());
     markers = [];
 
     const centre = map.getCenter();
-    const clat = centre.lat(), clng = centre.lng();
+    const clat = centre.lat, clng = centre.lng;
 
     allLoos
-        .filter(l => bounds.contains({ lat: l.lat, lng: l.lon }))
+        .filter(l => bounds.contains([l.lon, l.lat]))
         .sort((a, b) => haversineKm(clat, clng, a.lat, a.lon) - haversineKm(clat, clng, b.lat, b.lon))
         .slice(0, 200)
         .forEach(loo => {
             // Fast-food venues get a muted blue-grey pin so they're visually distinct
-            const icon = isToilet(loo) ? pooIcon : ffIcon;
-            const marker = new google.maps.Marker({
-                position: { lat: loo.lat, lng: loo.lon },
-                map,
-                icon,
-                title: loo.n,
-                optimized: true,
-            });
-            marker.addListener('click', () => openInfoWindow(loo));
+            const el = makePinEl(isToilet(loo) ? '#e8601a' : '#6b8fa8');
+            el.title = loo.n;
+            el.addEventListener('click', ev => { ev.stopPropagation(); openInfoWindow(loo); });
+            const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+                .setLngLat([loo.lon, loo.lat])
+                .addTo(map);
             markers.push(marker);
         });
 }
@@ -1075,43 +1062,34 @@ function startBlueDot() {
         pos => {
             const { latitude: lat, longitude: lng, accuracy } = pos.coords;
 
+            // Accuracy circle lives in a GeoJSON layer so it survives style switches
+            accuracyFeature = circlePolygon(lng, lat, accuracy || 0);
+            refreshOverlays();
+
             if (!blueDotMarker) {
                 // First GPS fix
                 document.getElementById('locate-fab').classList.remove('waiting');
 
-                blueDotAccuracy = new google.maps.Circle({
-                    map,
-                    center: { lat, lng },
-                    radius: accuracy,
-                    fillColor: '#1a8fd9', fillOpacity: 0.12,
-                    strokeColor: '#1a8fd9', strokeOpacity: 0.30, strokeWeight: 1,
-                    clickable: false, zIndex: 1,
-                });
-                blueDotMarker = new google.maps.Marker({
-                    position: { lat, lng }, map,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        fillColor: '#1a8fd9', fillOpacity: 1,
-                        strokeColor: '#FFFFFF', strokeWeight: 3, scale: 9,
-                    },
-                    zIndex: 10, clickable: false,
-                });
+                const dot = document.createElement('div');
+                dot.style.cssText = 'width:18px;height:18px;border-radius:50%;background:#1a8fd9;'
+                                  + 'border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,0.35);';
+                blueDotMarker = new maplibregl.Marker({ element: dot, anchor: 'center' })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
 
                 // Pan once to the user on first fix only if they haven't manually panned
                 if (!userHasPanned) {
-                    map.panTo({ lat, lng });
+                    map.panTo([lng, lat]);
                     // Don't set followMode — one-time pan only, then they're free to browse
                 }
 
             } else {
                 // Subsequent GPS updates — only move the dot, never auto-pan
-                blueDotMarker.setPosition({ lat, lng });
-                blueDotAccuracy.setCenter({ lat, lng });
-                blueDotAccuracy.setRadius(accuracy);
+                blueDotMarker.setLngLat([lng, lat]);
 
                 // Only follow if explicitly in follow mode (set by centreOnUser or active navigation)
                 if (followMode) {
-                    map.panTo({ lat, lng });
+                    map.panTo([lng, lat]);
                 }
             }
         },
@@ -1125,8 +1103,7 @@ function startBlueDot() {
 
 function centreOnUser() {
     if (blueDotMarker) {
-        map.panTo(blueDotMarker.getPosition());
-        map.setZoom(16);
+        map.easeTo({ center: blueDotMarker.getLngLat(), zoom: 16 });
         userHasPanned = false;
         followMode = true; // user explicitly asked to follow — keep following until they drag
     } else {
@@ -1141,7 +1118,7 @@ function findNearest() {
     if (!blueDotMarker) { showToast('📍 Waiting for GPS fix…'); return; }
     if (!allLoos.length) { showToast('⚠️ Facility data still loading…'); return; }
 
-    const { lat, lng } = blueDotMarker.getPosition().toJSON();
+    const { lat, lng } = blueDotMarker.getLngLat();
     let nearest = null, bestDist = Infinity;
 
     allLoos.forEach(l => {
@@ -1150,8 +1127,7 @@ function findNearest() {
     });
 
     if (nearest) {
-        map.panTo({ lat: nearest.lat, lng: nearest.lon });
-        map.setZoom(17);
+        map.easeTo({ center: [nearest.lon, nearest.lat], zoom: 17 });
         // Open card directly — don't search stale markers[] which reflect pre-zoom state
         openInfoWindow(nearest);
     } else {
@@ -1168,8 +1144,8 @@ function openInfoWindow(loo) {
 
     const dist = blueDotMarker
         ? UNITS.fmtDist(haversineKm(
-            blueDotMarker.getPosition().lat(),
-            blueDotMarker.getPosition().lng(),
+            blueDotMarker.getLngLat().lat,
+            blueDotMarker.getLngLat().lng,
             loo.lat, loo.lon
           ))
         : null;
@@ -1204,17 +1180,18 @@ function openInfoWindow(loo) {
         </div>
     </div>`;
 
-    infoWindow = new google.maps.InfoWindow({
-        content: html,
-        pixelOffset: new google.maps.Size(0, -8),
-        disableAutoPan: false,
-    });
-    infoWindow.open(map);
-    infoWindow.setPosition({ lat: loo.lat, lng: loo.lon });
+    infoWindow = new maplibregl.Popup({
+        closeButton: false, closeOnClick: false,
+        anchor: 'bottom', offset: 14, maxWidth: 'none',
+    })
+        .setLngLat([loo.lon, loo.lat])
+        .setHTML(html)
+        .addTo(map);
+    map.easeTo({ center: [loo.lon, loo.lat] });
 }
 
 function closeInfoWindow() {
-    if (infoWindow) { infoWindow.close(); infoWindow = null; }
+    if (infoWindow) { infoWindow.remove(); infoWindow = null; }
 }
 
 function closeAll() {
@@ -1224,14 +1201,29 @@ function closeAll() {
 }
 
 /* ═══════════════════════════════════════════════
-   IN-APP NAVIGATION
+   IN-APP NAVIGATION — FOSSGIS OSRM (free, keyless)
+   https://routing.openstreetmap.de — fair-use demo
+   servers run by FOSSGIS e.V. on OpenStreetMap data
 ═══════════════════════════════════════════════ */
+const OSRM_PROFILES = {
+    DRIVING:   'routed-car/route/v1/driving',
+    WALKING:   'routed-foot/route/v1/walking',
+    BICYCLING: 'routed-bike/route/v1/cycling',
+};
+
+function fmtDuration(sec) {
+    const min = Math.round(sec / 60);
+    if (min < 1)  return '1 min';
+    if (min < 60) return min + ' min';
+    return Math.floor(min / 60) + ' hr ' + (min % 60) + ' min';
+}
+
 function startNavigation() {
     if (!currentLoo) return;
     if (!blueDotMarker) { showToast('📍 Waiting for GPS fix — try again shortly.'); return; }
 
     const loo    = currentLoo;          // capture before closeInfoWindow nulls it
-    const origin = blueDotMarker.getPosition();
+    const origin = blueDotMarker.getLngLat();
     const dest   = { lat: loo.lat, lng: loo.lon };
     const mode   = localStorage.getItem('hs_travel_mode') || 'WALKING';
     const modeLabels = { DRIVING: '🚗 driving', WALKING: '🏃 walking', BICYCLING: '🚴 cycling' };
@@ -1241,7 +1233,8 @@ function startNavigation() {
     // Keep currentLoo set after closing the card — needed so mode changes can re-route
     currentLoo = loo;
 
-    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
+    routeFeature = null;
+    refreshOverlays();
 
     document.getElementById('nav-bar-name').textContent = loo.n;
     document.getElementById('nav-bar-meta').innerHTML   = 'Calculating…';
@@ -1249,38 +1242,49 @@ function startNavigation() {
     document.body.classList.add('nav-active');    // push FABs up
     followMode = true;
 
-    directionsService.route(
-        { origin, destination: dest, travelMode: google.maps.TravelMode[mode] },
-        (result, status) => {
-            if (status !== 'OK') {
-                document.getElementById('nav-bar-meta').textContent = 'Could not find route';
-                return;
-            }
-            const leg  = result.routes[0].legs[0];
-            const path = result.routes[0].overview_path;
+    const profile = OSRM_PROFILES[mode] || OSRM_PROFILES.WALKING;
+    const url = `https://routing.openstreetmap.de/${profile}/`
+              + `${origin.lng},${origin.lat};${dest.lng},${dest.lat}`
+              + `?overview=full&geometries=geojson&steps=false&alternatives=false`;
 
-            navPolyline = new google.maps.Polyline({
-                path, geodesic: true,
-                strokeColor: '#e8601a', strokeOpacity: 0.9, strokeWeight: 5, map,
-            });
+    const seq = ++_routeSeq;
+    fetch(url)
+        .then(r => r.json())
+        .then(json => {
+            if (seq !== _routeSeq) return;   // superseded by a newer request or cancel
+            if (json.code !== 'Ok' || !json.routes || !json.routes.length) {
+                throw new Error(json.code || 'No route');
+            }
+            const route = json.routes[0];
+
+            routeFeature = { type: 'Feature', geometry: route.geometry };
+            refreshOverlays();
 
             document.getElementById('nav-bar-meta').innerHTML =
-                `<span>${leg.distance.text}</span> · ${leg.duration.text} ${modeLabels[mode] || '🏃 walking'}`;
+                `<span>${UNITS.fmtDist(route.distance / 1000)}</span> · ${fmtDuration(route.duration)} ${modeLabels[mode] || '🏃 walking'}`;
 
-            const bounds = new google.maps.LatLngBounds();
-            path.forEach(p => bounds.extend(p));
-            map.fitBounds(bounds, { top: 80, right: 40, bottom: 140, left: 40 });
-        }
-    );
+            const coords = route.geometry.coordinates;
+            const bounds = coords.reduce(
+                (b, c) => b.extend(c),
+                new maplibregl.LngLatBounds(coords[0], coords[0])
+            );
+            map.fitBounds(bounds, { padding: { top: 80, right: 40, bottom: 140, left: 40 }, maxZoom: 17 });
+        })
+        .catch(() => {
+            if (seq !== _routeSeq) return;
+            document.getElementById('nav-bar-meta').textContent = 'Could not find route';
+        });
 }
 
 function cancelNavigation(panToUser = false) {
-    if (navPolyline) { navPolyline.setMap(null); navPolyline = null; }
+    _routeSeq++;                 // invalidate any in-flight route request
+    routeFeature = null;
+    refreshOverlays();
     document.getElementById('nav-bar').classList.remove('active');
     document.body.classList.remove('nav-active');  // restore FAB positions
     followMode = false;
     currentLoo = null;
-    if (panToUser && blueDotMarker) map.panTo(blueDotMarker.getPosition());
+    if (panToUser && blueDotMarker) map.panTo(blueDotMarker.getLngLat());
 }
 
 /* ═══════════════════════════════════════════════
@@ -1315,7 +1319,7 @@ function submitReport() {
     btn.disabled = true; btn.textContent = 'Sending…';
 
     const loc = currentLoo;
-    const gps = blueDotMarker ? blueDotMarker.getPosition() : null;
+    const gps = blueDotMarker ? blueDotMarker.getLngLat() : null;
 
     const payload = new URLSearchParams({
         'form-name':     'holyshit-report',
@@ -1323,8 +1327,8 @@ function submitReport() {
         'status':        _selectedReport.emoji + ' ' + _selectedReport.label,
         'location_name': loc ? (loc.n || loc.a || 'Unnamed facility') : 'No facility selected',
         'location_id':   loc ? (loc.id || '') : '',
-        'latitude':      loc ? loc.lat : (gps ? gps.lat().toFixed(6) : ''),
-        'longitude':     loc ? loc.lon : (gps ? gps.lng().toFixed(6) : ''),
+        'latitude':      loc ? loc.lat : (gps ? gps.lat.toFixed(6) : ''),
+        'longitude':     loc ? loc.lon : (gps ? gps.lng.toFixed(6) : ''),
         'reported_at':   new Date().toISOString(),
     });
 
@@ -1482,19 +1486,14 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ═══════════════════════════════════════════════
-   MAPS AUTH FAILURE HANDLER
+   AUTO-START — MapLibre loads synchronously above,
+   so the landing-page handoff can start immediately
 ═══════════════════════════════════════════════ */
-window.gm_authFailure = function() {
-    document.getElementById('splash')?.remove();
-    const div = document.createElement('div');
-    div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#faf8f3;border:2px solid #e8601a;border-radius:14px;padding:24px 20px;max-width:320px;font-family:sans-serif;font-size:14px;line-height:1.5;text-align:center;box-shadow:0 8px 30px rgba(100,80,60,0.2)';
-    div.innerHTML = '<strong style="color:#e8601a;font-size:16px">⚠️ Map Failed to Load</strong><br><br>Please check your internet connection and reload the page.';
-    document.body.appendChild(div);
-};
+if (window._autoStart) {
+    window._autoStart = false;
+    startApp();
+}
 </script>
-
-<!-- Google Maps (loads async, calls googleMapsReady when ready) -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByuYcj_qjTbjC2sRWx8VmlMLMxELQ3fB8&libraries=geometry&callback=googleMapsReady" async defer></script>
 
 </body>
 </html>
