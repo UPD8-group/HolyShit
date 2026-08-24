@@ -138,15 +138,9 @@
     .nav-tab-poo { flex: 1.2; }
     .nav-icon-poo { font-size: 1.7rem !important; width: 38px !important; height: 38px !important; margin-top: -6px; }
 
-    /* Layer toggle tabs — each has its own accent colour when active */
-    .nav-tab.layer-active .nav-icon  { background: rgba(0,0,0,0.07); }
-    .nav-tab.layer-active .nav-label { color: var(--text); }
-    .nav-tab[data-layer="fastfood"].layer-active  .nav-icon  { background: rgba(232,96,26,0.12); }
-    .nav-tab[data-layer="fastfood"].layer-active  .nav-label { color: var(--orange); }
-    .nav-tab[data-layer="shopping"].layer-active  .nav-icon  { background: rgba(26,143,217,0.12); }
-    .nav-tab[data-layer="shopping"].layer-active  .nav-label { color: var(--water); }
-    .nav-tab[data-layer="clubs"].layer-active     .nav-icon  { background: rgba(42,157,78,0.12); }
-    .nav-tab[data-layer="clubs"].layer-active     .nav-label { color: var(--green); }
+    /* Filter tabs — narrow down the OSM toilets already on the map */
+    .nav-tab.filter-active .nav-icon  { background: var(--orange-lt); box-shadow: inset 0 0 0 1.5px var(--orange); }
+    .nav-tab.filter-active .nav-label { color: var(--orange); }
     /* Loading spinner on tab icon */
     .nav-tab.loading .nav-icon::after {
         content: ''; position: absolute;
@@ -319,6 +313,23 @@
     .iw-address { font-size: 0.72rem; color: var(--text-mid); margin: 0 0 14px; line-height: 1.4; }
     .iw-dist { font-size: 0.72rem; color: var(--orange); font-weight: 600; margin: 0 0 14px; }
     .iw-type { font-size: 0.7rem; color: var(--text-mid); margin: 0 0 10px; padding: 5px 8px; background: var(--card); border-radius: 6px; border: 1px solid var(--border); }
+
+    /* OSM tag badges */
+    .iw-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+    .iw-badge  {
+        font-size: 0.66rem; font-weight: 600; line-height: 1.2;
+        color: var(--text-mid); background: var(--card);
+        border: 1px solid var(--border); border-radius: 999px;
+        padding: 4px 9px; white-space: nowrap;
+        max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+    }
+    .iw-badge.good { color: var(--green);     background: var(--green-lt);  border-color: rgba(42,157,78,0.30); }
+    .iw-badge.warn { color: var(--orange-dk); background: var(--orange-lt); border-color: rgba(232,96,26,0.30); }
+    .iw-osm {
+        display: block; margin: 12px 0 0; font-size: 0.62rem;
+        color: var(--text-dim); text-decoration: none;
+    }
+    .iw-osm u { text-decoration-style: dotted; }
 
     /* 2-button grid */
     .iw-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -553,7 +564,7 @@
 <div id="splash">
     <div class="splash-emoji">💩</div>
     <div class="splash-title">HolyShit.app</div>
-    <div class="splash-sub" id="splash-sub">Find a toilet. Right now.</div>
+    <div class="splash-sub" id="splash-sub">Public toilets near you. Anywhere in the world.</div>
     <button id="splash-btn" onclick="startApp()">Find toilets near me 💩</button>
 </div>
 
@@ -635,23 +646,27 @@
     </div>
 </div>
 
-<!-- Bottom nav — Near Me + layer toggles -->
+<!-- Bottom nav — Near Me + OpenStreetMap filters -->
 <nav id="bottom-nav">
     <button class="nav-tab nav-tab-poo" id="tab-near" onclick="findNearest()">
         <div class="nav-icon nav-icon-poo">💩</div>
         <div class="nav-label">Near Me</div>
     </button>
-    <button class="nav-tab" id="tab-fastfood" data-layer="fastfood" onclick="toggleLayer('fastfood')">
-        <div class="nav-icon">🍔</div>
-        <div class="nav-label">Fast Food</div>
+    <button class="nav-tab" id="tab-accessible" onclick="toggleFilter('accessible')">
+        <div class="nav-icon">♿</div>
+        <div class="nav-label">Accessible</div>
     </button>
-    <button class="nav-tab" id="tab-shopping" data-layer="shopping" onclick="toggleLayer('shopping')">
-        <div class="nav-icon">🛍️</div>
-        <div class="nav-label">Shopping</div>
+    <button class="nav-tab" id="tab-baby" onclick="toggleFilter('baby')">
+        <div class="nav-icon">🚼</div>
+        <div class="nav-label">Baby</div>
     </button>
-    <button class="nav-tab" id="tab-clubs" data-layer="clubs" onclick="toggleLayer('clubs')">
-        <div class="nav-icon">🍺</div>
-        <div class="nav-label">Clubs</div>
+    <button class="nav-tab" id="tab-free" onclick="toggleFilter('free')">
+        <div class="nav-icon">🆓</div>
+        <div class="nav-label">Free</div>
+    </button>
+    <button class="nav-tab" id="tab-open24" onclick="toggleFilter('open24')">
+        <div class="nav-icon">🕐</div>
+        <div class="nav-label">24/7</div>
     </button>
 </nav>
 
@@ -739,7 +754,9 @@ async function startApp() {
     const btn = document.getElementById('splash-btn');
     if (btn) { btn.textContent = '📍 Finding you…'; btn.disabled = true; }
 
-    let startCenter = { lat: -25.2744, lng: 133.7751 }; // AU centre fallback
+    // No fallback centre — HolyShit works anywhere, so without a fix we
+    // open on a world view and let the user hit the locate button.
+    let startCenter = null;
 
     // Request GPS with a hard 8-second cap — always resolves
     await new Promise(resolve => {
@@ -771,17 +788,23 @@ async function startApp() {
    MAP INIT
 ═══════════════════════════════════════════════ */
 function initMap(center) {
+    const hasFix = !!center;
+
     map = new maplibregl.Map({
         container: 'map',
         style: MAP_MODES[mapModeIdx].style,
-        center: [center.lng, center.lat],
-        zoom: 15,
-        attributionControl: { compact: true },
+        center: hasFix ? [center.lng, center.lat] : [12, 25],
+        zoom:   hasFix ? 15 : 2,
+        attributionControl: {
+            compact: true,
+            customAttribution: 'Toilets from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+        },
     });
 
     // Map events
     map.on('click',   () => { closeInfoWindow(); });
-    map.on('moveend', debounce(renderVisibleMarkers, 200));
+    // Every time the view settles, top up the OSM data for what's on screen
+    map.on('moveend', debounce(refreshData, 400));
     map.on('dragstart', () => {
         userHasPanned = true;
         followMode = false;
@@ -790,11 +813,20 @@ function initMap(center) {
     // style load — setStyle wipes custom sources and layers
     map.on('style.load', refreshOverlays);
 
+    // Anything kept from the last session shows instantly, then we refresh from OSM
+    restoreCache();
+
+    map.on('load', () => {
+        renderVisibleMarkers();
+        if (hasFix) {
+            ensureRadius(center.lat, center.lng, 2.5, { toast: true });
+        } else {
+            showToast('📍 Turn on location to find toilets near you', 5000);
+        }
+    });
+
     // Start GPS blue dot
     startBlueDot();
-
-    // Load all Australian facility data
-    loadData();
 
     // Sync mode button
     syncModeButtons();
@@ -872,145 +904,284 @@ function applyMapMode() {
 }
 
 /* ═══════════════════════════════════════════════
-   DATA LAYERS
-   Each layer has its own JSON file, active flag,
-   and cached data. renderVisibleMarkers draws from
-   all active layers combined.
+   OPENSTREETMAP DATA — live, worldwide
+   Toilets come straight from OpenStreetMap via the
+   Overpass API, fetched for whatever patch of the
+   world you're looking at. No bundled dataset, no
+   country limits — if it's mapped, it's here.
+   Data © OpenStreetMap contributors (ODbL).
 ═══════════════════════════════════════════════ */
-const LAYERS = {
-    toilets: {
-        file:   'toilets-au.json',
-        data:   [],
-        loaded: false,
-        active: true,   // always on — the core dataset
-    },
-    fastfood: {
-        file:   'chains-fastfood.json',
-        data:   [],
-        loaded: false,
-        active: false,
-    },
-    shopping: {
-        file:   'chains-shopping.json',
-        data:   [],
-        loaded: false,
-        active: false,
-    },
-    clubs: {
-        file:   'chains-clubs.json',
-        data:   [],
-        loaded: false,
-        active: false,
-    },
-};
 
-// allLoos is now a computed union of all active layers
-// kept for compatibility with findNearest / openInfoWindow etc
-let allLoos = [];
+// Public Overpass mirrors, tried in order until one answers.
+const OVERPASS_ENDPOINTS = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter',
+];
+let _endpointIdx = 0;
 
-function rebuildAllLoos() {
-    allLoos = Object.values(LAYERS)
-        .filter(l => l.active)
-        .flatMap(l => l.data);
+const CELL_DEG    = 0.05;    // ≈ 5.5 km grid used to remember what we've already fetched
+const MAX_CELLS   = 60;      // don't auto-fetch a wider area than this in one request
+const MIN_ZOOM    = 11;      // any further out and the viewport is too big to be useful
+const FETCH_GAP   = 1200;    // min ms between Overpass calls — be a good citizen
+const REQ_TIMEOUT = 25000;
+
+const CACHE_KEY = 'hs_osm_cache_v1';
+const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;   // a week
+const CACHE_MAX = 2500;                      // most recent N records kept for offline use
+
+const looById     = new Map();   // "node/123" → record
+const loadedCells = new Set();   // grid cells already fetched this session
+let   allLoos     = [];          // flat array of looById values, for fast scans
+
+let _lastFetchAt  = 0;
+let _queue        = Promise.resolve();
+let _zoomHintAt   = 0;
+let _loadingDepth = 0;
+
+/* ── grid helpers ── */
+function cellIdx(v) { return Math.floor(v / CELL_DEG); }
+
+function cellsIn(s, w, n, e) {
+    const cells = [];
+    for (let y = cellIdx(s); y <= cellIdx(n); y++)
+        for (let x = cellIdx(w); x <= cellIdx(e); x++)
+            cells.push({ key: y + ':' + x, y, x });
+    return cells;
 }
 
-async function loadLayer(key) {
-    const layer = LAYERS[key];
-    if (layer.loaded) return true;
-
-    const tab = document.getElementById('tab-' + key);
-    if (tab) tab.classList.add('loading');
-
-    try {
-        const res = await fetch(layer.file);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Bad data');
-        layer.data   = data;
-        layer.loaded = true;
-        if (tab) tab.classList.remove('loading');
-        return true;
-    } catch(e) {
-        if (tab) tab.classList.remove('loading');
-        // File doesn't exist yet — silently ignore, show helpful message
-        showToast(`⚠️ ${key} data not available yet`, 3000);
-        console.warn('loadLayer failed:', key, e.message);
-        return false;
-    }
+/* ── OSM element → app record ── */
+function osmAddress(t) {
+    const street = [t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' ');
+    const place  = t['addr:suburb'] || t['addr:city'] || t['addr:town'] || t['addr:village'] || '';
+    return [street, place].filter(Boolean).join(', ') || t.description || '';
 }
 
-async function toggleLayer(key) {
-    const layer = LAYERS[key];
-    const tab   = document.getElementById('tab-' + key);
+function osmRecord(el) {
+    const lat = el.lat != null ? el.lat : (el.center && el.center.lat);
+    const lon = el.lon != null ? el.lon : (el.center && el.center.lon);
+    if (lat == null || lon == null) return null;
+    const t = el.tags || {};
+    return {
+        id:   el.type + '/' + el.id,
+        lat:  lat,
+        lon:  lon,
+        n:    t.name || t.operator || 'Public toilet',
+        a:    osmAddress(t),
+        tags: t,
+    };
+}
 
-    if (layer.active) {
-        // Turn off
-        layer.active = false;
-        tab?.classList.remove('layer-active');
-        rebuildAllLoos();
-        renderVisibleMarkers();
-        showToast(`${layerEmoji(key)} ${layerName(key)} hidden`);
-    } else {
-        // Turn on — load first if needed
-        if (!layer.loaded) {
-            const ok = await loadLayer(key);
-            if (!ok) return; // file missing, bail
+function ingest(elements) {
+    let added = 0;
+    (elements || []).forEach(el => {
+        const rec = osmRecord(el);
+        if (!rec) return;
+        if (!looById.has(rec.id)) added++;
+        looById.set(rec.id, rec);
+    });
+    allLoos = Array.from(looById.values());
+    return added;
+}
+
+/* ── Overpass ── */
+function overpassQL(s, w, n, e) {
+    const bbox = [s.toFixed(5), w.toFixed(5), n.toFixed(5), e.toFixed(5)].join(',');
+    return '[out:json][timeout:25];'
+         + '(node["amenity"="toilets"](' + bbox + ');'
+         + 'way["amenity"="toilets"](' + bbox + ');'
+         + 'relation["amenity"="toilets"](' + bbox + '););'
+         + 'out center;';
+}
+
+async function overpassFetch(s, w, n, e) {
+    const body = 'data=' + encodeURIComponent(overpassQL(s, w, n, e));
+
+    for (let i = 0; i < OVERPASS_ENDPOINTS.length; i++) {
+        const idx  = (_endpointIdx + i) % OVERPASS_ENDPOINTS.length;
+        const url  = OVERPASS_ENDPOINTS[idx];
+        const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timer = ctrl ? setTimeout(() => ctrl.abort(), REQ_TIMEOUT) : null;
+        try {
+            const res = await fetch(url, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body:    body,
+                signal:  ctrl ? ctrl.signal : undefined,
+            });
+            if (timer) clearTimeout(timer);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            _endpointIdx = idx;          // stick with whichever mirror answered
+            return json.elements || [];
+        } catch (err) {
+            if (timer) clearTimeout(timer);
+            console.warn('[OSM] mirror failed:', url, err.message);
         }
-        layer.active = true;
-        tab?.classList.add('layer-active');
-        rebuildAllLoos();
-        renderVisibleMarkers();
-        showToast(`${layerEmoji(key)} ${layer.data.length.toLocaleString()} ${layerName(key)} shown`);
     }
+    throw new Error('no Overpass mirror answered');
 }
 
-function layerEmoji(key) {
-    return { fastfood: '🍔', shopping: '🛍️', clubs: '🍺' }[key] || '📍';
-}
-function layerName(key) {
-    return { fastfood: 'Fast food', shopping: 'Shopping', clubs: 'Clubs' }[key] || key;
+/* ── area loading ──
+   Requests are serialised and rate-limited so a fast pan can't fire a
+   burst at the public Overpass servers. Cells are only marked loaded
+   once the data is actually in, so a failed area is retried later. */
+function ensureBox(s, w, n, e, opts) {
+    _queue = _queue.then(() => _ensureBox(s, w, n, e, opts || {})).catch(() => {});
+    return _queue;
 }
 
-/* ═══════════════════════════════════════════════
-   CORE DATA LOADING — toilets only on startup
-═══════════════════════════════════════════════ */
-let _dataLoaded  = false;
-let _dataLoading = false;
+async function _ensureBox(s, w, n, e, opts) {
+    if (![s, w, n, e].every(Number.isFinite)) return;
+    if (e < w) return;                       // viewport straddles the antimeridian — skip
+    s = Math.max(s, -85); n = Math.min(n, 85);
+    w = Math.max(w, -180); e = Math.min(e, 180);
 
-async function loadData() {
-    if (_dataLoaded || _dataLoading) return;
-    _dataLoading = true;
-    showToast('📡 Loading facilities…', 0, true);
+    const missing = cellsIn(s, w, n, e).filter(c => !loadedCells.has(c.key));
+    if (!missing.length) return;
+
+    if (missing.length > MAX_CELLS && !opts.force) {
+        hintZoomIn();
+        return;
+    }
+
+    // One request covering the missing cells, snapped out to whole cell edges
+    const ys = missing.map(c => c.y), xs = missing.map(c => c.x);
+    const qs = Math.min.apply(null, ys) * CELL_DEG;
+    const qn = (Math.max.apply(null, ys) + 1) * CELL_DEG;
+    const qw = Math.min.apply(null, xs) * CELL_DEG;
+    const qe = (Math.max.apply(null, xs) + 1) * CELL_DEG;
+
+    const wait = FETCH_GAP - (Date.now() - _lastFetchAt);
+    if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    _lastFetchAt = Date.now();
+
+    setLoading(true);
     try {
-        const res = await fetch('toilets-au.json');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) throw new Error('Empty data');
-        LAYERS.toilets.data   = data;
-        LAYERS.toilets.loaded = true;
-        _dataLoaded = true;
-        rebuildAllLoos();
+        const elements = await overpassFetch(qs, qw, qn, qe);
+        missing.forEach(c => loadedCells.add(c.key));
+        ingest(elements);
+        saveCache();
         renderVisibleMarkers();
-        hideToast();
-        showToast('✅ ' + data.length.toLocaleString() + ' facilities loaded');
-    } catch(e) {
-        _dataLoading = false;
-        hideToast();
-        showToast('⚠️ Could not load facility data. Check connection and reload.', 6000);
-        console.error('loadData failed:', e);
+        if (opts.toast) {
+            const shown = visibleLoos().length;
+            showToast(shown
+                ? '💩 ' + shown.toLocaleString() + ' toilet' + (shown === 1 ? '' : 's') + ' nearby'
+                : '😕 No toilets mapped around here yet — try Near Me');
+        }
+    } catch (err) {
+        console.warn('[OSM] area load failed:', err.message);
+        showToast('⚠️ Could not reach OpenStreetMap — showing what we have', 4000);
+    } finally {
+        setLoading(false);
+    }
+}
+
+function ensureArea(bounds, opts) {
+    if (!bounds) return Promise.resolve();
+    return ensureBox(bounds.getSouth(), bounds.getWest(), bounds.getNorth(), bounds.getEast(), opts);
+}
+
+function ensureRadius(lat, lon, km, opts) {
+    const dLat = km / 111;
+    const dLon = km / (111 * Math.max(0.15, Math.cos(lat * Math.PI / 180)));
+    return ensureBox(lat - dLat, lon - dLon, lat + dLat, lon + dLon,
+                     Object.assign({ force: true }, opts || {}));
+}
+
+// Called on every settled map move
+function refreshData() {
+    if (!map) return;
+    renderVisibleMarkers();
+    if (map.getZoom() < MIN_ZOOM) {
+        if (!visibleLoos().length) hintZoomIn();
+        return;
+    }
+    ensureArea(map.getBounds());
+}
+
+function hintZoomIn() {
+    if (Date.now() - _zoomHintAt < 20000) return;
+    _zoomHintAt = Date.now();
+    showToast('🔍 Zoom in to load toilets here');
+}
+
+function setLoading(on) {
+    _loadingDepth = Math.max(0, _loadingDepth + (on ? 1 : -1));
+    const tab = document.getElementById('tab-near');
+    if (tab) tab.classList.toggle('loading', _loadingDepth > 0);
+}
+
+/* ── offline cache ──
+   Purely a nicety: lets the app show the last places you saw when
+   Overpass is unreachable. Never used to skip a fresh fetch. */
+function writeCache() {
+    try {
+        const items = Array.from(looById.values()).slice(-CACHE_MAX);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), items: items }));
+    } catch (e) { /* quota or private mode — not worth caring about */ }
+}
+const saveCache = debounce(writeCache, 1500);
+
+function restoreCache() {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return;
+        const box = JSON.parse(raw);
+        if (!box || !Array.isArray(box.items) || Date.now() - box.ts > CACHE_TTL) {
+            localStorage.removeItem(CACHE_KEY);
+            return;
+        }
+        box.items.forEach(r => { if (r && r.id) looById.set(r.id, r); });
+        allLoos = Array.from(looById.values());
+    } catch (e) {
+        try { localStorage.removeItem(CACHE_KEY); } catch (e2) {}
     }
 }
 
 /* ═══════════════════════════════════════════════
-   VENUE TYPE HELPERS
-   Data uses an 'e' emoji field to identify type.
-   Toilets have 💩/🚻/🚽 or no emoji.
-   Cafes/restaurants have ☕/🍔/🍽️ etc.
+   FILTERS — read straight off the OSM tags.
+   They narrow what's already loaded; no extra fetching.
 ═══════════════════════════════════════════════ */
-const TOILET_EMOJI = new Set(['💩','🚻','🚽','🚾','♿']);
-function isToilet(loo) {
-    if (!loo.e) return true; // no emoji = public toilet
-    return TOILET_EMOJI.has(loo.e);
+const FILTERS = {
+    accessible: { emoji: '♿',      label: 'Accessible', test: t => /^(yes|designated)$/.test(t.wheelchair || '') },
+    baby:       { emoji: '🚼', label: 'Baby change', test: t => (t.changing_table || '') === 'yes' },
+    free:       { emoji: '🆓', label: 'Free',       test: t => (t.fee || '') !== 'yes' },
+    open24:     { emoji: '🕐', label: '24/7',       test: t => /24\/7/.test(t.opening_hours || '') },
+};
+const activeFilters = new Set();
+
+function passesFilters(loo) {
+    for (const key of activeFilters) {
+        if (!FILTERS[key].test(loo.tags || {})) return false;
+    }
+    return true;
+}
+
+function visibleLoos() {
+    if (!map) return [];
+    const b = map.getBounds();
+    if (!b) return [];
+    return allLoos.filter(l => passesFilters(l) && b.contains([l.lon, l.lat]));
+}
+
+function toggleFilter(key) {
+    if (!FILTERS[key]) return;
+    const tab = document.getElementById('tab-' + key);
+    if (activeFilters.has(key)) {
+        activeFilters.delete(key);
+        if (tab) tab.classList.remove('filter-active');
+    } else {
+        activeFilters.add(key);
+        if (tab) tab.classList.add('filter-active');
+    }
+    renderVisibleMarkers();
+
+    const n = visibleLoos().length;
+    const what = n === 1 ? 'toilet' : 'toilets';
+    showToast(activeFilters.size
+        ? Array.from(activeFilters).map(k => FILTERS[k].emoji).join(' ') + ' ' + n + ' ' + what + ' in view'
+        : '💩 ' + n + ' ' + what + ' in view');
 }
 
 /* ═══════════════════════════════════════════════
@@ -1021,28 +1192,24 @@ function renderVisibleMarkers() {
     // Don't redraw markers during active turn-by-turn nav — it's distracting
     if (document.getElementById('nav-bar').classList.contains('active')) return;
 
-    const bounds = map.getBounds();
-    if (!bounds) return;
-
     markers.forEach(m => m.remove());
     markers = [];
 
     const centre = map.getCenter();
-    const clat = centre.lat, clng = centre.lng;
 
-    allLoos
-        .filter(l => bounds.contains([l.lon, l.lat]))
-        .sort((a, b) => haversineKm(clat, clng, a.lat, a.lon) - haversineKm(clat, clng, b.lat, b.lon))
-        .slice(0, 200)
+    visibleLoos()
+        .sort((a, b) => haversineKm(centre.lat, centre.lng, a.lat, a.lon)
+                      - haversineKm(centre.lat, centre.lng, b.lat, b.lon))
+        .slice(0, 250)
         .forEach(loo => {
-            // Fast-food venues get a muted blue-grey pin so they're visually distinct
-            const el = makePinEl(isToilet(loo) ? '#e8601a' : '#6b8fa8');
+            const el = makePinEl('#e8601a');
             el.title = loo.n;
             el.addEventListener('click', ev => { ev.stopPropagation(); openInfoWindow(loo); });
-            const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
-                .setLngLat([loo.lon, loo.lat])
-                .addTo(map);
-            markers.push(marker);
+            markers.push(
+                new maplibregl.Marker({ element: el, anchor: 'bottom' })
+                    .setLngLat([loo.lon, loo.lat])
+                    .addTo(map)
+            );
         });
 }
 
@@ -1114,30 +1281,77 @@ function centreOnUser() {
 /* ═══════════════════════════════════════════════
    FIND NEAREST
 ═══════════════════════════════════════════════ */
-function findNearest() {
+function nearestTo(lat, lng) {
+    let best = null, bestD = Infinity;
+    for (const l of allLoos) {
+        if (!passesFilters(l)) continue;
+        const d = haversineKm(lat, lng, l.lat, l.lon);
+        if (d < bestD) { bestD = d; best = l; }
+    }
+    return best;
+}
+
+async function findNearest() {
     if (!blueDotMarker) { showToast('📍 Waiting for GPS fix…'); return; }
-    if (!allLoos.length) { showToast('⚠️ Facility data still loading…'); return; }
 
     const { lat, lng } = blueDotMarker.getLngLat();
-    let nearest = null, bestDist = Infinity;
+    let nearest = nearestTo(lat, lng);
 
-    allLoos.forEach(l => {
-        const d = haversineKm(lat, lng, l.lat, l.lon);
-        if (d < bestDist) { bestDist = d; nearest = l; }
-    });
-
-    if (nearest) {
-        map.easeTo({ center: [nearest.lon, nearest.lat], zoom: 17 });
-        // Open card directly — don't search stale markers[] which reflect pre-zoom state
-        openInfoWindow(nearest);
-    } else {
-        showToast('😕 No facilities found nearby.');
+    // Nothing loaded around here yet — widen the OSM search until we find one
+    if (!nearest) {
+        showToast('📡 Asking OpenStreetMap…', 0, true);
+        for (const km of [3, 10, 30]) {
+            await ensureRadius(lat, lng, km);
+            nearest = nearestTo(lat, lng);
+            if (nearest) break;
+        }
+        hideToast();
     }
+
+    if (!nearest) {
+        showToast(activeFilters.size
+            ? '😕 Nothing matching those filters nearby'
+            : '😕 No toilets mapped near you on OpenStreetMap yet', 4500);
+        return;
+    }
+
+    map.easeTo({ center: [nearest.lon, nearest.lat], zoom: 17 });
+    // Open the card directly — markers[] still reflects the pre-zoom view
+    openInfoWindow(nearest);
 }
 
 /* ═══════════════════════════════════════════════
    INFO WINDOW  (the main 3-button card)
 ═══════════════════════════════════════════════ */
+function looBadges(t) {
+    const out = [];
+    const push = (cls, text) => out.push('<span class="iw-badge ' + cls + '">' + text + '</span>');
+
+    if (/^(yes|designated)$/.test(t.wheelchair || ''))  push('good', '♿ Accessible');
+    else if (t.wheelchair === 'limited')                push('',     '♿ Partly accessible');
+    else if (t.wheelchair === 'no')                     push('warn', '♿ Not accessible');
+
+    if (t.changing_table === 'yes') push('good', '🚼 Baby change');
+
+    if (t.fee === 'yes')     push('warn', '💰 ' + (t.charge ? escapeHtml(t.charge) : 'Fee'));
+    else if (t.fee === 'no') push('good', '🆓 Free');
+
+    if (t.opening_hours) {
+        push(/24\/7/.test(t.opening_hours) ? 'good' : '',
+             '🕐 ' + escapeHtml(t.opening_hours));
+    }
+
+    if (t.access && !/^(yes|public|permissive)$/.test(t.access)) {
+        push('warn', '🔑 ' + escapeHtml(t.access.replace(/_/g, ' ')));
+    }
+
+    if (t.unisex === 'yes')         push('', '🚻 Unisex');
+    if (t.shower === 'yes')         push('', '🚿 Shower');
+    if (t.drinking_water === 'yes') push('', '💧 Drinking water');
+
+    return out.length ? '<div class="iw-badges">' + out.join('') + '</div>' : '';
+}
+
 function openInfoWindow(loo) {
     currentLoo = loo;
     closeInfoWindow();
@@ -1150,23 +1364,21 @@ function openInfoWindow(loo) {
           ))
         : null;
 
-    const mode     = localStorage.getItem('hs_travel_mode') || 'WALKING';
+    const mode      = localStorage.getItem('hs_travel_mode') || 'WALKING';
     const modeEmoji = { DRIVING: '🚗', WALKING: '🏃', BICYCLING: '🚴' };
 
-    // Determine venue type from emoji field
-    const toilet   = isToilet(loo);
-    const emoji    = loo.e || (toilet ? '💩' : '🍽️');
-    const typeTag  = !toilet
-        ? `<div class="iw-type">${emoji} ${loo.c ? loo.c.charAt(0).toUpperCase() + loo.c.slice(1) : 'Restaurant / cafe'}</div>`
-        : '';
+    const badges = looBadges(loo.tags || {});
+    const osmUrl = /^(node|way|relation)\/\d+$/.test(loo.id || '')
+        ? 'https://www.openstreetmap.org/' + loo.id
+        : null;
 
     const html = `
     <div class="iw-card">
         <button class="iw-close" onclick="closeInfoWindow()">✕</button>
-        <span class="iw-emoji">${emoji}</span>
+        <span class="iw-emoji">💩</span>
         <div class="iw-name">${escapeHtml(loo.n)}</div>
         ${loo.a  ? `<div class="iw-address">${escapeHtml(loo.a)}</div>` : ''}
-        ${typeTag}
+        ${badges}
         ${dist   ? `<div class="iw-dist">${dist} away</div>` : ''}
         <div class="iw-actions">
             <button class="iw-btn iw-btn-nav"    onclick="startNavigation()">
@@ -1178,6 +1390,7 @@ function openInfoWindow(loo) {
                 <span class="iw-btn-label">REPORT</span>
             </button>
         </div>
+        ${osmUrl ? `<a class="iw-osm" href="${osmUrl}" target="_blank" rel="noopener">Data from OpenStreetMap — <u>fix or add detail</u></a>` : ''}
     </div>`;
 
     infoWindow = new maplibregl.Popup({
