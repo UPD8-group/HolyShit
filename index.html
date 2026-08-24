@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HolyShit.app — Relief Radar for Runners & Cyclists</title>
-    <meta name="description" content="Find public toilets near you instantly. For runners, cyclists, road trippers, parents — anyone who just needs to go. Free. No account. No drama.">
+    <meta name="description" content="Find public toilets near you instantly, anywhere in the world. Live OpenStreetMap data. For runners, cyclists, road trippers, parents — anyone who just needs to go. Free. No account. No drama.">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-title" content="HolyShit">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <meta property="og:title" content="HolyShit.app — Relief Radar">
-    <meta property="og:description" content="Find public toilets near you instantly. Free. No account. No drama.">
+    <meta property="og:description" content="Find public toilets near you instantly, anywhere in the world. Free. No account. No drama.">
     <meta property="og:image" content="banner.jpg">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
@@ -368,6 +368,7 @@
     }
     .about-inner p:last-child { margin-bottom: 0; }
     .about-inner strong { color: #fff; font-weight: 600; }
+    .about-inner a { color: var(--orange); text-decoration: underline; text-underline-offset: 2px; }
     .about-inner .big { font-size: 1.05rem; color: rgba(255,255,255,0.8); }
     .about-contact {
         display: inline-block; margin-top: 28px;
@@ -555,12 +556,12 @@
     <img id="hero-img" src="banner.jpg" alt="HolyShit.app — find public toilets near you"
          onerror="this.style.display='none';">
     <div class="hero-content">
-        <p class="hero-eyebrow">Relief Radar — Active Across Australia</p>
+        <p class="hero-eyebrow">Relief Radar — Anywhere in the World</p>
         <h1 class="hero-headline">
             Never Get Caught<br>Without a <em>Bathroom</em>
         </h1>
         <p class="hero-sub">
-            Public toilets near you, instantly. For runners, cyclists, road trippers and parents.
+            Public toilets near you, instantly — wherever you happen to be standing.
             Free. No account. No drama.
         </p>
         <button id="launch-btn" onclick="handleLaunch(event)">💩 Launch App</button>
@@ -574,12 +575,12 @@
 <div id="stats">
     <div class="stats-inner">
         <div class="stat-item">
-            <span class="stat-value">30,000+</span>
-            <span class="stat-label">Facilities Nationwide</span>
+            <span class="stat-value">Worldwide</span>
+            <span class="stat-label">Every Country, Every City</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">8</span>
-            <span class="stat-label">States &amp; Territories</span>
+            <span class="stat-value">Live</span>
+            <span class="stat-label">Straight From OpenStreetMap</span>
         </div>
         <div class="stat-item">
             <span class="stat-value">Free</span>
@@ -691,7 +692,7 @@
         <div class="step">
             <span class="step-num">04</span>
             <div class="step-title">Never Panic Again</div>
-            <div class="step-desc">Tap Near Me any time to instantly surface the closest facility wherever you are across Australia.</div>
+            <div class="step-desc">Tap Near Me any time to instantly surface the closest facility, wherever in the world you happen to be.</div>
         </div>
     </div>
 </section>
@@ -701,7 +702,8 @@
     <h2 class="section-title">Born at a Ball.<br>Built for Everyone.</h2>
     <div class="about-inner">
         <p class="big">HolyShit.app started as a conversation at a black tie ball. A friend who runs mentioned she'd never found a good way to plan routes around bathroom access. By the time the band finished their second set, the concept was locked in.</p>
-        <p><strong>Free for users. Useful for athletes. Built for real life.</strong> We're Australian, we don't take ourselves too seriously, and we think finding a toilet when you desperately need one should be the easiest thing in the world.</p>
+        <p><strong>Free for users. Useful for athletes. Built for real life.</strong> We're Australian, we don't take ourselves too seriously, and we think finding a toilet when you desperately need one should be the easiest thing in the world — in Wagga or in Warsaw.</p>
+        <p>Every toilet you see comes from <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>, the free map of the world built by hundreds of thousands of volunteers. Spot one that's missing or wrong? You can fix it there yourself, and it shows up here for everyone.</p>
         <p>Hence the name. Hence the 💩.</p>
     </div>
 </section>
@@ -719,7 +721,8 @@
         <a href="/terms.html">Terms of Use</a>
     </div>
     <span class="footer-copy">
-        © 2026 UPD8 Group Pty Ltd
+        © 2026 UPD8 Group Pty Ltd · Toilet data ©
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors
     </span>
     <a href="https://oo.studio" target="_blank" rel="noopener" class="oo-credit">
       <span>website by</span>

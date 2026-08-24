@@ -84,14 +84,15 @@
     <div class="big-claim">We do not collect your name, email, phone number, or any identifying information. There is no account to create.</div>
 
     <h2>Your location</h2>
-    <p>When you tap "Find toilets near me," your browser asks for permission to access your GPS. If you grant it, your coordinates are used locally on your device to find nearby facilities from our database. Your location is never transmitted to HolyShit.app servers. The only exception is when you actively request directions: your start and end coordinates are sent to the routing service (see below) to calculate the route, and nothing else.</p>
+    <p>When you tap "Find toilets near me," your browser asks for permission to access your GPS. If you grant it, your coordinates are used locally on your device to work out which part of the map to show you. Your location is never transmitted to HolyShit.app servers — we don't run any.</p>
+    <p>Two things do leave your device, and only when you ask for them. To list the toilets around you, the app asks the public OpenStreetMap Overpass API for everything mapped inside the map area you're viewing — that area, not your exact position, is what gets sent. And when you request directions, your start and end coordinates are sent to the routing service (see below) to calculate the route. Neither request carries your identity or anything else about you.</p>
     <p>You can revoke location permission at any time through your browser or device settings. The app will still work — you just won't be automatically centred on your location.</p>
 
     <h2>Maps &amp; directions</h2>
-    <p>HolyShit.app displays maps using OpenStreetMap-based tiles served by OpenFreeMap, and calculates directions using the community routing service at routing.openstreetmap.de (operated by FOSSGIS e.V.). Loading map tiles sends your device's IP address and the map area you're viewing to the tile server, as with any website. When you request directions, your start and end coordinates are sent to the routing service to compute the route. Neither request includes your identity, and we pass no other personal information to these services.</p>
+    <p>HolyShit.app displays maps using OpenStreetMap-based tiles served by OpenFreeMap, looks up toilets through the OpenStreetMap Overpass API, and calculates directions using the community routing service at routing.openstreetmap.de (operated by FOSSGIS e.V.). Loading map tiles and querying Overpass sends your device's IP address and the map area you're viewing to those servers, as with any website. When you request directions, your start and end coordinates are sent to the routing service to compute the route. None of these requests include your identity, and we pass no other personal information to these services.</p>
 
     <h2>Cookies</h2>
-    <p>We don't use tracking cookies. The only data stored locally on your device is your travel mode preference (Drive/Walk/Cycle), saved via localStorage so the app remembers your choice next time. This never leaves your device.</p>
+    <p>We don't use tracking cookies. The only data stored locally on your device is your travel mode preference (Drive/Walk/Cycle) and a short-lived copy of the toilets you've recently looked at, so the app still shows something when you're offline. Both are saved via localStorage and never leave your device. Clearing your browser data clears them.</p>
 
     <h2>Third parties</h2>
     <p>We do not sell, share, rent or trade your information with any third party for marketing purposes. Ever.</p>
@@ -99,6 +100,7 @@
     <ul>
         <li><strong>Netlify</strong> — hosting and anonymous analytics</li>
         <li><strong>OpenFreeMap</strong> — map tile display (OpenStreetMap data)</li>
+        <li><strong>OpenStreetMap Overpass API</strong> — looking up toilets in the area you're viewing</li>
         <li><strong>FOSSGIS e.V.</strong> (routing.openstreetmap.de) — directions calculation</li>
     </ul>
 

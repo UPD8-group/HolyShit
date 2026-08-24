@@ -1,7 +1,7 @@
 {
     "name": "HolyShit.app — Relief Radar",
     "short_name": "HolyShit",
-    "description": "Find public toilets near you, instantly. For runners, cyclists, road trippers and anyone who just needs to go.",
+    "description": "Find public toilets near you, instantly — anywhere in the world. Live OpenStreetMap data. For runners, cyclists, road trippers and anyone who just needs to go.",
     "start_url": "/app.html",
     "scope": "/",
     "display": "standalone",

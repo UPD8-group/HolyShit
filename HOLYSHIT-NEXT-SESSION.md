@@ -1,82 +1,63 @@
 # HolyShit.app — Next Session Briefing
-*Updated after big session — March 2026*
+*Updated after the OpenStreetMap rebuild — August 2026*
 
 ---
 
-## Current Status (as of this session)
+## Current Status
+
 - Live at holyshit.app
-- **50/50 code audit passed** — cleanest version yet
-- State-based JSON loading (8 files, one per state)
-- 4-button bottom nav: 🚗 Drive | 🏃 Walk/Run | 🚴 Cycle | 💩 Near Me
-- Map type FAB + Locate FAB stacked on right (Google Maps style)
+- **Toilets now come live from OpenStreetMap** — the whole world, not just Australia
+- No bundled dataset. The app queries the Overpass API for whatever part of
+  the map you're looking at, then caches it for the session
+- Map tiles: OpenFreeMap (OSM vector styles, keyless)
+- Routing: FOSSGIS OSRM at routing.openstreetmap.de (keyless)
+- 5-button bottom nav: 💩 Near Me | ♿ Accessible | 🚼 Baby | 🆓 Free | 🕐 24/7
+- Map type FAB + travel mode FAB + Locate FAB stacked on the right
 - Splash screen with tap-to-start (fixes iOS location permission)
 - Auto-start when coming from landing page (no double tap)
-- Map opens centred on user location, falls back to Canberra
-- Satellite view as default
-- Map follows user during active navigation
-- Cross-border state reload (e.g. ACT → NSW mid-session)
+- Opens centred on the user; no GPS = world view + prompt to enable location
 
 ### Files currently deployed:
-- `app.html` — main app
-- `index.html` — landing page (updated: "toilets near you", no "public toilets" claim)
-- `privacy.html` — privacy policy (NEW)
-- `terms.html` — terms of use (NEW)
-- `toilets-act.json` — 1,549 records, 134KB
-- `toilets-nsw.json` — 28,135 records, 2.3MB
-- `toilets-vic.json` — 15,823 records, 1.4MB
-- `toilets-qld.json` — 15,045 records, 1.2MB
-- `toilets-sa.json` — 5,662 records, 467KB
-- `toilets-wa.json` — 8,083 records, 645KB
-- `toilets-tas.json` — 2,541 records, 210KB
-- `toilets-nt.json` — 947 records, 72KB
+- `app.html` — main app (all OSM logic lives here)
+- `index.html` — landing page
+- `privacy.html` / `terms.html` — legal, updated for the OSM switch
+- `sw.js` — service worker v4 (app shell + versioned CDN assets only)
+
+### How the data layer works
+- The world is diced into a 0.05° grid (≈5.5 km cells). Each cell is fetched
+  from Overpass at most once per session; `loadedCells` remembers which.
+- Requests are serialised and rate-limited (1.2 s apart) so panning fast can't
+  hammer the public Overpass servers.
+- Three Overpass mirrors are tried in order; the app sticks with whichever
+  answers. A failed area is *not* marked loaded, so it retries later.
+- Below zoom 11 nothing is fetched — the viewport is too big to be useful.
+- The last ~2,500 records seen are kept in localStorage for a week, purely so
+  something shows up when Overpass is unreachable.
+- Query: `amenity=toilets` on nodes, ways and relations.
+
+### Tags surfaced on the card
+`wheelchair`, `changing_table`, `fee` / `charge`, `opening_hours`, `access`,
+`unisex`, `shower`, `drinking_water` — plus a link to edit the listing on
+openstreetmap.org.
 
 ---
 
-## Priority 1 — Expand the Database (MAIN TASK NEXT SESSION)
+## Priority 1 — Widen what counts as a toilet
 
-**The source: Overture Maps** — free, worldwide, no licensing restrictions.
-Run by the Overture Maps Foundation (Apple, Meta, Microsoft, Amazon).
-Download once, store yourself, no ongoing API costs. Worldwide coverage.
+Right now the app only asks OSM for `amenity=toilets`. The obvious next step is
+a second query for venues that *have* a toilet but aren't one:
 
-### Step 1 — Run this on your laptop at home first:
-```bash
-pip install overturemaps
-overturemaps download --bbox=113.3,-43.7,153.6,-10.7 --type=place -f geojson -o overture-au-places.geojson
 ```
-Takes 10-15 mins. Produces a large GeoJSON file of all Australian places.
-Then upload it here and I'll process it into the database.
+node["toilets"="yes"](bbox);
+node["amenity"~"fuel|fast_food|cafe"]["toilets"="yes"](bbox);
+```
 
-### Step 2 — I'll filter and tag using the stranger rule:
-**If a stranger can walk in without showing a card or paying first — it's in.**
+Apply the stranger rule: **if a stranger can walk in without showing a card or
+paying first — it's in.** Tag those results as daytime-only (☀️) and put them
+behind a nav toggle so the core map stays clean.
 
-#### Always Open (no icon)
-- Dedicated public toilets ✅ already have
-- Highway rest stops ✅ already have
-- Petrol/service stations (with toilets=yes tag)
-- Train stations and bus interchanges
-
-#### Daytime Only ☀️
-- Shopping centres
-- Bunnings and hardware stores
-- McDonald's and fast food (dining room only)
-- Supermarkets (Woolies, Coles, Aldi)
-- Public libraries
-- Council/government shopfronts
-- Community centres
-- Sports clubs and ovals
-- Hospitals and medical centres (public areas)
-- Beaches and surf clubs
-- National parks and rest stops
-- Universities and TAFE campuses
-- Caravan parks (some public access)
-
-#### Exclude
-- Hotels (unreliable lobby access)
-- Costco (membership required)
-- Gyms (membership required)
-- Pubs and clubs (patron access only)
-
-### Step 3 — Rebuild all 8 state JSON files with ☀️ tags
+Worth doing at the same time: OSM's `opening_hours` is already on the card, so
+a night mode (below) can filter on it rather than guessing.
 
 ---
 
